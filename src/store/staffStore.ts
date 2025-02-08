@@ -1,6 +1,7 @@
 
 import { create } from 'zustand';
 import { StaffMember, Transaction } from '@/types/staff';
+import { supabase } from '@/integrations/supabase/client';
 import {
   fetchStaffFromApi,
   fetchTransactionsFromApi,
@@ -21,6 +22,8 @@ interface StaffStore {
   deleteStaff: (id: string) => Promise<void>;
   addTransaction: (transaction: Omit<Transaction, 'id'>) => Promise<void>;
   deleteTransaction: (id: string) => Promise<void>;
+  subscribeToStaffChanges: () => void;
+  unsubscribeFromStaffChanges: () => void;
 }
 
 export const useStaffStore = create<StaffStore>()((set) => ({
@@ -74,5 +77,30 @@ export const useStaffStore = create<StaffStore>()((set) => ({
       transactions: state.transactions.filter((t) => t.id !== id),
     }));
   },
-}));
 
+  subscribeToStaffChanges: () => {
+    const channel = supabase
+      .channel('staff_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'staff'
+        },
+        async () => {
+          const staff = await fetchStaffFromApi();
+          set({ staff });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  },
+
+  unsubscribeFromStaffChanges: () => {
+    supabase.removeAllChannels();
+  },
+}));
