@@ -1,6 +1,5 @@
-
 import { formatDistanceToNow } from "date-fns";
-import { StaffMember } from "@/store/staffStore";
+import { StaffMember } from "@/types/staff";
 
 interface StaffCardProps {
   staff: StaffMember;

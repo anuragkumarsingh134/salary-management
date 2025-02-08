@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +16,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
-import { StaffMember } from "@/store/staffStore";
+import { StaffMember } from "@/types/staff";
 
 interface StaffDetailsProps {
   staff: StaffMember;
