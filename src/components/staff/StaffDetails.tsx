@@ -2,9 +2,20 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { X, Edit2 } from "lucide-react";
+import { X, Edit2, Trash2 } from "lucide-react";
 import { formatDistanceToNow, differenceInDays } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useState } from "react";
 import { StaffMember } from "@/store/staffStore";
 
@@ -13,9 +24,16 @@ interface StaffDetailsProps {
   totalTransactions: number;
   onClose: () => void;
   onUpdate: (staffId: string, updates: Partial<StaffMember>) => void;
+  onDelete: (staffId: string) => void;
 }
 
-export const StaffDetails = ({ staff, totalTransactions, onClose, onUpdate }: StaffDetailsProps) => {
+export const StaffDetails = ({ 
+  staff, 
+  totalTransactions, 
+  onClose, 
+  onUpdate,
+  onDelete 
+}: StaffDetailsProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const { toast } = useToast();
   
@@ -49,19 +67,60 @@ export const StaffDetails = ({ staff, totalTransactions, onClose, onUpdate }: St
     });
   };
 
+  const handleDelete = () => {
+    onDelete(staff.id);
+    onClose();
+    toast({
+      title: "Staff member deleted",
+      description: "The staff member and their transactions have been deleted.",
+      variant: "destructive",
+    });
+  };
+
   return (
     <Card className="p-4 glassmorphism">
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-xl font-semibold">Staff Details</h2>
         <div className="flex gap-2">
           {!isEditing && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsEditing(true)}
-            >
-              <Edit2 className="h-4 w-4" />
-            </Button>
+            <>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-red-500 hover:text-red-700 hover:bg-red-100"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete {staff.name}'s
+                      profile and all associated transactions.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDelete}
+                      className="bg-red-500 hover:bg-red-600"
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsEditing(true)}
+              >
+                <Edit2 className="h-4 w-4" />
+              </Button>
+            </>
           )}
           <Button
             variant="ghost"

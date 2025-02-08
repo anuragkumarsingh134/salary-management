@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
@@ -128,18 +127,29 @@ export const useStaffStore = create<StaffStore>()((set) => ({
   },
 
   deleteStaff: async (id) => {
-    const { error } = await supabase
+    const { error: transactionError } = await supabase
+      .from('transactions')
+      .delete()
+      .eq('staff_id', id);
+
+    if (transactionError) {
+      console.error('Error deleting transactions:', transactionError);
+      return;
+    }
+
+    const { error: staffError } = await supabase
       .from('staff')
       .delete()
       .eq('id', id);
 
-    if (error) {
-      console.error('Error deleting staff:', error);
+    if (staffError) {
+      console.error('Error deleting staff:', staffError);
       return;
     }
 
     set((state) => ({
       staff: state.staff.filter((staff) => staff.id !== id),
+      transactions: state.transactions.filter((t) => t.staffId !== id),
     }));
   },
 

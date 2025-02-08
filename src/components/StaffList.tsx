@@ -10,7 +10,7 @@ interface StaffListProps {
 }
 
 const StaffList = ({ onStaffSelect }: StaffListProps) => {
-  const { staff, transactions, updateStaff } = useStaffStore();
+  const { staff, transactions, updateStaff, deleteStaff } = useStaffStore();
   const [selectedStaff, setSelectedStaff] = useState<string | null>(null);
 
   const handleStaffSelect = (staffId: string | null) => {
@@ -35,6 +35,7 @@ const StaffList = ({ onStaffSelect }: StaffListProps) => {
         totalTransactions={totalTransactions}
         onClose={() => handleStaffSelect(null)}
         onUpdate={updateStaff}
+        onDelete={deleteStaff}
       />
     );
   }
