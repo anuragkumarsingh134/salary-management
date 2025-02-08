@@ -28,11 +28,6 @@ const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
     });
   };
 
-  // Filter transactions based on selected staff
-  const filteredTransactions = selectedStaffId 
-    ? transactions.filter(t => t.staffId === selectedStaffId)
-    : [];
-
   // Don't render the card if no staff is selected
   if (!selectedStaffId) {
     return null;
@@ -40,9 +35,12 @@ const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
 
   // Get the staff member to check if they exist and are active
   const selectedStaffMember = staff.find(s => s.id === selectedStaffId);
-  if (!selectedStaffMember) {
+  if (!selectedStaffMember || !selectedStaffMember.active) {
     return null;
   }
+
+  // Filter transactions based on selected staff
+  const filteredTransactions = transactions.filter(t => t.staffId === selectedStaffId);
 
   return (
     <Card className="p-6 glassmorphism">
@@ -87,7 +85,10 @@ const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => handleDelete(transaction.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(transaction.id);
+                  }}
                   className="text-red-500 hover:text-red-700"
                 >
                   <Trash className="h-4 w-4" />
