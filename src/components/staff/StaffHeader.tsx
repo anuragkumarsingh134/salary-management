@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { X, Edit2, Trash2, PowerOff } from "lucide-react";
+import { X, Edit2, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,10 +42,13 @@ export const StaffHeader = ({
               <AlertDialogTrigger asChild>
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className={isInactive ? "text-green-500 hover:text-green-700 hover:bg-green-100" : "text-red-500 hover:text-red-700 hover:bg-red-100"}
+                  className={
+                    isInactive
+                      ? "text-red-500 hover:text-red-700 hover:bg-red-100"
+                      : "text-green-500 hover:text-green-700 hover:bg-green-100"
+                  }
                 >
-                  <PowerOff className="h-4 w-4" />
+                  {isInactive ? "Inactive" : "Active"}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
