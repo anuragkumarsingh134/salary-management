@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, DollarSign } from "lucide-react";
 import { useStaffStore } from "@/store/staffStore";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,12 @@ const Index = () => {
   const [addStaffOpen, setAddStaffOpen] = useState(false);
   const [addTransactionOpen, setAddTransactionOpen] = useState(false);
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
+  const { fetchStaff, fetchTransactions } = useStaffStore();
+
+  useEffect(() => {
+    fetchStaff();
+    fetchTransactions();
+  }, [fetchStaff, fetchTransactions]);
 
   return (
     <div className="container py-8 flex flex-col h-[calc(100vh-2rem)] space-y-8 animate-fadeIn">
