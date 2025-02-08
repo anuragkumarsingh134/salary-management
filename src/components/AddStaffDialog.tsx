@@ -68,7 +68,7 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="salary">Monthly Salary ($)</Label>
+            <Label htmlFor="salary">Monthly Salary (₹)</Label>
             <Input
               id="salary"
               type="number"

@@ -27,7 +27,7 @@ const TransactionList = () => {
             </div>
             <div className="text-right">
               <p className="font-medium">
-                ${transaction.amount.toLocaleString()}
+                ₹{transaction.amount.toLocaleString()}
               </p>
               <p className="text-sm text-muted-foreground">
                 {format(new Date(transaction.date), "MMM d, yyyy")}

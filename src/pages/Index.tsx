@@ -59,7 +59,7 @@ const Index = () => {
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Total Salaries</p>
-              <h3 className="text-2xl font-bold">${totalSalaries.toLocaleString()}</h3>
+              <h3 className="text-2xl font-bold">₹{totalSalaries.toLocaleString()}</h3>
             </div>
           </div>
         </Card>
@@ -71,7 +71,7 @@ const Index = () => {
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Total Transactions</p>
-              <h3 className="text-2xl font-bold">${totalTransactions.toLocaleString()}</h3>
+              <h3 className="text-2xl font-bold">₹{totalTransactions.toLocaleString()}</h3>
             </div>
           </div>
         </Card>

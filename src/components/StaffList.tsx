@@ -50,13 +50,13 @@ const StaffList = () => {
             <div className="p-4 rounded-lg bg-secondary/30">
               <p className="text-sm text-muted-foreground">Monthly Salary</p>
               <p className="text-xl font-semibold">
-                ${selectedStaffMember.salary.toLocaleString()}
+                ₹{selectedStaffMember.salary.toLocaleString()}
               </p>
             </div>
             <div className="p-4 rounded-lg bg-secondary/30">
               <p className="text-sm text-muted-foreground">Total Transactions</p>
               <p className="text-xl font-semibold">
-                ${totalTransactions.toLocaleString()}
+                ₹{totalTransactions.toLocaleString()}
               </p>
             </div>
           </div>
@@ -95,7 +95,7 @@ const StaffList = () => {
               </div>
             </div>
             <div className="text-right">
-              <p className="font-medium">${member.salary.toLocaleString()}/month</p>
+              <p className="font-medium">₹{member.salary.toLocaleString()}/month</p>
               <p className="text-sm text-muted-foreground">
                 Joined {formatDistanceToNow(new Date(member.startDate))} ago
               </p>
