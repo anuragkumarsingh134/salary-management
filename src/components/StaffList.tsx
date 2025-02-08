@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { X, Edit2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { TransactionList } from "@/components/transaction-list";
+import TransactionList from "@/components/TransactionList";
 
 const StaffList = () => {
   const { staff, transactions, updateStaff } = useStaffStore();
