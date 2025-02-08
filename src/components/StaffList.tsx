@@ -68,34 +68,6 @@ const StaffList = () => {
               {formatDistanceToNow(new Date(selectedStaffMember.startDate))} ago
             </p>
           </div>
-
-          <div>
-            <h4 className="font-semibold mb-3">Recent Transactions</h4>
-            <div className="space-y-2">
-              {staffTransactions.length > 0 ? (
-                staffTransactions.map((transaction) => (
-                  <div
-                    key={transaction.id}
-                    className="p-3 rounded-lg bg-secondary/30 flex justify-between items-center"
-                  >
-                    <div>
-                      <p className="font-medium capitalize">{transaction.type}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {transaction.description}
-                      </p>
-                    </div>
-                    <p className="font-semibold">
-                      ${transaction.amount.toLocaleString()}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-muted-foreground text-center py-4">
-                  No transactions found
-                </p>
-              )}
-            </div>
-          </div>
         </div>
       </Card>
     );
