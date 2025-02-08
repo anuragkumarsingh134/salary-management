@@ -1,26 +1,15 @@
 
 import { create } from 'zustand';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/ui/use-toast';
-
-export interface StaffMember {
-  id: string;
-  name: string;
-  position: string;
-  salary: number;
-  startDate: string;
-  email: string;
-  image?: string;
-}
-
-export interface Transaction {
-  id: string;
-  staffId: string;
-  amount: number;
-  type: 'salary' | 'bonus' | 'withdrawal';
-  date: string;
-  description: string;
-}
+import { StaffMember, Transaction } from '@/types/staff';
+import {
+  fetchStaffFromApi,
+  fetchTransactionsFromApi,
+  addStaffToApi,
+  updateStaffInApi,
+  deleteStaffFromApi,
+  addTransactionToApi,
+  deleteTransactionFromApi,
+} from '@/api/staffApi';
 
 interface StaffStore {
   staff: StaffMember[];
@@ -39,101 +28,24 @@ export const useStaffStore = create<StaffStore>()((set) => ({
   transactions: [],
   
   fetchStaff: async () => {
-    const { data, error } = await supabase
-      .from('staff')
-      .select('*');
-    
-    if (error) {
-      console.error('Error fetching staff:', error);
-      return;
-    }
-
-    const formattedStaff = data.map(staff => ({
-      ...staff,
-      startDate: staff.start_date,
-    }));
-
-    set({ staff: formattedStaff });
+    const staff = await fetchStaffFromApi();
+    set({ staff });
   },
 
   fetchTransactions: async () => {
-    const { data, error } = await supabase
-      .from('transactions')
-      .select('*');
-    
-    if (error) {
-      console.error('Error fetching transactions:', error);
-      return;
-    }
-
-    const formattedTransactions = data.map(transaction => ({
-      id: transaction.id,
-      staffId: transaction.staff_id,
-      amount: transaction.amount,
-      type: transaction.type as 'salary' | 'bonus' | 'withdrawal',
-      date: transaction.date,
-      description: transaction.description,
-    }));
-
-    set({ transactions: formattedTransactions });
+    const transactions = await fetchTransactionsFromApi();
+    set({ transactions });
   },
 
   addStaff: async (staffMember) => {
-    // First, create a Supabase auth user with the provided email
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: staffMember.email,
-      password: 'temp123', // Temporary password that staff will need to change
-    });
-
-    if (authError) {
-      console.error('Error creating auth user:', authError);
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from('staff')
-      .insert([{
-        name: staffMember.name,
-        position: staffMember.position,
-        salary: staffMember.salary,
-        start_date: staffMember.startDate,
-        email: staffMember.email,
-        image: staffMember.image,
-      }])
-      .select()
-      .single();
-    
-    if (error) {
-      console.error('Error adding staff:', error);
-      return;
-    }
-
+    const newStaff = await addStaffToApi(staffMember);
     set((state) => ({
-      staff: [...state.staff, { 
-        ...data,
-        startDate: data.start_date,
-      }],
+      staff: [...state.staff, newStaff],
     }));
   },
 
   updateStaff: async (id, updatedStaff) => {
-    const { error } = await supabase
-      .from('staff')
-      .update({
-        name: updatedStaff.name,
-        position: updatedStaff.position,
-        salary: updatedStaff.salary,
-        start_date: updatedStaff.startDate,
-        email: updatedStaff.email,
-        image: updatedStaff.image,
-      })
-      .eq('id', id);
-
-    if (error) {
-      console.error('Error updating staff:', error);
-      return;
-    }
-
+    await updateStaffInApi(id, updatedStaff);
     set((state) => ({
       staff: state.staff.map((staff) =>
         staff.id === id ? { ...staff, ...updatedStaff } : staff
@@ -142,26 +54,7 @@ export const useStaffStore = create<StaffStore>()((set) => ({
   },
 
   deleteStaff: async (id) => {
-    const { error: transactionError } = await supabase
-      .from('transactions')
-      .delete()
-      .eq('staff_id', id);
-
-    if (transactionError) {
-      console.error('Error deleting transactions:', transactionError);
-      return;
-    }
-
-    const { error: staffError } = await supabase
-      .from('staff')
-      .delete()
-      .eq('id', id);
-
-    if (staffError) {
-      console.error('Error deleting staff:', staffError);
-      return;
-    }
-
+    await deleteStaffFromApi(id);
     set((state) => ({
       staff: state.staff.filter((staff) => staff.id !== id),
       transactions: state.transactions.filter((t) => t.staffId !== id),
@@ -169,48 +62,14 @@ export const useStaffStore = create<StaffStore>()((set) => ({
   },
 
   addTransaction: async (transaction) => {
-    const { data, error } = await supabase
-      .from('transactions')
-      .insert([{
-        staff_id: transaction.staffId,
-        amount: transaction.amount,
-        type: transaction.type,
-        date: transaction.date,
-        description: transaction.description,
-      }])
-      .select()
-      .single();
-    
-    if (error) {
-      console.error('Error adding transaction:', error);
-      return;
-    }
-
-    const formattedTransaction: Transaction = {
-      id: data.id,
-      staffId: data.staff_id,
-      amount: data.amount,
-      type: data.type as 'salary' | 'bonus' | 'withdrawal',
-      date: data.date,
-      description: data.description,
-    };
-
+    const newTransaction = await addTransactionToApi(transaction);
     set((state) => ({
-      transactions: [...state.transactions, formattedTransaction],
+      transactions: [...state.transactions, newTransaction],
     }));
   },
 
   deleteTransaction: async (id) => {
-    const { error } = await supabase
-      .from('transactions')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      console.error('Error deleting transaction:', error);
-      return;
-    }
-
+    await deleteTransactionFromApi(id);
     set((state) => ({
       transactions: state.transactions.filter((t) => t.id !== id),
     }));
