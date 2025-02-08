@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,23 +12,50 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      // First, check if a staff member with this email exists
+      const { data: staffData, error: staffError } = await supabase
+        .from('staff')
+        .select('id, user_id')
+        .eq('email', email)
+        .single();
+
+      if (staffError || !staffData) {
+        throw new Error("No staff member found with this email. Please contact your administrator.");
+      }
+
+      if (staffData.user_id) {
+        throw new Error("This staff account is already registered.");
+      }
+
+      // Create the user account
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (authError) throw authError;
+
+      // Link the staff record to the new user account
+      const { error: updateError } = await supabase
+        .from('staff')
+        .update({ user_id: authData.user?.id })
+        .eq('id', staffData.id);
+
+      if (updateError) throw updateError;
 
       toast({
         title: "Registration successful",
         description: "Please check your email to verify your account.",
       });
+
+      navigate("/login");
     } catch (error: any) {
       toast({
         title: "Error",
@@ -43,12 +70,12 @@ const Register = () => {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <Card className="w-full max-w-md p-8">
-        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">Staff Registration</h2>
         <form onSubmit={handleRegister} className="space-y-4">
           <div>
             <Input
               type="email"
-              placeholder="Email"
+              placeholder="Your Staff Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -79,3 +106,4 @@ const Register = () => {
 };
 
 export default Register;
+
