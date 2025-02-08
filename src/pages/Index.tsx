@@ -1,8 +1,7 @@
 
 import { useState } from "react";
-import { Plus, DollarSign, Users, BarChart3 } from "lucide-react";
+import { Plus, DollarSign } from "lucide-react";
 import { useStaffStore } from "@/store/staffStore";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import StaffList from "@/components/StaffList";
 import AddStaffDialog from "@/components/AddStaffDialog";
@@ -13,10 +12,6 @@ const Index = () => {
   const [addStaffOpen, setAddStaffOpen] = useState(false);
   const [addTransactionOpen, setAddTransactionOpen] = useState(false);
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
-  const { staff, transactions } = useStaffStore();
-
-  const totalSalaries = staff.reduce((acc, curr) => acc + curr.salary, 0);
-  const totalTransactions = transactions.reduce((acc, curr) => acc + curr.amount, 0);
 
   return (
     <div className="container py-8 flex flex-col h-[calc(100vh-2rem)] space-y-8 animate-fadeIn">
@@ -38,44 +33,6 @@ const Index = () => {
             Add Staff
           </Button>
         </div>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="p-6 glassmorphism card-hover">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-primary/10 rounded-full">
-              <Users className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Total Staff</p>
-              <h3 className="text-2xl font-bold">{staff.length}</h3>
-            </div>
-          </div>
-        </Card>
-        
-        <Card className="p-6 glassmorphism card-hover">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-primary/10 rounded-full">
-              <DollarSign className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Total Salaries</p>
-              <h3 className="text-2xl font-bold">₹{totalSalaries.toLocaleString()}</h3>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6 glassmorphism card-hover">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-primary/10 rounded-full">
-              <BarChart3 className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Total Transactions</p>
-              <h3 className="text-2xl font-bold">₹{totalTransactions.toLocaleString()}</h3>
-            </div>
-          </div>
-        </Card>
       </div>
 
       <div className="flex-none">
