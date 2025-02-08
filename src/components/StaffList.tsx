@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { useStaffStore } from "@/store/staffStore";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, differenceInDays } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
@@ -20,7 +20,22 @@ const StaffList = () => {
     0
   );
 
+  const calculateSalaryDetails = (staffMember: typeof selectedStaffMember) => {
+    if (!staffMember) return null;
+    
+    const daysWorked = differenceInDays(new Date(), new Date(staffMember.startDate));
+    const dailyRate = staffMember.salary / 30;
+    const totalEarned = daysWorked * dailyRate;
+    
+    return {
+      daysWorked,
+      dailyRate,
+      totalEarned
+    };
+  };
+
   if (selectedStaffMember) {
+    const salaryDetails = calculateSalaryDetails(selectedStaffMember);
     return (
       <Card className="p-6 glassmorphism">
         <div className="flex justify-between items-center mb-6">
@@ -61,11 +76,44 @@ const StaffList = () => {
             </div>
           </div>
 
-          <div>
-            <h4 className="font-semibold mb-3">Employment Information</h4>
+          <div className="space-y-4">
+            <h4 className="font-semibold">Employment Information</h4>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="p-4 rounded-lg bg-secondary/30">
+                <p className="text-sm text-muted-foreground">Days Worked</p>
+                <p className="text-xl font-semibold">
+                  {salaryDetails?.daysWorked} days
+                </p>
+              </div>
+              <div className="p-4 rounded-lg bg-secondary/30">
+                <p className="text-sm text-muted-foreground">Daily Rate</p>
+                <p className="text-xl font-semibold">
+                  ₹{salaryDetails?.dailyRate.toLocaleString()}
+                </p>
+              </div>
+              <div className="p-4 rounded-lg bg-secondary/30">
+                <p className="text-sm text-muted-foreground">Total Earned</p>
+                <p className="text-xl font-semibold">
+                  ₹{salaryDetails?.totalEarned.toLocaleString()}
+                </p>
+              </div>
+              <div className="p-4 rounded-lg bg-secondary/30">
+                <p className="text-sm text-muted-foreground">Balance</p>
+                <p className="text-xl font-semibold">
+                  {salaryDetails && (salaryDetails.totalEarned > totalTransactions ? (
+                    <span className="text-green-600">
+                      Pending: ₹{(salaryDetails.totalEarned - totalTransactions).toLocaleString()}
+                    </span>
+                  ) : (
+                    <span className="text-red-600">
+                      Advance: ₹{Math.abs(salaryDetails.totalEarned - totalTransactions).toLocaleString()}
+                    </span>
+                  ))}
+                </p>
+              </div>
+            </div>
             <p className="text-sm text-muted-foreground">
-              Started{" "}
-              {formatDistanceToNow(new Date(selectedStaffMember.startDate))} ago
+              Started {formatDistanceToNow(new Date(selectedStaffMember.startDate))} ago
             </p>
           </div>
         </div>
