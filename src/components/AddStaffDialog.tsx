@@ -20,7 +20,6 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
     position: "",
     salary: "",
     startDate: "",
-    email: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,15 +30,14 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
         position: formData.position,
         salary: Number(formData.salary),
         startDate: formData.startDate,
-        email: formData.email,
-        active: true, // Add this line to set default active status
+        active: true,
       });
       toast({
         title: "Staff member added",
-        description: `${formData.name} has been added to the staff list. A temporary password has been sent to their email.`,
+        description: `${formData.name} has been added to the staff list.`,
       });
       onOpenChange(false);
-      setFormData({ name: "", position: "", salary: "", startDate: "", email: "" });
+      setFormData({ name: "", position: "", salary: "", startDate: "" });
     } catch (error) {
       toast({
         title: "Error adding staff",
@@ -63,18 +61,6 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
-              }
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
               }
               required
             />

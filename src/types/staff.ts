@@ -5,9 +5,9 @@ export interface StaffMember {
   position: string;
   salary: number;
   startDate: string;
-  email: string;
   image?: string;
   active: boolean;
+  email?: string;  // Made email optional
 }
 
 export interface Transaction {

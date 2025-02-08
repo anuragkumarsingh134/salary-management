@@ -38,23 +38,7 @@ export const fetchTransactionsFromApi = async () => {
   }));
 };
 
-export const createAuthUser = async (email: string) => {
-  const { data, error } = await supabase.auth.signUp({
-    email: email,
-    password: 'temp123', // Temporary password that staff will need to change
-  });
-
-  if (error) {
-    console.error('Error creating auth user:', error);
-    throw error;
-  }
-
-  return data;
-};
-
 export const addStaffToApi = async (staffMember: Omit<StaffMember, 'id'>) => {
-  await createAuthUser(staffMember.email);
-
   const { data, error } = await supabase
     .from('staff')
     .insert([{
@@ -62,8 +46,8 @@ export const addStaffToApi = async (staffMember: Omit<StaffMember, 'id'>) => {
       position: staffMember.position,
       salary: staffMember.salary,
       start_date: staffMember.startDate,
-      email: staffMember.email,
       image: staffMember.image,
+      active: staffMember.active,
     }])
     .select()
     .single();
@@ -87,8 +71,8 @@ export const updateStaffInApi = async (id: string, updatedStaff: Partial<StaffMe
       position: updatedStaff.position,
       salary: updatedStaff.salary,
       start_date: updatedStaff.startDate,
-      email: updatedStaff.email,
       image: updatedStaff.image,
+      active: updatedStaff.active,
     })
     .eq('id', id);
 
