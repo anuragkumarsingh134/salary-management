@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useStaffStore } from "@/store/staffStore";
+import { useStaffStore, Transaction } from "@/store/staffStore";
 import { useToast } from "@/components/ui/use-toast";
 
 interface AddTransactionDialogProps {
@@ -19,7 +19,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
   const [formData, setFormData] = useState({
     staffId: "",
     amount: "",
-    type: "salary" as const,
+    type: "salary" as Transaction['type'],
     date: "",
     description: "",
   });
@@ -90,7 +90,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
             <Label htmlFor="type">Type</Label>
             <Select
               value={formData.type}
-              onValueChange={(value: "salary" | "bonus" | "withdrawal") =>
+              onValueChange={(value: Transaction['type']) =>
                 setFormData({ ...formData, type: value })
               }
             >
