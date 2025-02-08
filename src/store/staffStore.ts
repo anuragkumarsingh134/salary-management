@@ -22,7 +22,7 @@ interface StaffStore {
   deleteStaff: (id: string) => Promise<void>;
   addTransaction: (transaction: Omit<Transaction, 'id'>) => Promise<void>;
   deleteTransaction: (id: string) => Promise<void>;
-  subscribeToStaffChanges: () => void;
+  subscribeToStaffChanges: () => () => void;
   unsubscribeFromStaffChanges: () => void;
 }
 
@@ -88,7 +88,8 @@ export const useStaffStore = create<StaffStore>()((set) => ({
           schema: 'public',
           table: 'staff'
         },
-        async () => {
+        async (payload) => {
+          // Fetch fresh data on any change
           const staff = await fetchStaffFromApi();
           set({ staff });
         }
@@ -96,7 +97,9 @@ export const useStaffStore = create<StaffStore>()((set) => ({
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   },
 

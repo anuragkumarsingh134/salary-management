@@ -15,20 +15,20 @@ const Index = () => {
   const [addStaffOpen, setAddStaffOpen] = useState(false);
   const [addTransactionOpen, setAddTransactionOpen] = useState(false);
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
-  const { fetchStaff, fetchTransactions, subscribeToStaffChanges, unsubscribeFromStaffChanges } = useStaffStore();
+  const { fetchStaff, fetchTransactions, subscribeToStaffChanges } = useStaffStore();
 
   useEffect(() => {
     fetchStaff();
     fetchTransactions();
     
-    // Subscribe to real-time updates
-    subscribeToStaffChanges();
+    // Subscribe to real-time updates and store cleanup function
+    const unsubscribe = subscribeToStaffChanges();
 
     // Cleanup subscription on unmount
     return () => {
-      unsubscribeFromStaffChanges();
+      unsubscribe();
     };
-  }, [fetchStaff, fetchTransactions, subscribeToStaffChanges, unsubscribeFromStaffChanges]);
+  }, [fetchStaff, fetchTransactions, subscribeToStaffChanges]);
 
   return (
     <div className="min-h-screen flex flex-col">
