@@ -6,7 +6,11 @@ import { Trash } from "lucide-react";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
 
-const TransactionList = () => {
+interface TransactionListProps {
+  selectedStaffId?: string | null;
+}
+
+const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
   const { transactions, staff, deleteTransaction } = useStaffStore();
   const { toast } = useToast();
 
@@ -40,11 +44,27 @@ const TransactionList = () => {
     });
   };
 
+  // Filter transactions based on selected staff
+  const filteredTransactions = selectedStaffId 
+    ? transactions.filter(t => t.staffId === selectedStaffId)
+    : transactions;
+
+  if (!selectedStaffId) {
+    return (
+      <Card className="p-6 glassmorphism">
+        <h2 className="text-2xl font-semibold mb-4">Recent Transactions</h2>
+        <p className="text-muted-foreground text-center py-8">
+          Select a staff member to view their transactions
+        </p>
+      </Card>
+    );
+  }
+
   return (
     <Card className="p-6 glassmorphism">
       <h2 className="text-2xl font-semibold mb-4">Recent Transactions</h2>
       <div className="space-y-4">
-        {transactions.map((transaction) => {
+        {filteredTransactions.map((transaction) => {
           const balance = calculateBalance(transaction.staffId);
           return (
             <div
@@ -83,11 +103,11 @@ const TransactionList = () => {
                 </Button>
               </div>
             </div>
-          );
-        })}
-        {transactions.length === 0 && (
+          )}
+        )}
+        {filteredTransactions.length === 0 && (
           <p className="text-muted-foreground text-center py-8">
-            No transactions recorded yet
+            No transactions recorded for this staff member
           </p>
         )}
       </div>
@@ -96,3 +116,4 @@ const TransactionList = () => {
 };
 
 export default TransactionList;
+

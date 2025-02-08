@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { useStaffStore } from "@/store/staffStore";
@@ -7,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { X, Edit2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import { TransactionList } from "@/components/transaction-list";
 
 const StaffList = () => {
   const { staff, transactions, updateStaff } = useStaffStore();
@@ -239,6 +239,9 @@ const StaffList = () => {
             No staff members added yet
           </p>
         )}
+      </div>
+      <div className="mt-6">
+        <TransactionList selectedStaffId={selectedStaff} />
       </div>
     </Card>
   );
