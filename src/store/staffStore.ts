@@ -66,8 +66,12 @@ export const useStaffStore = create<StaffStore>()((set) => ({
     }
 
     const formattedTransactions = data.map(transaction => ({
-      ...transaction,
+      id: transaction.id,
       staffId: transaction.staff_id,
+      amount: transaction.amount,
+      type: transaction.type as 'salary' | 'bonus' | 'withdrawal',
+      date: transaction.date,
+      description: transaction.description,
     }));
 
     set({ transactions: formattedTransactions });
@@ -157,14 +161,17 @@ export const useStaffStore = create<StaffStore>()((set) => ({
       return;
     }
 
+    const formattedTransaction: Transaction = {
+      id: data.id,
+      staffId: data.staff_id,
+      amount: data.amount,
+      type: data.type as 'salary' | 'bonus' | 'withdrawal',
+      date: data.date,
+      description: data.description,
+    };
+
     set((state) => ({
-      transactions: [
-        ...state.transactions,
-        { 
-          ...data,
-          staffId: data.staff_id,
-        },
-      ],
+      transactions: [...state.transactions, formattedTransaction],
     }));
   },
 
