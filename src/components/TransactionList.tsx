@@ -39,8 +39,11 @@ const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
     return null;
   }
 
-  // Filter transactions based on selected staff
-  const filteredTransactions = transactions.filter(t => t.staffId === selectedStaffId);
+  // Only show transactions that belong to this specific active staff member
+  const staffTransactions = transactions.filter(t => 
+    t.staffId === selectedStaffId && 
+    staff.some(s => s.id === t.staffId && s.active)
+  );
 
   return (
     <Card className="p-6 glassmorphism">
@@ -62,7 +65,7 @@ const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
       
       {isExpanded && (
         <div className="space-y-4 mt-4">
-          {filteredTransactions.map((transaction) => (
+          {staffTransactions.map((transaction) => (
             <div
               key={transaction.id}
               className="flex items-center justify-between p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors"
@@ -96,7 +99,7 @@ const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
               </div>
             </div>
           ))}
-          {filteredTransactions.length === 0 && (
+          {staffTransactions.length === 0 && (
             <p className="text-muted-foreground text-center py-8">
               No transactions recorded for this staff member
             </p>
