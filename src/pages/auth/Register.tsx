@@ -24,9 +24,13 @@ const Register = () => {
         .from('staff')
         .select('id, user_id')
         .eq('email', email)
-        .single();
+        .maybeSingle();
 
-      if (staffError || !staffData) {
+      if (staffError) {
+        throw staffError;
+      }
+
+      if (!staffData) {
         throw new Error("No staff member found with this email. Please contact your administrator.");
       }
 
@@ -106,4 +110,3 @@ const Register = () => {
 };
 
 export default Register;
-
