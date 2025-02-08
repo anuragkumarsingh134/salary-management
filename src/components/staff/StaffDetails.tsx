@@ -6,13 +6,13 @@ import { X, Edit2 } from "lucide-react";
 import { formatDistanceToNow, differenceInDays } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
-import { Staff } from "@/store/staffStore";
+import { StaffMember } from "@/store/staffStore";
 
 interface StaffDetailsProps {
-  staff: Staff;
+  staff: StaffMember;
   totalTransactions: number;
   onClose: () => void;
-  onUpdate: (staffId: string, updates: Partial<Staff>) => void;
+  onUpdate: (staffId: string, updates: Partial<StaffMember>) => void;
 }
 
 export const StaffDetails = ({ staff, totalTransactions, onClose, onUpdate }: StaffDetailsProps) => {

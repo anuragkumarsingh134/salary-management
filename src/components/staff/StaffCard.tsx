@@ -1,9 +1,9 @@
 
 import { formatDistanceToNow } from "date-fns";
-import { Staff } from "@/store/staffStore";
+import { StaffMember } from "@/store/staffStore";
 
 interface StaffCardProps {
-  staff: Staff;
+  staff: StaffMember;
   onClick: () => void;
 }
 
