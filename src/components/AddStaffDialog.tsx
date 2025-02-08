@@ -20,22 +20,32 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
     position: "",
     salary: "",
     startDate: "",
+    email: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    addStaff({
-      name: formData.name,
-      position: formData.position,
-      salary: Number(formData.salary),
-      startDate: formData.startDate,
-    });
-    toast({
-      title: "Staff member added",
-      description: `${formData.name} has been added to the staff list.`,
-    });
-    onOpenChange(false);
-    setFormData({ name: "", position: "", salary: "", startDate: "" });
+    try {
+      await addStaff({
+        name: formData.name,
+        position: formData.position,
+        salary: Number(formData.salary),
+        startDate: formData.startDate,
+        email: formData.email,
+      });
+      toast({
+        title: "Staff member added",
+        description: `${formData.name} has been added to the staff list. A temporary password has been sent to their email.`,
+      });
+      onOpenChange(false);
+      setFormData({ name: "", position: "", salary: "", startDate: "", email: "" });
+    } catch (error) {
+      toast({
+        title: "Error adding staff",
+        description: "There was an error adding the staff member. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -52,6 +62,18 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
+              }
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
               }
               required
             />

@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
@@ -8,6 +9,7 @@ export interface StaffMember {
   position: string;
   salary: number;
   startDate: string;
+  email: string;
   image?: string;
 }
 
@@ -77,6 +79,17 @@ export const useStaffStore = create<StaffStore>()((set) => ({
   },
 
   addStaff: async (staffMember) => {
+    // First, create a Supabase auth user with the provided email
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: staffMember.email,
+      password: 'temp123', // Temporary password that staff will need to change
+    });
+
+    if (authError) {
+      console.error('Error creating auth user:', authError);
+      return;
+    }
+
     const { data, error } = await supabase
       .from('staff')
       .insert([{
@@ -84,6 +97,7 @@ export const useStaffStore = create<StaffStore>()((set) => ({
         position: staffMember.position,
         salary: staffMember.salary,
         start_date: staffMember.startDate,
+        email: staffMember.email,
         image: staffMember.image,
       }])
       .select()
@@ -110,6 +124,7 @@ export const useStaffStore = create<StaffStore>()((set) => ({
         position: updatedStaff.position,
         salary: updatedStaff.salary,
         start_date: updatedStaff.startDate,
+        email: updatedStaff.email,
         image: updatedStaff.image,
       })
       .eq('id', id);
