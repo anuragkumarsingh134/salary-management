@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       staff: {
         Row: {
+          active: boolean
           created_at: string
           email: string | null
           id: string
@@ -22,6 +23,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          active?: boolean
           created_at?: string
           email?: string | null
           id?: string
@@ -33,6 +35,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          active?: boolean
           created_at?: string
           email?: string | null
           id?: string

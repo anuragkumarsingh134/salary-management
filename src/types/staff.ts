@@ -7,6 +7,7 @@ export interface StaffMember {
   startDate: string;
   email: string;
   image?: string;
+  active: boolean;
 }
 
 export interface Transaction {

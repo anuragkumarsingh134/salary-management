@@ -1,7 +1,8 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { X, Edit2, Trash2 } from "lucide-react";
+import { X, Edit2, Trash2, PowerOff } from "lucide-react";
 import { formatDistanceToNow, differenceInDays } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -23,7 +24,9 @@ interface StaffDetailsProps {
   totalTransactions: number;
   onClose: () => void;
   onUpdate: (staffId: string, updates: Partial<StaffMember>) => void;
-  onDelete: (staffId: string) => void;
+  onDelete?: (staffId: string) => void;
+  onReactivate?: () => void;
+  isInactive?: boolean;
 }
 
 export const StaffDetails = ({ 
@@ -31,7 +34,9 @@ export const StaffDetails = ({
   totalTransactions, 
   onClose, 
   onUpdate,
-  onDelete 
+  onDelete,
+  onReactivate,
+  isInactive
 }: StaffDetailsProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const { toast } = useToast();
@@ -66,14 +71,34 @@ export const StaffDetails = ({
     });
   };
 
+  const handleStatusChange = () => {
+    if (isInactive && onReactivate) {
+      onReactivate();
+      toast({
+        title: "Staff member reactivated",
+        description: "The staff member has been successfully reactivated.",
+      });
+    } else {
+      onUpdate(staff.id, { active: false });
+      onClose();
+      toast({
+        title: "Staff member deactivated",
+        description: "The staff member has been successfully deactivated.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleDelete = () => {
-    onDelete(staff.id);
-    onClose();
-    toast({
-      title: "Staff member deleted",
-      description: "The staff member and their transactions have been deleted.",
-      variant: "destructive",
-    });
+    if (onDelete) {
+      onDelete(staff.id);
+      onClose();
+      toast({
+        title: "Staff member deleted",
+        description: "The staff member and their transactions have been deleted.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -88,37 +113,71 @@ export const StaffDetails = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-red-500 hover:text-red-700 hover:bg-red-100"
+                    className={isInactive ? "text-green-500 hover:text-green-700 hover:bg-green-100" : "text-red-500 hover:text-red-700 hover:bg-red-100"}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <PowerOff className="h-4 w-4" />
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete {staff.name}'s
-                      profile and all associated transactions.
+                      {isInactive
+                        ? "This will reactivate the staff member's account."
+                        : "This will deactivate the staff member's account. They will be moved to the inactive staff list."}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
-                      onClick={handleDelete}
-                      className="bg-red-500 hover:bg-red-600"
+                      onClick={handleStatusChange}
+                      className={isInactive ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"}
                     >
-                      Delete
+                      {isInactive ? "Reactivate" : "Deactivate"}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsEditing(true)}
-              >
-                <Edit2 className="h-4 w-4" />
-              </Button>
+              {!isInactive && (
+                <>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-red-500 hover:text-red-700 hover:bg-red-100"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete {staff.name}'s
+                          profile and all associated transactions.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleDelete}
+                          className="bg-red-500 hover:bg-red-600"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                </>
+              )}
             </>
           )}
           <Button

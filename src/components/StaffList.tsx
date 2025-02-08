@@ -13,6 +13,8 @@ const StaffList = ({ onStaffSelect }: StaffListProps) => {
   const { staff, transactions, updateStaff, deleteStaff } = useStaffStore();
   const [selectedStaff, setSelectedStaff] = useState<string | null>(null);
 
+  const activeStaff = staff.filter((member) => member.active);
+
   const handleStaffSelect = (staffId: string | null) => {
     setSelectedStaff(staffId);
     onStaffSelect?.(staffId);
@@ -44,16 +46,16 @@ const StaffList = ({ onStaffSelect }: StaffListProps) => {
     <Card className="p-6 glassmorphism">
       <h2 className="text-2xl font-semibold mb-4">Staff Members</h2>
       <div className="space-y-4">
-        {staff.map((member) => (
+        {activeStaff.map((member) => (
           <StaffCard
             key={member.id}
             staff={member}
             onClick={() => handleStaffSelect(member.id)}
           />
         ))}
-        {staff.length === 0 && (
+        {activeStaff.length === 0 && (
           <p className="text-muted-foreground text-center py-8">
-            No staff members added yet
+            No active staff members
           </p>
         )}
       </div>

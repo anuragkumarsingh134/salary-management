@@ -1,15 +1,19 @@
+
 import { formatDistanceToNow } from "date-fns";
 import { StaffMember } from "@/types/staff";
 
 interface StaffCardProps {
   staff: StaffMember;
   onClick: () => void;
+  isInactive?: boolean;
 }
 
-export const StaffCard = ({ staff, onClick }: StaffCardProps) => {
+export const StaffCard = ({ staff, onClick, isInactive }: StaffCardProps) => {
   return (
     <div
-      className="flex items-center justify-between p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors cursor-pointer"
+      className={`flex items-center justify-between p-4 rounded-lg ${
+        isInactive ? 'bg-secondary/30' : 'bg-secondary/50 hover:bg-secondary/70'
+      } transition-colors cursor-pointer`}
       onClick={onClick}
     >
       <div className="flex items-center space-x-4">
