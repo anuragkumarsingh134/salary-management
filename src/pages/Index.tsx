@@ -19,7 +19,7 @@ const Index = () => {
   const totalTransactions = transactions.reduce((acc, curr) => acc + curr.amount, 0);
 
   return (
-    <div className="container py-8 space-y-8 animate-fadeIn">
+    <div className="container py-8 flex flex-col h-[calc(100vh-2rem)] space-y-8 animate-fadeIn">
       <div className="flex justify-between items-center">
         <h1 className="text-4xl font-bold">Staff Management</h1>
         <div className="space-x-4">
@@ -78,8 +78,11 @@ const Index = () => {
         </Card>
       </div>
 
-      <div className="space-y-6">
+      <div className="flex-none">
         <StaffList onStaffSelect={setSelectedStaffId} />
+      </div>
+
+      <div className="flex-1 overflow-auto min-h-0">
         <TransactionList selectedStaffId={selectedStaffId} />
       </div>
 
