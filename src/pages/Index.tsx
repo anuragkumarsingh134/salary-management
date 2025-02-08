@@ -5,11 +5,9 @@ import { useStaffStore } from "@/store/staffStore";
 import { Button } from "@/components/ui/button";
 import { NavBar } from "@/components/NavBar";
 import StaffList from "@/components/StaffList";
-import InactiveStaffList from "@/components/staff/InactiveStaffList";
 import AddStaffDialog from "@/components/AddStaffDialog";
 import TransactionList from "@/components/TransactionList";
 import AddTransactionDialog from "@/components/AddTransactionDialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Index = () => {
   const [addStaffOpen, setAddStaffOpen] = useState(false);
@@ -61,18 +59,7 @@ const Index = () => {
           </div>
         </div>
 
-        <Tabs defaultValue="active" className="flex-none">
-          <TabsList>
-            <TabsTrigger value="active">Active Staff</TabsTrigger>
-            <TabsTrigger value="inactive">Inactive Staff</TabsTrigger>
-          </TabsList>
-          <TabsContent value="active">
-            <StaffList onStaffSelect={setSelectedStaffId} />
-          </TabsContent>
-          <TabsContent value="inactive">
-            <InactiveStaffList />
-          </TabsContent>
-        </Tabs>
+        <StaffList onStaffSelect={setSelectedStaffId} />
 
         <div className="flex-1 overflow-auto min-h-0">
           <TransactionList selectedStaffId={selectedStaffId} />
