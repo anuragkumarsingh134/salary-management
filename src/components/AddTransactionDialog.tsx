@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -24,19 +25,36 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
     description: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Filter to only show active staff members
+  const activeStaff = staff.filter(member => member.active);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    addTransaction({
+    
+    // Check if selected staff member exists and is active
+    const selectedStaff = staff.find(s => s.id === formData.staffId);
+    if (!selectedStaff || !selectedStaff.active) {
+      toast({
+        title: "Error",
+        description: "Cannot add transaction for inactive staff member.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    await addTransaction({
       staffId: formData.staffId,
       amount: Number(formData.amount),
       type: formData.type,
       date: formData.date,
       description: formData.description,
     });
+
     toast({
       title: "Transaction added",
       description: "The transaction has been recorded successfully.",
     });
+    
     onOpenChange(false);
     setFormData({
       staffId: "",
@@ -66,7 +84,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
                 <SelectValue placeholder="Select staff member" />
               </SelectTrigger>
               <SelectContent>
-                {staff.map((member) => (
+                {activeStaff.map((member) => (
                   <SelectItem key={member.id} value={member.id}>
                     {member.name}
                   </SelectItem>
