@@ -12,6 +12,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface StaffHeaderProps {
   isEditing: boolean;
@@ -32,26 +33,28 @@ export const StaffHeader = ({
   onStatusChange,
   staffName,
 }: StaffHeaderProps) => {
+  const isMobile = useIsMobile();
+
   return (
-    <div className="flex justify-between items-center mb-3">
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-3">
       <h2 className="text-xl font-semibold">Staff Details</h2>
-      <div className="flex gap-2">
+      <div className="flex gap-2 items-center justify-end">
         {!isEditing && (
           <>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
                   variant="ghost"
-                  className={
+                  className={`w-full sm:w-auto px-4 py-2 ${
                     isInactive
                       ? "text-red-500 hover:text-red-700 hover:bg-red-100"
                       : "text-green-500 hover:text-green-700 hover:bg-green-100"
-                  }
+                  }`}
                 >
                   {isInactive ? "Inactive" : "Active"}
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
+              <AlertDialogContent className="sm:max-w-[425px]">
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                   <AlertDialogDescription>
@@ -77,13 +80,14 @@ export const StaffHeader = ({
                   <AlertDialogTrigger asChild>
                     <Button
                       variant="ghost"
-                      size="icon"
+                      size={isMobile ? "default" : "icon"}
                       className="text-red-500 hover:text-red-700 hover:bg-red-100"
                     >
                       <Trash2 className="h-4 w-4" />
+                      {isMobile && <span className="ml-2">Delete</span>}
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent className="sm:max-w-[425px]">
                     <AlertDialogHeader>
                       <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                       <AlertDialogDescription>
@@ -104,10 +108,11 @@ export const StaffHeader = ({
                 </AlertDialog>
                 <Button
                   variant="ghost"
-                  size="icon"
+                  size={isMobile ? "default" : "icon"}
                   onClick={onEdit}
                 >
                   <Edit2 className="h-4 w-4" />
+                  {isMobile && <span className="ml-2">Edit</span>}
                 </Button>
               </>
             )}
@@ -115,10 +120,11 @@ export const StaffHeader = ({
         )}
         <Button
           variant="ghost"
-          size="icon"
+          size={isMobile ? "default" : "icon"}
           onClick={onClose}
         >
           <X className="h-4 w-4" />
+          {isMobile && <span className="ml-2">Close</span>}
         </Button>
       </div>
     </div>
