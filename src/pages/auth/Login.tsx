@@ -18,18 +18,43 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      // First, check if a staff member with this email exists
+      const { data: staffData, error: staffError } = await supabase
+        .from('staff')
+        .select('id, user_id, email')
+        .eq('email', email)
+        .maybeSingle();
+
+      console.log('Staff query result:', { staffData, staffError });
+
+      if (staffError) {
+        console.error('Staff query error:', staffError);
+        throw staffError;
+      }
+
+      if (!staffData) {
+        throw new Error("No staff member found with this email. Please contact your administrator.");
+      }
+
+      if (!staffData.user_id) {
+        throw new Error("Please register your account first.");
+      }
+
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      console.log('Auth sign in result:', { authData, authError });
+
+      if (authError) throw authError;
 
       toast({
         title: "Login successful",
         description: "Welcome back!",
       });
     } catch (error: any) {
+      console.error('Login error:', error);
       toast({
         title: "Error",
         description: error.message,
