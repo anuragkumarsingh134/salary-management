@@ -12,6 +12,7 @@ import AddTransactionDialog from "@/components/AddTransactionDialog";
 const Index = () => {
   const [addStaffOpen, setAddStaffOpen] = useState(false);
   const [addTransactionOpen, setAddTransactionOpen] = useState(false);
+  const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
   const { staff, transactions } = useStaffStore();
 
   const totalSalaries = staff.reduce((acc, curr) => acc + curr.salary, 0);
@@ -78,8 +79,8 @@ const Index = () => {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <StaffList />
-        <TransactionList />
+        <StaffList onStaffSelect={setSelectedStaffId} />
+        <TransactionList selectedStaffId={selectedStaffId} />
       </div>
 
       <AddStaffDialog open={addStaffOpen} onOpenChange={setAddStaffOpen} />

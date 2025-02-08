@@ -8,12 +8,21 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import TransactionList from "@/components/TransactionList";
 
-const StaffList = () => {
+interface StaffListProps {
+  onStaffSelect?: (staffId: string | null) => void;
+}
+
+const StaffList = ({ onStaffSelect }: StaffListProps) => {
   const { staff, transactions, updateStaff } = useStaffStore();
   const [selectedStaff, setSelectedStaff] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const { toast } = useToast();
-  
+
+  const handleStaffSelect = (staffId: string | null) => {
+    setSelectedStaff(staffId);
+    onStaffSelect?.(staffId);
+  };
+
   const selectedStaffMember = staff.find((member) => member.id === selectedStaff);
   const staffTransactions = transactions.filter(
     (transaction) => transaction.staffId === selectedStaff
@@ -88,7 +97,7 @@ const StaffList = () => {
               variant="ghost"
               size="icon"
               onClick={() => {
-                setSelectedStaff(null);
+                handleStaffSelect(null);
                 setIsEditing(false);
               }}
             >
@@ -213,7 +222,7 @@ const StaffList = () => {
           <div
             key={member.id}
             className="flex items-center justify-between p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors cursor-pointer"
-            onClick={() => setSelectedStaff(member.id)}
+            onClick={() => handleStaffSelect(member.id)}
           >
             <div className="flex items-center space-x-4">
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
