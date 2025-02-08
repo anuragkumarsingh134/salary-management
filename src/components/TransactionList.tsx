@@ -31,10 +31,17 @@ const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
   // Filter transactions based on selected staff
   const filteredTransactions = selectedStaffId 
     ? transactions.filter(t => t.staffId === selectedStaffId)
-    : transactions;
+    : [];
 
+  // Don't render the card if no staff is selected
   if (!selectedStaffId) {
-    return null; // Don't render anything if no staff is selected
+    return null;
+  }
+
+  // Get the staff member to check if they exist and are active
+  const selectedStaffMember = staff.find(s => s.id === selectedStaffId);
+  if (!selectedStaffMember) {
+    return null;
   }
 
   return (
@@ -43,7 +50,9 @@ const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
         className="flex items-center justify-between cursor-pointer"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <h2 className="text-2xl font-semibold">Recent Transactions</h2>
+        <h2 className="text-2xl font-semibold">
+          Recent Transactions for {selectedStaffMember.name}
+        </h2>
         <Button variant="ghost" size="icon">
           {isExpanded ? (
             <ChevronUp className="h-4 w-4" />
@@ -98,4 +107,3 @@ const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
 };
 
 export default TransactionList;
-
