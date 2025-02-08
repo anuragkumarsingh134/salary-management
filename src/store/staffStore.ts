@@ -23,7 +23,9 @@ interface StaffStore {
   addTransaction: (transaction: Omit<Transaction, 'id'>) => Promise<void>;
   deleteTransaction: (id: string) => Promise<void>;
   subscribeToStaffChanges: () => () => void;
+  subscribeToTransactionChanges: () => () => void;
   unsubscribeFromStaffChanges: () => void;
+  unsubscribeFromTransactionChanges: () => void;
 }
 
 export const useStaffStore = create<StaffStore>()((set) => ({
@@ -103,7 +105,36 @@ export const useStaffStore = create<StaffStore>()((set) => ({
     };
   },
 
+  subscribeToTransactionChanges: () => {
+    const channel = supabase
+      .channel('transaction_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'transactions'
+        },
+        async (payload) => {
+          // Fetch fresh data on any change
+          const transactions = await fetchTransactionsFromApi();
+          set({ transactions });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
+  },
+
   unsubscribeFromStaffChanges: () => {
+    supabase.removeAllChannels();
+  },
+
+  unsubscribeFromTransactionChanges: () => {
     supabase.removeAllChannels();
   },
 }));
