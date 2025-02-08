@@ -32,6 +32,7 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
         salary: Number(formData.salary),
         startDate: formData.startDate,
         email: formData.email,
+        active: true, // Add this line to set default active status
       });
       toast({
         title: "Staff member added",
