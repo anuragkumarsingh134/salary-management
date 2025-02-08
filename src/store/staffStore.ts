@@ -27,6 +27,7 @@ interface StaffStore {
   updateStaff: (id: string, staff: Partial<StaffMember>) => void;
   deleteStaff: (id: string) => void;
   addTransaction: (transaction: Omit<Transaction, 'id'>) => void;
+  deleteTransaction: (id: string) => void;
 }
 
 export const useStaffStore = create<StaffStore>()(
@@ -54,6 +55,10 @@ export const useStaffStore = create<StaffStore>()(
             ...state.transactions,
             { ...transaction, id: crypto.randomUUID() },
           ],
+        })),
+      deleteTransaction: (id) =>
+        set((state) => ({
+          transactions: state.transactions.filter((t) => t.id !== id),
         })),
     }),
     {
