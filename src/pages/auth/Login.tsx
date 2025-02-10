@@ -6,12 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import ResetPasswordForm from "@/components/ResetPasswordForm";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [resetPassword, setResetPassword] = useState(false);
+  const [showResetForm, setShowResetForm] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -20,66 +21,52 @@ const Login = () => {
     setLoading(true);
 
     try {
-      if (resetPassword) {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/reset-password`,
-        });
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-        if (error) throw error;
-
-        toast({
-          title: "Password reset email sent",
-          description: "Please check your email to reset your password.",
-        });
-        setResetPassword(false);
-      } else {
-        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (signInError) {
-          // Only attempt signup if it's an invalid credentials error
-          if (signInError.message === "Invalid login credentials") {
-            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-              email,
-              password,
-              options: {
-                emailRedirectTo: window.location.origin,
-              },
-            });
-
-            if (signUpError) {
-              console.error("Signup error:", signUpError);
-              throw signUpError;
-            }
-
-            // Check if the user needs to verify their email
-            if (!signUpData.session) {
-              toast({
-                title: "Account created",
-                description: "Please check your email to verify your account.",
-              });
-            } else {
-              // If auto-confirmation is enabled, user will be signed in immediately
-              toast({
-                title: "Welcome!",
-                description: "Your account has been created successfully.",
-              });
-              navigate("/");
-            }
-          } else {
-            // If it's a different error, throw it
-            throw signInError;
-          }
-        } else if (signInData.session) {
-          // If sign in was successful
-          toast({
-            title: "Welcome back!",
-            description: "You have successfully logged in.",
+      if (signInError) {
+        // Only attempt signup if it's an invalid credentials error
+        if (signInError.message === "Invalid login credentials") {
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              emailRedirectTo: window.location.origin,
+            },
           });
-          navigate("/");
+
+          if (signUpError) {
+            console.error("Signup error:", signUpError);
+            throw signUpError;
+          }
+
+          // Check if the user needs to verify their email
+          if (!signUpData.session) {
+            toast({
+              title: "Account created",
+              description: "Please check your email to verify your account.",
+            });
+          } else {
+            // If auto-confirmation is enabled, user will be signed in immediately
+            toast({
+              title: "Welcome!",
+              description: "Your account has been created successfully.",
+            });
+            navigate("/");
+          }
+        } else {
+          // If it's a different error, throw it
+          throw signInError;
         }
+      } else if (signInData.session) {
+        // If sign in was successful
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully logged in.",
+        });
+        navigate("/");
       }
     } catch (error: any) {
       console.error("Auth error:", error);
@@ -93,31 +80,113 @@ const Login = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    try {
+      const userEmail = email;
+      if (!userEmail) {
+        toast({
+          title: "Error",
+          description: "Please enter your email address",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // First check if the user exists
+      const { data: userExists } = await supabase.auth.admin.listUsers({
+        filters: {
+          email: userEmail
+        }
+      });
+
+      if (!userExists) {
+        toast({
+          title: "Error",
+          description: "No account found with this email address",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const resetToken = Math.random().toString(36).substring(2, 15);
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 1);
+
+      // Get user ID from email
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error("No user found");
+      }
+
+      const { error: updateError } = await supabase
+        .from('user_settings')
+        .update({
+          reset_token: resetToken,
+          reset_token_expires_at: expiresAt.toISOString()
+        })
+        .eq('user_id', user.id);
+
+      if (updateError) throw updateError;
+
+      const { error } = await supabase.functions.invoke('send-reset-password', {
+        body: { email: userEmail, resetToken }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Reset Instructions Sent",
+        description: "Please check your email for instructions to reset your password.",
+      });
+
+      setShowResetForm(true);
+    } catch (error: any) {
+      console.error('Error handling password reset:', error);
+      toast({
+        title: "Error",
+        description: error.message || "An error occurred while processing your request.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md p-8 space-y-6">
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-bold">Welcome</h2>
           <p className="text-muted-foreground">
-            {resetPassword 
-              ? "Enter your email to reset your password" 
+            {showResetForm 
+              ? "Enter your reset token and new password" 
               : "Sign in to your account or create a new one"}
           </p>
         </div>
 
-        <form onSubmit={handleAuth} className="space-y-4">
-          <div className="space-y-2">
-            <Input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full"
-              disabled={loading}
-            />
+        {showResetForm ? (
+          <div className="space-y-4">
+            <ResetPasswordForm />
+            <Button
+              type="button"
+              variant="link"
+              className="text-sm w-full"
+              onClick={() => setShowResetForm(false)}
+            >
+              Back to Login
+            </Button>
           </div>
-          {!resetPassword && (
+        ) : (
+          <form onSubmit={handleAuth} className="space-y-4">
+            <div className="space-y-2">
+              <Input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full"
+                disabled={loading}
+              />
+            </div>
             <div className="space-y-2">
               <Input
                 type="password"
@@ -129,31 +198,24 @@ const Login = () => {
                 disabled={loading}
               />
             </div>
-          )}
-          <Button 
-            type="submit" 
-            className="w-full" 
-            disabled={loading}
-          >
-            {loading 
-              ? "Processing..." 
-              : resetPassword 
-                ? "Send Reset Instructions" 
-                : "Continue"}
-          </Button>
-        </form>
-
-        <div className="text-center">
-          <Button
-            variant="link"
-            className="text-sm text-muted-foreground"
-            onClick={() => setResetPassword(!resetPassword)}
-          >
-            {resetPassword 
-              ? "Back to login" 
-              : "Forgot your password?"}
-          </Button>
-        </div>
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={loading}
+            >
+              {loading ? "Processing..." : "Continue"}
+            </Button>
+            <Button
+              type="button"
+              variant="link"
+              className="text-sm w-full"
+              onClick={handleForgotPassword}
+              disabled={loading}
+            >
+              Forgot your password?
+            </Button>
+          </form>
+        )}
       </Card>
     </div>
   );
