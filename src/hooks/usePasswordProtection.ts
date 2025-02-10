@@ -14,7 +14,14 @@ export const usePasswordProtection = () => {
     
     try {
       const userId = (await supabase.auth.getUser()).data.user?.id;
-      if (!userId) throw new Error("No user found");
+      if (!userId) {
+        toast({
+          title: "Error",
+          description: "No user found",
+          variant: "destructive",
+        });
+        return;
+      }
 
       const { data: settings, error: fetchError } = await supabase
         .from('user_settings')
@@ -34,7 +41,14 @@ export const usePasswordProtection = () => {
               }
             ]);
 
-          if (insertError) throw insertError;
+          if (insertError) {
+            toast({
+              title: "Error",
+              description: "Failed to set password",
+              variant: "destructive",
+            });
+            return;
+          }
 
           setShowData(true);
           setPasswordDialogOpen(false);
@@ -84,14 +98,19 @@ export const usePasswordProtection = () => {
   const handleForgotPassword = async () => {
     try {
       const userId = (await supabase.auth.getUser()).data.user?.id;
-      if (!userId) throw new Error("No user found");
+      if (!userId) {
+        toast({
+          title: "Error",
+          description: "No user found",
+          variant: "destructive",
+        });
+        return;
+      }
 
-      // Generate a random reset token
       const resetToken = Math.random().toString(36).substring(2, 15);
       const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 1); // Token expires in 1 hour
+      expiresAt.setHours(expiresAt.getHours() + 1);
 
-      // Update the user settings with the reset token
       const { error: updateError } = await supabase
         .from('user_settings')
         .update({
@@ -102,9 +121,15 @@ export const usePasswordProtection = () => {
 
       if (updateError) throw updateError;
 
-      // Send reset instructions to the user's email
       const userEmail = (await supabase.auth.getUser()).data.user?.email;
-      if (!userEmail) throw new Error("No email found");
+      if (!userEmail) {
+        toast({
+          title: "Error",
+          description: "No email found",
+          variant: "destructive",
+        });
+        return;
+      }
 
       toast({
         title: "Reset Instructions Sent",
