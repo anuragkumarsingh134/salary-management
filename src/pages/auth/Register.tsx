@@ -19,40 +19,12 @@ const Register = () => {
     setLoading(true);
 
     try {
-      // First, check if a staff member with this email exists
-      const { data: staffData, error: staffError } = await supabase
-        .from('staff')
-        .select('id, user_id')
-        .eq('email', email)
-        .maybeSingle();
-
-      if (staffError) {
-        throw staffError;
-      }
-
-      if (!staffData) {
-        throw new Error("No staff member found with this email. Please contact your administrator.");
-      }
-
-      if (staffData.user_id) {
-        throw new Error("This staff account is already registered.");
-      }
-
-      // Create the user account
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
       });
 
       if (authError) throw authError;
-
-      // Link the staff record to the new user account
-      const { error: updateError } = await supabase
-        .from('staff')
-        .update({ user_id: authData.user?.id })
-        .eq('id', staffData.id);
-
-      if (updateError) throw updateError;
 
       toast({
         title: "Registration successful",
@@ -74,12 +46,12 @@ const Register = () => {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <Card className="w-full max-w-md p-8">
-        <h2 className="text-2xl font-bold mb-6 text-center">Staff Registration</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
         <form onSubmit={handleRegister} className="space-y-4">
           <div>
             <Input
               type="email"
-              placeholder="Your Staff Email"
+              placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
