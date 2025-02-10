@@ -28,14 +28,7 @@ const App = () => {
     // Listen for changes on auth state (sign in, sign out, etc.)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null);
-      
-      // Handle password recovery
-      if (_event === 'PASSWORD_RECOVERY') {
-        const currentPath = window.location.pathname;
-        if (currentPath !== '/reset-password') {
-          window.location.replace('/reset-password');
-        }
-      }
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
