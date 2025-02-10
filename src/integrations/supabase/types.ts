@@ -20,6 +20,7 @@ export type Database = {
           position: string
           salary: number
           start_date: string
+          tenant_id: string | null
           user_id: string | null
         }
         Insert: {
@@ -32,6 +33,7 @@ export type Database = {
           position: string
           salary: number
           start_date: string
+          tenant_id?: string | null
           user_id?: string | null
         }
         Update: {
@@ -44,7 +46,29 @@ export type Database = {
           position?: string
           salary?: number
           start_date?: string
+          tenant_id?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      tenants: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          owner_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          owner_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          owner_id?: string
         }
         Relationships: []
       }
@@ -56,6 +80,7 @@ export type Database = {
           description: string
           id: string
           staff_id: string
+          tenant_id: string | null
           type: string
         }
         Insert: {
@@ -65,6 +90,7 @@ export type Database = {
           description: string
           id?: string
           staff_id: string
+          tenant_id?: string | null
           type: string
         }
         Update: {
@@ -74,6 +100,7 @@ export type Database = {
           description?: string
           id?: string
           staff_id?: string
+          tenant_id?: string | null
           type?: string
         }
         Relationships: [

@@ -2,6 +2,20 @@
 import { supabase } from '@/integrations/supabase/client';
 import { StaffMember, Transaction } from '@/types/staff';
 
+const getTenantId = async (): Promise<string> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  const { data: tenant, error } = await supabase
+    .from('tenants')
+    .select('id')
+    .eq('owner_id', user.id)
+    .single();
+
+  if (error || !tenant) throw new Error("Tenant not found");
+  return tenant.id;
+};
+
 export const fetchStaffFromApi = async () => {
   const { data, error } = await supabase
     .from('staff')
@@ -39,6 +53,8 @@ export const fetchTransactionsFromApi = async () => {
 };
 
 export const addStaffToApi = async (staffMember: Omit<StaffMember, 'id'>) => {
+  const tenantId = await getTenantId();
+  
   const { data, error } = await supabase
     .from('staff')
     .insert([{
@@ -48,6 +64,7 @@ export const addStaffToApi = async (staffMember: Omit<StaffMember, 'id'>) => {
       start_date: staffMember.startDate,
       image: staffMember.image,
       active: staffMember.active,
+      tenant_id: tenantId,
     }])
     .select()
     .single();
@@ -105,6 +122,8 @@ export const deleteStaffFromApi = async (id: string) => {
 };
 
 export const addTransactionToApi = async (transaction: Omit<Transaction, 'id'>) => {
+  const tenantId = await getTenantId();
+
   const { data, error } = await supabase
     .from('transactions')
     .insert([{
@@ -113,6 +132,7 @@ export const addTransactionToApi = async (transaction: Omit<Transaction, 'id'>) 
       type: transaction.type,
       date: transaction.date,
       description: transaction.description,
+      tenant_id: tenantId,
     }])
     .select()
     .single();
