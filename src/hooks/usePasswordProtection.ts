@@ -3,6 +3,13 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+interface UserSettings {
+  show_data_password: string;
+  recovery_email: string | null;
+  reset_token?: string | null;
+  reset_token_expires_at?: string | null;
+}
+
 export const usePasswordProtection = () => {
   const [showData, setShowData] = useState(false);
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
@@ -39,7 +46,7 @@ export const usePasswordProtection = () => {
                 user_id: userId,
                 recovery_email: (await supabase.auth.getUser()).data.user?.email
               }
-            ]);
+            ] as UserSettings[]);
 
           if (insertError) {
             toast({
