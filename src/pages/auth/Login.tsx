@@ -92,14 +92,19 @@ const Login = () => {
         return;
       }
 
-      // First check if the user exists
-      const { data: userExists } = await supabase.auth.admin.listUsers({
-        filters: {
-          email: userEmail
-        }
+      // Generate reset token and expiry
+      const resetToken = Math.random().toString(36).substring(2, 15);
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 1);
+
+      // First try to sign in with a wrong password to check if user exists
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: userEmail,
+        password: "dummy-password-to-check-existence",
       });
 
-      if (!userExists) {
+      // If error is NOT "Invalid login credentials", the user doesn't exist
+      if (signInError && signInError.message !== "Invalid login credentials") {
         toast({
           title: "Error",
           description: "No account found with this email address",
@@ -107,10 +112,6 @@ const Login = () => {
         });
         return;
       }
-
-      const resetToken = Math.random().toString(36).substring(2, 15);
-      const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 1);
 
       // Get user ID from email
       const { data: { user } } = await supabase.auth.getUser();
