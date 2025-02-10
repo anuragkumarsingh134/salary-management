@@ -7,7 +7,7 @@ interface UserSettings {
   id?: string;
   created_at?: string;
   updated_at?: string;
-  show_data_password: string;
+  show_data_password: string | null;
   recovery_email: string | null;
   reset_token?: string | null;
   reset_token_expires_at?: string | null;
@@ -41,38 +41,41 @@ export const usePasswordProtection = () => {
         .single();
 
       if (fetchError) {
-        if (fetchError.code === 'PGRST116') {
-          const newSettings: UserSettings = {
-            show_data_password: password,
-            user_id: userId,
-            recovery_email: (await supabase.auth.getUser()).data.user?.email || null
-          };
+        toast({
+          title: "Error",
+          description: "Failed to fetch user settings",
+          variant: "destructive",
+        });
+        return;
+      }
 
-          const { error: insertError } = await supabase
-            .from('user_settings')
-            .insert(newSettings);
+      // If no password is set yet, set it now
+      if (!settings.show_data_password) {
+        const { error: updateError } = await supabase
+          .from('user_settings')
+          .update({ show_data_password: password })
+          .eq('user_id', userId);
 
-          if (insertError) {
-            toast({
-              title: "Error",
-              description: "Failed to set password",
-              variant: "destructive",
-            });
-            return;
-          }
-
-          setShowData(true);
-          setPasswordDialogOpen(false);
-          setPassword("");
+        if (updateError) {
           toast({
-            title: "Password Set",
-            description: "Your password has been set and data is now visible.",
+            title: "Error",
+            description: "Failed to set password",
+            variant: "destructive",
           });
           return;
         }
-        throw fetchError;
+
+        setShowData(true);
+        setPasswordDialogOpen(false);
+        setPassword("");
+        toast({
+          title: "Password Set",
+          description: "Your password has been set and data is now visible.",
+        });
+        return;
       }
 
+      // Check if password matches
       if (settings.show_data_password === password) {
         setShowData(true);
         setPasswordDialogOpen(false);
