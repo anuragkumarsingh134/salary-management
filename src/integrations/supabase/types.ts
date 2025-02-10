@@ -9,27 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      admin_settings: {
-        Row: {
-          created_at: string
-          id: string
-          password: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          password: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          password?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       staff_8719e208_5a4f_419e_ac2b_7bdb0334cae2: {
         Row: {
           active: boolean
@@ -183,6 +162,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_settings: {
+        Row: {
+          created_at: string
+          id: string
+          show_data_password: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          show_data_password: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          show_data_password?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {

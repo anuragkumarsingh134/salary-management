@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const [addStaffOpen, setAddStaffOpen] = useState(false);
@@ -35,21 +36,62 @@ const Index = () => {
     subscribeToTransactionChanges 
   } = useStaffStore();
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simple password check - in a real app, this would be more secure
-    if (password === "admin123") {
-      setShowData(true);
-      setPasswordDialogOpen(false);
-      setPassword("");
+    
+    try {
+      // Get the current user's settings
+      const { data: settings, error: fetchError } = await supabase
+        .from('user_settings')
+        .select('show_data_password')
+        .single();
+
+      if (fetchError) {
+        if (fetchError.code === 'PGRST116') {
+          // No settings found, create initial settings with the entered password
+          const { error: insertError } = await supabase
+            .from('user_settings')
+            .insert([
+              {
+                show_data_password: password,
+                user_id: (await supabase.auth.getUser()).data.user?.id
+              }
+            ]);
+
+          if (insertError) throw insertError;
+
+          setShowData(true);
+          setPasswordDialogOpen(false);
+          setPassword("");
+          toast({
+            title: "Password Set",
+            description: "Your password has been set and data is now visible.",
+          });
+          return;
+        }
+        throw fetchError;
+      }
+
+      if (settings.show_data_password === password) {
+        setShowData(true);
+        setPasswordDialogOpen(false);
+        setPassword("");
+        toast({
+          title: "Access Granted",
+          description: "You now have access to view the data.",
+        });
+      } else {
+        toast({
+          title: "Access Denied",
+          description: "Incorrect password. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error('Error handling password:', error);
       toast({
-        title: "Access Granted",
-        description: "You now have access to view the data.",
-      });
-    } else {
-      toast({
-        title: "Access Denied",
-        description: "Incorrect password. Please try again.",
+        title: "Error",
+        description: "An error occurred while checking the password.",
         variant: "destructive",
       });
     }
@@ -187,4 +229,3 @@ const Index = () => {
 };
 
 export default Index;
-
