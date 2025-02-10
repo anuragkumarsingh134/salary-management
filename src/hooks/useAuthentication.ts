@@ -78,39 +78,12 @@ export const useAuthentication = () => {
         return;
       }
 
+      // Generate a reset token
       const resetToken = Math.random().toString(36).substring(2, 15);
       const expiresAt = new Date();
       expiresAt.setHours(expiresAt.getHours() + 1);
 
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password: "dummy-password-to-check-existence",
-      });
-
-      if (signInError && signInError.message !== "Invalid login credentials") {
-        toast({
-          title: "Error",
-          description: "No account found with this email address",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error("No user found");
-      }
-
-      const { error: updateError } = await supabase
-        .from('user_settings')
-        .update({
-          reset_token: resetToken,
-          reset_token_expires_at: expiresAt.toISOString()
-        })
-        .eq('user_id', user.id);
-
-      if (updateError) throw updateError;
-
+      // Send password reset email
       const { error } = await supabase.functions.invoke('send-reset-password', {
         body: { email, resetToken }
       });
