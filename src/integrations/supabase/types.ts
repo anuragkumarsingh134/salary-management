@@ -9,7 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      staff_d909a462_e3ff_42bf_bb4c_f25d1d0d0a9b: {
+      staff_a9cf7f51_3104_413e_a6a4_a892a865a8a4: {
         Row: {
           active: boolean
           created_at: string
@@ -48,7 +48,7 @@ export type Database = {
         }
         Relationships: []
       }
-      transactions_d909a462_e3ff_42bf_bb4c_f25d1d0d0a9b: {
+      transactions_a9cf7f51_3104_413e_a6a4_a892a865a8a4: {
         Row: {
           amount: number
           created_at: string
@@ -78,10 +78,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_transactions_d909a462_e3ff_42bf_bb4c_f25d1d0d0a9b_staff_id"
+            foreignKeyName: "fk_transactions_a9cf7f51_3104_413e_a6a4_a892a865a8a4_staff_id"
             columns: ["staff_id"]
             isOneToOne: false
-            referencedRelation: "staff_d909a462_e3ff_42bf_bb4c_f25d1d0d0a9b"
+            referencedRelation: "staff_a9cf7f51_3104_413e_a6a4_a892a865a8a4"
             referencedColumns: ["id"]
           },
         ]
