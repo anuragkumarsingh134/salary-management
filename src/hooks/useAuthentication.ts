@@ -13,14 +13,12 @@ export const useAuthentication = () => {
     setLoading(true);
 
     try {
-      // First try to sign in
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (signInError) {
-        // If invalid credentials, attempt to sign up
         if (signInError.message === "Invalid login credentials") {
           const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
             email,
@@ -35,7 +33,6 @@ export const useAuthentication = () => {
             throw signUpError;
           }
 
-          // Check if email confirmation is required
           if (!signUpData.session) {
             toast({
               title: "Account created",
@@ -81,9 +78,41 @@ export const useAuthentication = () => {
         return;
       }
 
-      // Send password reset email through Supabase's built-in functionality
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+      const resetToken = Math.random().toString(36).substring(2, 15);
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 1);
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password: "dummy-password-to-check-existence",
+      });
+
+      if (signInError && signInError.message !== "Invalid login credentials") {
+        toast({
+          title: "Error",
+          description: "No account found with this email address",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error("No user found");
+      }
+
+      const { error: updateError } = await supabase
+        .from('user_settings')
+        .update({
+          reset_token: resetToken,
+          reset_token_expires_at: expiresAt.toISOString()
+        })
+        .eq('user_id', user.id);
+
+      if (updateError) throw updateError;
+
+      const { error } = await supabase.functions.invoke('send-reset-password', {
+        body: { email, resetToken }
       });
 
       if (error) throw error;

@@ -9,7 +9,6 @@ import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
-import ResetPassword from "./pages/auth/ResetPassword";
 import { User } from "@supabase/supabase-js";
 
 const queryClient = new QueryClient();
@@ -26,9 +25,8 @@ const App = () => {
     });
 
     // Listen for changes on auth state (sign in, sign out, etc.)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
-      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -45,9 +43,8 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
-            {/* Public routes */}
+            {/* Public route */}
             <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
             
             {/* Protected routes */}
             <Route path="/" element={user ? <Index /> : <Navigate to="/login" />} />
@@ -62,3 +59,4 @@ const App = () => {
 };
 
 export default App;
+
