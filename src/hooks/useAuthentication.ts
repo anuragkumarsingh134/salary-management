@@ -13,12 +13,14 @@ export const useAuthentication = () => {
     setLoading(true);
 
     try {
+      // First try to sign in
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (signInError) {
+        // If invalid credentials, attempt to sign up
         if (signInError.message === "Invalid login credentials") {
           const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
             email,
@@ -33,6 +35,7 @@ export const useAuthentication = () => {
             throw signUpError;
           }
 
+          // Check if email confirmation is required
           if (!signUpData.session) {
             toast({
               title: "Account created",
@@ -78,14 +81,9 @@ export const useAuthentication = () => {
         return;
       }
 
-      // Generate a reset token
-      const resetToken = Math.random().toString(36).substring(2, 15);
-      const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 1);
-
-      // Send password reset email
-      const { error } = await supabase.functions.invoke('send-reset-password', {
-        body: { email, resetToken }
+      // Send password reset email through Supabase's built-in functionality
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
       });
 
       if (error) throw error;
