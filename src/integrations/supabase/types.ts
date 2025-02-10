@@ -9,6 +9,83 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      staff_11c1cd88_00bd_4257_807b_5dcef156acf1: {
+        Row: {
+          active: boolean
+          created_at: string
+          email: string | null
+          id: string
+          image: string | null
+          name: string
+          position: string
+          salary: number
+          start_date: string
+          user_id: string | null
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          email?: string | null
+          id?: string
+          image?: string | null
+          name: string
+          position: string
+          salary: number
+          start_date: string
+          user_id?: string | null
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          email?: string | null
+          id?: string
+          image?: string | null
+          name?: string
+          position?: string
+          salary?: number
+          start_date?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      transactions_11c1cd88_00bd_4257_807b_5dcef156acf1: {
+        Row: {
+          amount: number
+          created_at: string
+          date: string
+          description: string
+          id: string
+          staff_id: string
+          type: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          date: string
+          description: string
+          id?: string
+          staff_id: string
+          type: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          date?: string
+          description?: string
+          id?: string
+          staff_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_transactions_11c1cd88_00bd_4257_807b_5dcef156acf1_staff_id"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff_11c1cd88_00bd_4257_807b_5dcef156acf1"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_settings: {
         Row: {
           created_at: string
