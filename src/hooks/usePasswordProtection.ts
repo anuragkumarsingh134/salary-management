@@ -7,8 +7,6 @@ export const usePasswordProtection = () => {
   const [showData, setShowData] = useState(false);
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [password, setPassword] = useState("");
-  const [recoveryEmail, setRecoveryEmail] = useState("");
-  const [isRecoveryMode, setIsRecoveryMode] = useState(false);
   const { toast } = useToast();
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {

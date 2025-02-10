@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,9 @@ const PasswordDialog = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Enter Password</DialogTitle>
+          <DialogDescription>
+            Enter your password to view the data
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">
           <Input
