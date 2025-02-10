@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Plus, DollarSign } from "lucide-react";
+import { Plus, DollarSign, Eye } from "lucide-react";
 import { useStaffStore } from "@/store/staffStore";
 import { Button } from "@/components/ui/button";
 import { NavBar } from "@/components/NavBar";
@@ -15,6 +15,7 @@ const Index = () => {
   const [addTransactionOpen, setAddTransactionOpen] = useState(false);
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showData, setShowData] = useState(false);
   const { 
     fetchStaff, 
     fetchTransactions, 
@@ -79,28 +80,43 @@ const Index = () => {
         <div className="flex justify-between items-center">
           <h1 className="text-4xl font-bold">Dashboard</h1>
           <div className="space-x-4">
+            {showData && (
+              <>
+                <Button
+                  onClick={() => setAddTransactionOpen(true)}
+                  className="bg-primary/90 hover:bg-primary"
+                >
+                  <DollarSign className="mr-2 h-4 w-4" />
+                  Add Transaction
+                </Button>
+                <Button
+                  onClick={() => setAddStaffOpen(true)}
+                  className="bg-primary/90 hover:bg-primary"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Staff
+                </Button>
+              </>
+            )}
             <Button
-              onClick={() => setAddTransactionOpen(true)}
-              className="bg-primary/90 hover:bg-primary"
+              onClick={() => setShowData(!showData)}
+              variant={showData ? "outline" : "default"}
+              className="min-w-[140px]"
             >
-              <DollarSign className="mr-2 h-4 w-4" />
-              Add Transaction
-            </Button>
-            <Button
-              onClick={() => setAddStaffOpen(true)}
-              className="bg-primary/90 hover:bg-primary"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add Staff
+              <Eye className="mr-2 h-4 w-4" />
+              {showData ? "Hide Data" : "Show Data"}
             </Button>
           </div>
         </div>
 
-        <StaffList onStaffSelect={setSelectedStaffId} />
-
-        <div className="flex-1 overflow-auto min-h-0">
-          <TransactionList selectedStaffId={selectedStaffId} />
-        </div>
+        {showData && (
+          <>
+            <StaffList onStaffSelect={setSelectedStaffId} />
+            <div className="flex-1 overflow-auto min-h-0">
+              <TransactionList selectedStaffId={selectedStaffId} />
+            </div>
+          </>
+        )}
 
         <AddStaffDialog open={addStaffOpen} onOpenChange={setAddStaffOpen} />
         <AddTransactionDialog
@@ -113,3 +129,4 @@ const Index = () => {
 };
 
 export default Index;
+
