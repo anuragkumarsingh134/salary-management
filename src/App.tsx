@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
+import ResetPassword from "./pages/auth/ResetPassword";
 import { User } from "@supabase/supabase-js";
 
 const queryClient = new QueryClient();
@@ -53,7 +54,7 @@ const App = () => {
           <Routes>
             {/* Public routes */}
             <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
-            <Route path="/reset-password" element={<ResetPasswordForm />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             
             {/* Protected routes */}
             <Route path="/" element={user ? <Index /> : <Navigate to="/login" />} />
