@@ -19,18 +19,20 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // First try to sign in
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (signInError) {
-        // If it's an invalid credentials error, try to sign up
+        // Only attempt signup if it's an invalid credentials error
         if (signInError.message === "Invalid login credentials") {
           const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
             email,
             password,
+            options: {
+              emailRedirectTo: window.location.origin,
+            },
           });
 
           if (signUpError) {
@@ -38,10 +40,20 @@ const Login = () => {
             throw signUpError;
           }
 
-          toast({
-            title: "Account created",
-            description: "Please check your email to verify your account.",
-          });
+          // Check if the user needs to verify their email
+          if (!signUpData.session) {
+            toast({
+              title: "Account created",
+              description: "Please check your email to verify your account.",
+            });
+          } else {
+            // If auto-confirmation is enabled, user will be signed in immediately
+            toast({
+              title: "Welcome!",
+              description: "Your account has been created successfully.",
+            });
+            navigate("/");
+          }
         } else {
           // If it's a different error, throw it
           throw signInError;
