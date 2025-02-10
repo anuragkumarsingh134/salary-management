@@ -25,8 +25,16 @@ const App = () => {
     });
 
     // Listen for changes on auth state (sign in, sign out, etc.)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null);
+      
+      // Handle password recovery
+      if (_event === 'PASSWORD_RECOVERY') {
+        const currentPath = window.location.pathname;
+        if (currentPath !== '/reset-password') {
+          window.location.replace('/reset-password');
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -43,8 +51,9 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
-            {/* Public route */}
+            {/* Public routes */}
             <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
+            <Route path="/reset-password" element={<ResetPasswordForm />} />
             
             {/* Protected routes */}
             <Route path="/" element={user ? <Index /> : <Navigate to="/login" />} />
@@ -59,4 +68,3 @@ const App = () => {
 };
 
 export default App;
-

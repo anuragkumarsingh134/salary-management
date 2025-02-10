@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,35 @@ const ResetPasswordForm = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if we're in a password reset flow
+    const checkPasswordRecovery = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error('Error checking session:', error);
+        toast({
+          title: "Error",
+          description: "Unable to verify password reset session. Please try again.",
+          variant: "destructive",
+        });
+        navigate('/login');
+        return;
+      }
+
+      if (!session?.user) {
+        toast({
+          title: "Error",
+          description: "Invalid or expired password reset link. Please request a new one.",
+          variant: "destructive",
+        });
+        navigate('/login');
+      }
+    };
+
+    checkPasswordRecovery();
+  }, [navigate, toast]);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +92,7 @@ const ResetPasswordForm = () => {
             required
             className="w-full"
             disabled={loading}
+            minLength={6}
           />
         </div>
         <Button 
