@@ -40,10 +40,14 @@ const Index = () => {
     e.preventDefault();
     
     try {
+      const userId = (await supabase.auth.getUser()).data.user?.id;
+      if (!userId) throw new Error("No user found");
+
       // Get the current user's settings
       const { data: settings, error: fetchError } = await supabase
         .from('user_settings')
         .select('show_data_password')
+        .eq('user_id', userId)
         .single();
 
       if (fetchError) {
@@ -54,7 +58,7 @@ const Index = () => {
             .insert([
               {
                 show_data_password: password,
-                user_id: (await supabase.auth.getUser()).data.user?.id
+                user_id: userId
               }
             ]);
 

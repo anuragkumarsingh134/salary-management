@@ -11,6 +11,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resetPassword, setResetPassword] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -19,52 +20,66 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (signInError) {
-        // Only attempt signup if it's an invalid credentials error
-        if (signInError.message === "Invalid login credentials") {
-          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-              emailRedirectTo: window.location.origin,
-            },
-          });
-
-          if (signUpError) {
-            console.error("Signup error:", signUpError);
-            throw signUpError;
-          }
-
-          // Check if the user needs to verify their email
-          if (!signUpData.session) {
-            toast({
-              title: "Account created",
-              description: "Please check your email to verify your account.",
-            });
-          } else {
-            // If auto-confirmation is enabled, user will be signed in immediately
-            toast({
-              title: "Welcome!",
-              description: "Your account has been created successfully.",
-            });
-            navigate("/");
-          }
-        } else {
-          // If it's a different error, throw it
-          throw signInError;
-        }
-      } else if (signInData.session) {
-        // If sign in was successful
-        toast({
-          title: "Welcome back!",
-          description: "You have successfully logged in.",
+      if (resetPassword) {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
         });
-        navigate("/");
+
+        if (error) throw error;
+
+        toast({
+          title: "Password reset email sent",
+          description: "Please check your email to reset your password.",
+        });
+        setResetPassword(false);
+      } else {
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (signInError) {
+          // Only attempt signup if it's an invalid credentials error
+          if (signInError.message === "Invalid login credentials") {
+            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+              email,
+              password,
+              options: {
+                emailRedirectTo: window.location.origin,
+              },
+            });
+
+            if (signUpError) {
+              console.error("Signup error:", signUpError);
+              throw signUpError;
+            }
+
+            // Check if the user needs to verify their email
+            if (!signUpData.session) {
+              toast({
+                title: "Account created",
+                description: "Please check your email to verify your account.",
+              });
+            } else {
+              // If auto-confirmation is enabled, user will be signed in immediately
+              toast({
+                title: "Welcome!",
+                description: "Your account has been created successfully.",
+              });
+              navigate("/");
+            }
+          } else {
+            // If it's a different error, throw it
+            throw signInError;
+          }
+        } else if (signInData.session) {
+          // If sign in was successful
+          toast({
+            title: "Welcome back!",
+            description: "You have successfully logged in.",
+          });
+          navigate("/");
+        }
       }
     } catch (error: any) {
       console.error("Auth error:", error);
@@ -84,7 +99,9 @@ const Login = () => {
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-bold">Welcome</h2>
           <p className="text-muted-foreground">
-            Sign in to your account or create a new one
+            {resetPassword 
+              ? "Enter your email to reset your password" 
+              : "Sign in to your account or create a new one"}
           </p>
         </div>
 
@@ -100,25 +117,43 @@ const Login = () => {
               disabled={loading}
             />
           </div>
-          <div className="space-y-2">
-            <Input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full"
-              disabled={loading}
-            />
-          </div>
+          {!resetPassword && (
+            <div className="space-y-2">
+              <Input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full"
+                disabled={loading}
+              />
+            </div>
+          )}
           <Button 
             type="submit" 
             className="w-full" 
             disabled={loading}
           >
-            {loading ? "Processing..." : "Continue"}
+            {loading 
+              ? "Processing..." 
+              : resetPassword 
+                ? "Send Reset Instructions" 
+                : "Continue"}
           </Button>
         </form>
+
+        <div className="text-center">
+          <Button
+            variant="link"
+            className="text-sm text-muted-foreground"
+            onClick={() => setResetPassword(!resetPassword)}
+          >
+            {resetPassword 
+              ? "Back to login" 
+              : "Forgot your password?"}
+          </Button>
+        </div>
       </Card>
     </div>
   );
