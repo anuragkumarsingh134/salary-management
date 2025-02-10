@@ -20,7 +20,7 @@ export type Database = {
           position: string
           salary: number
           start_date: string
-          tenant_id: string | null
+          tenant_id: string
           user_id: string | null
         }
         Insert: {
@@ -33,7 +33,7 @@ export type Database = {
           position: string
           salary: number
           start_date: string
-          tenant_id?: string | null
+          tenant_id: string
           user_id?: string | null
         }
         Update: {
@@ -46,7 +46,7 @@ export type Database = {
           position?: string
           salary?: number
           start_date?: string
-          tenant_id?: string | null
+          tenant_id?: string
           user_id?: string | null
         }
         Relationships: []
@@ -80,7 +80,7 @@ export type Database = {
           description: string
           id: string
           staff_id: string
-          tenant_id: string | null
+          tenant_id: string
           type: string
         }
         Insert: {
@@ -90,7 +90,7 @@ export type Database = {
           description: string
           id?: string
           staff_id: string
-          tenant_id?: string | null
+          tenant_id: string
           type: string
         }
         Update: {
@@ -100,7 +100,7 @@ export type Database = {
           description?: string
           id?: string
           staff_id?: string
-          tenant_id?: string | null
+          tenant_id?: string
           type?: string
         }
         Relationships: [
