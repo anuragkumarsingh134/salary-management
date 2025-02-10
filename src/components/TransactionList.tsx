@@ -33,17 +33,14 @@ const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
     return null;
   }
 
-  // Get the staff member to check if they exist and are active
+  // Get the staff member to check if they exist
   const selectedStaffMember = staff.find(s => s.id === selectedStaffId);
-  if (!selectedStaffMember || !selectedStaffMember.active) {
+  if (!selectedStaffMember) {
     return null;
   }
 
-  // Only show transactions that belong to this specific active staff member
-  const staffTransactions = transactions.filter(t => 
-    t.staffId === selectedStaffId && 
-    staff.some(s => s.id === t.staffId && s.active)
-  );
+  // Show transactions for the selected staff member, regardless of active status
+  const staffTransactions = transactions.filter(t => t.staffId === selectedStaffId);
 
   return (
     <Card className="p-6 glassmorphism">
