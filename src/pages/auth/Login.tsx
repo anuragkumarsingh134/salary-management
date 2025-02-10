@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,33 +25,40 @@ const Login = () => {
         password,
       });
 
-      // If sign in fails with invalid credentials, try to sign up
-      if (signInError?.message === "Invalid login credentials") {
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-        });
+      if (signInError) {
+        // If it's an invalid credentials error, try to sign up
+        if (signInError.message === "Invalid login credentials") {
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email,
+            password,
+          });
 
-        if (signUpError) throw signUpError;
+          if (signUpError) {
+            console.error("Signup error:", signUpError);
+            throw signUpError;
+          }
 
-        toast({
-          title: "Verification Required",
-          description: "Please check your email to verify your account.",
-        });
-      } else if (signInError) {
-        // If there's a different error during sign in, throw it
-        throw signInError;
-      } else {
+          toast({
+            title: "Account created",
+            description: "Please check your email to verify your account.",
+          });
+        } else {
+          // If it's a different error, throw it
+          throw signInError;
+        }
+      } else if (signInData.session) {
         // If sign in was successful
         toast({
-          title: "Login successful",
-          description: "Welcome back!",
+          title: "Welcome back!",
+          description: "You have successfully logged in.",
         });
+        navigate("/");
       }
     } catch (error: any) {
+      console.error("Auth error:", error);
       toast({
-        title: "Error",
-        description: error.message,
+        title: "Authentication error",
+        description: error.message || "An error occurred during authentication",
         variant: "destructive",
       });
     } finally {
@@ -58,32 +67,43 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <Card className="w-full max-w-md p-8">
-        <h2 className="text-2xl font-bold mb-6 text-center">Welcome</h2>
-        <p className="text-center text-muted-foreground mb-6">
-          Sign in to your account or create a new one
-        </p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <Card className="w-full max-w-md p-8 space-y-6">
+        <div className="text-center space-y-2">
+          <h2 className="text-2xl font-bold">Welcome</h2>
+          <p className="text-muted-foreground">
+            Sign in to your account or create a new one
+          </p>
+        </div>
+
         <form onSubmit={handleAuth} className="space-y-4">
-          <div>
+          <div className="space-y-2">
             <Input
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="w-full"
+              disabled={loading}
             />
           </div>
-          <div>
+          <div className="space-y-2">
             <Input
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className="w-full"
+              disabled={loading}
             />
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button 
+            type="submit" 
+            className="w-full" 
+            disabled={loading}
+          >
             {loading ? "Processing..." : "Continue"}
           </Button>
         </form>
