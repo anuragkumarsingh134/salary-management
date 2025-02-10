@@ -4,10 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 interface UserSettings {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
   show_data_password: string;
   recovery_email: string | null;
   reset_token?: string | null;
   reset_token_expires_at?: string | null;
+  user_id: string;
 }
 
 export const usePasswordProtection = () => {
@@ -38,15 +42,15 @@ export const usePasswordProtection = () => {
 
       if (fetchError) {
         if (fetchError.code === 'PGRST116') {
+          const newSettings: UserSettings = {
+            show_data_password: password,
+            user_id: userId,
+            recovery_email: (await supabase.auth.getUser()).data.user?.email || null
+          };
+
           const { error: insertError } = await supabase
             .from('user_settings')
-            .insert([
-              {
-                show_data_password: password,
-                user_id: userId,
-                recovery_email: (await supabase.auth.getUser()).data.user?.email
-              }
-            ] as UserSettings[]);
+            .insert(newSettings);
 
           if (insertError) {
             toast({
