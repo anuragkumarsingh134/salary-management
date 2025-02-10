@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +15,7 @@ interface PasswordDialogProps {
   password: string;
   setPassword: (password: string) => void;
   onSubmit: (e: React.FormEvent) => Promise<void>;
+  onForgotPassword: () => void;
 }
 
 const PasswordDialog = ({
@@ -23,6 +24,7 @@ const PasswordDialog = ({
   password,
   setPassword,
   onSubmit,
+  onForgotPassword,
 }: PasswordDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -38,9 +40,19 @@ const PasswordDialog = ({
             onChange={(e) => setPassword(e.target.value)}
             autoFocus
           />
-          <Button type="submit" className="w-full">
-            Submit
-          </Button>
+          <div className="flex flex-col space-y-2">
+            <Button type="submit" className="w-full">
+              Submit
+            </Button>
+            <Button
+              type="button"
+              variant="link"
+              className="text-sm"
+              onClick={onForgotPassword}
+            >
+              Forgot Password?
+            </Button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

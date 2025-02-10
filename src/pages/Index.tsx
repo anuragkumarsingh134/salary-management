@@ -25,6 +25,7 @@ const Index = () => {
     setPasswordDialogOpen,
     handlePasswordSubmit,
     handleShowDataClick,
+    handleForgotPassword,
   } = usePasswordProtection();
 
   const { 
@@ -89,6 +90,7 @@ const Index = () => {
           password={password}
           setPassword={setPassword}
           onSubmit={handlePasswordSubmit}
+          onForgotPassword={handleForgotPassword}
         />
 
         <AddStaffDialog open={addStaffOpen} onOpenChange={setAddStaffOpen} />
