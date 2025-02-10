@@ -8,11 +8,13 @@ import StaffList from "@/components/StaffList";
 import AddStaffDialog from "@/components/AddStaffDialog";
 import TransactionList from "@/components/TransactionList";
 import AddTransactionDialog from "@/components/AddTransactionDialog";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
   const [addStaffOpen, setAddStaffOpen] = useState(false);
   const [addTransactionOpen, setAddTransactionOpen] = useState(false);
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const { 
     fetchStaff, 
     fetchTransactions, 
@@ -21,8 +23,21 @@ const Index = () => {
   } = useStaffStore();
 
   useEffect(() => {
-    fetchStaff();
-    fetchTransactions();
+    const loadData = async () => {
+      try {
+        // Fetch data in parallel
+        await Promise.all([
+          fetchStaff(),
+          fetchTransactions()
+        ]);
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
     
     // Subscribe to real-time updates and store cleanup functions
     const unsubscribeStaff = subscribeToStaffChanges();
@@ -34,6 +49,28 @@ const Index = () => {
       unsubscribeTransactions();
     };
   }, [fetchStaff, fetchTransactions, subscribeToStaffChanges, subscribeToTransactionChanges]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <NavBar />
+        <div className="container py-8 flex-1 flex flex-col space-y-8">
+          <div className="flex justify-between items-center">
+            <Skeleton className="h-10 w-32" />
+            <div className="space-x-4">
+              <Skeleton className="h-10 w-32 inline-block" />
+              <Skeleton className="h-10 w-32 inline-block" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-32 w-full" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">

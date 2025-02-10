@@ -90,7 +90,7 @@ export const useStaffStore = create<StaffStore>()((set) => ({
           schema: 'public',
           table: 'staff'
         },
-        async (payload) => {
+        async () => {
           // Fetch fresh data on any change
           const staff = await fetchStaffFromApi();
           set({ staff });
@@ -115,7 +115,7 @@ export const useStaffStore = create<StaffStore>()((set) => ({
           schema: 'public',
           table: 'transactions'
         },
-        async (payload) => {
+        async () => {
           // Fetch fresh data on any change
           const transactions = await fetchTransactionsFromApi();
           set({ transactions });
