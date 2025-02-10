@@ -27,12 +27,15 @@ const LoginForm = () => {
       });
 
       if (signInError) {
-        if (signInError.message.includes("Email not confirmed")) {
+        // Check specifically for email_not_confirmed error
+        const errorBody = JSON.parse((signInError as any).body || "{}");
+        if (errorBody.code === "email_not_confirmed") {
           toast({
             title: "Email Not Verified",
             description: "Please check your email and verify your account before logging in.",
             variant: "destructive",
           });
+          setLoading(false);
           return;
         }
 
