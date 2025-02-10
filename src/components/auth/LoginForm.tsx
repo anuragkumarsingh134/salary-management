@@ -20,14 +20,24 @@ const LoginForm = () => {
     setLoading(true);
 
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      // First try to sign in
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (signInError) {
+        if (signInError.message.includes("Email not confirmed")) {
+          toast({
+            title: "Email Not Verified",
+            description: "Please check your email and verify your account before logging in.",
+            variant: "destructive",
+          });
+          return;
+        }
+
         // If login fails, try to sign up
-        const { error: signUpError } = await supabase.auth.signUp({
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -37,11 +47,19 @@ const LoginForm = () => {
 
         if (signUpError) throw signUpError;
 
-        toast({
-          title: "Account created",
-          description: "Please check your email to verify your account.",
-        });
-      } else {
+        if (!signUpData.session) {
+          toast({
+            title: "Account Created",
+            description: "Please check your email to verify your account.",
+          });
+        } else {
+          toast({
+            title: "Welcome!",
+            description: "Your account has been created successfully.",
+          });
+          navigate("/");
+        }
+      } else if (signInData.session) {
         toast({
           title: "Success",
           description: "You have been logged in.",
@@ -49,6 +67,7 @@ const LoginForm = () => {
         navigate("/");
       }
     } catch (error: any) {
+      console.error("Auth error:", error);
       toast({
         title: "Error",
         description: error.message || "An error occurred during authentication",
