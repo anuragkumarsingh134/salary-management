@@ -4,18 +4,25 @@ import { Resend } from "npm:resend@2.0.0"
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"))
 
+// Update CORS headers to be more permissive
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Max-Age': '86400',
 }
 
 serve(async (req) => {
   console.log('Received request:', req.method);
+  console.log('Request headers:', Object.fromEntries(req.headers.entries()));
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     console.log('Handling CORS preflight request');
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, {
+      headers: corsHeaders,
+      status: 204
+    });
   }
 
   try {
@@ -23,6 +30,7 @@ serve(async (req) => {
     
     console.log('Processing reset password request for:', email);
     console.log('RESEND_API_KEY is set:', !!Deno.env.get("RESEND_API_KEY"));
+    console.log('Request body:', { email, resetToken: resetToken ? '[REDACTED]' : undefined });
 
     if (!email || !resetToken) {
       throw new Error('Email and reset token are required');
@@ -48,13 +56,20 @@ serve(async (req) => {
 
     console.log('Email sent successfully:', data);
 
-    return new Response(JSON.stringify({ success: true }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ success: true, data }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200
+      }
+    );
   } catch (error) {
     console.error('Error in send-reset-password function:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        stack: error.stack
+      }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }

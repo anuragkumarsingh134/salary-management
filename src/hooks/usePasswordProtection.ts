@@ -97,6 +97,16 @@ export const usePasswordProtection = () => {
 
   const handleForgotPassword = async () => {
     try {
+      const userEmail = (await supabase.auth.getUser()).data.user?.email;
+      if (!userEmail) {
+        toast({
+          title: "Error",
+          description: "No email found",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const userId = (await supabase.auth.getUser()).data.user?.id;
       if (!userId) {
         toast({
@@ -121,19 +131,12 @@ export const usePasswordProtection = () => {
 
       if (updateError) throw updateError;
 
-      const userEmail = (await supabase.auth.getUser()).data.user?.email;
-      if (!userEmail) {
-        toast({
-          title: "Error",
-          description: "No email found",
-          variant: "destructive",
-        });
-        return;
-      }
-
       // Call the Edge Function to send the reset email
-      const { error } = await supabase.functions.invoke('send-reset-password', {
-        body: { email: userEmail, resetToken }
+      const { data, error } = await supabase.functions.invoke('send-reset-password', {
+        body: JSON.stringify({ 
+          email: userEmail, 
+          resetToken 
+        })
       });
 
       if (error) throw error;
@@ -148,7 +151,7 @@ export const usePasswordProtection = () => {
       console.error('Error handling password reset:', error);
       toast({
         title: "Error",
-        description: "An error occurred while processing your request.",
+        description: error.message || "An error occurred while processing your request.",
         variant: "destructive",
       });
     }
