@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { useStaffStore } from "@/store/staffStore";
 import { StaffDetails } from "@/components/staff/StaffDetails";
 import { StaffCard } from "@/components/staff/StaffCard";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface StaffListProps {
   onStaffSelect?: (staffId: string | null) => void;
@@ -12,6 +13,7 @@ interface StaffListProps {
 const StaffList = ({ onStaffSelect }: StaffListProps) => {
   const { staff, transactions, updateStaff, deleteStaff } = useStaffStore();
   const [selectedStaff, setSelectedStaff] = useState<string | null>(null);
+  const [viewType, setViewType] = useState<"active" | "inactive">("active");
 
   const activeStaff = staff.filter((member) => member.active);
   const inactiveStaff = staff.filter((member) => !member.active);
@@ -25,6 +27,7 @@ const StaffList = ({ onStaffSelect }: StaffListProps) => {
     await updateStaff(staffId, { active: true });
     setSelectedStaff(null);
     onStaffSelect?.(null);
+    setViewType("active");
   };
 
   const selectedStaffMember = staff.find((member) => member.id === selectedStaff);
@@ -51,45 +54,40 @@ const StaffList = ({ onStaffSelect }: StaffListProps) => {
     );
   }
 
+  const currentStaff = viewType === "active" ? activeStaff : inactiveStaff;
+
   return (
     <Card className="p-6 glassmorphism">
       <div className="space-y-4">
-        {activeStaff.length > 0 && (
-          <>
-            <h3 className="font-semibold text-lg">Active Staff</h3>
-            <div className="space-y-4">
-              {activeStaff.map((member) => (
-                <StaffCard
-                  key={member.id}
-                  staff={member}
-                  onClick={() => handleStaffSelect(member.id)}
-                />
-              ))}
-            </div>
-          </>
-        )}
-        
-        {inactiveStaff.length > 0 && (
-          <>
-            <h3 className="font-semibold text-lg mt-6">Inactive Staff</h3>
-            <div className="space-y-4">
-              {inactiveStaff.map((member) => (
-                <StaffCard
-                  key={member.id}
-                  staff={member}
-                  onClick={() => handleStaffSelect(member.id)}
-                  isInactive
-                />
-              ))}
-            </div>
-          </>
-        )}
-        
-        {staff.length === 0 && (
-          <p className="text-muted-foreground text-center py-8">
-            No staff members found
-          </p>
-        )}
+        <ToggleGroup
+          type="single"
+          value={viewType}
+          onValueChange={(value) => value && setViewType(value as "active" | "inactive")}
+          className="justify-start"
+        >
+          <ToggleGroupItem value="active" aria-label="Show active staff">
+            Active Staff
+          </ToggleGroupItem>
+          <ToggleGroupItem value="inactive" aria-label="Show inactive staff">
+            Inactive Staff
+          </ToggleGroupItem>
+        </ToggleGroup>
+
+        <div className="space-y-4">
+          {currentStaff.map((member) => (
+            <StaffCard
+              key={member.id}
+              staff={member}
+              onClick={() => handleStaffSelect(member.id)}
+              isInactive={!member.active}
+            />
+          ))}
+          {currentStaff.length === 0 && (
+            <p className="text-muted-foreground text-center py-8">
+              No {viewType} staff members found
+            </p>
+          )}
+        </div>
       </div>
     </Card>
   );
