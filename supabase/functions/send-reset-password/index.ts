@@ -10,15 +10,23 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  console.log('Received request:', req.method);
+
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    console.log('Handling CORS preflight request');
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { email, resetToken } = await req.json()
+    const { email, resetToken } = await req.json();
     
-    console.log('Sending reset password email to:', email)
+    console.log('Processing reset password request for:', email);
+    console.log('RESEND_API_KEY is set:', !!Deno.env.get("RESEND_API_KEY"));
+
+    if (!email || !resetToken) {
+      throw new Error('Email and reset token are required');
+    }
 
     const { data, error } = await resend.emails.send({
       from: 'Password Reset <onboarding@resend.dev>',
@@ -31,26 +39,26 @@ serve(async (req) => {
         <p>This token will expire in 1 hour.</p>
         <p>If you didn't request this reset, you can safely ignore this email.</p>
       `
-    })
+    });
 
     if (error) {
-      console.error('Error sending email:', error)
-      throw error
+      console.error('Error sending email:', error);
+      throw error;
     }
 
-    console.log('Email sent successfully:', data)
+    console.log('Email sent successfully:', data);
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    });
   } catch (error) {
-    console.error('Error in send-reset-password function:', error)
+    console.error('Error in send-reset-password function:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
-    )
+    );
   }
 })
