@@ -2,23 +2,21 @@
 import { supabase } from '@/integrations/supabase/client';
 import { StaffMember, Transaction } from '@/types/staff';
 
-const getTenantId = async (): Promise<string> => {
+const getUserTableNames = async () => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const { data: tenant, error } = await supabase
-    .from('tenants')
-    .select('id')
-    .eq('owner_id', user.id)
-    .single();
-
-  if (error || !tenant) throw new Error("Tenant not found");
-  return tenant.id;
+  const staffTable = `staff_${user.id.replace(/-/g, '_')}`;
+  const transactionsTable = `transactions_${user.id.replace(/-/g, '_')}`;
+  
+  return { staffTable, transactionsTable };
 };
 
 export const fetchStaffFromApi = async () => {
+  const { staffTable } = await getUserTableNames();
+  
   const { data, error } = await supabase
-    .from('staff')
+    .from(staffTable)
     .select('*');
   
   if (error) {
@@ -33,8 +31,10 @@ export const fetchStaffFromApi = async () => {
 };
 
 export const fetchTransactionsFromApi = async () => {
+  const { transactionsTable } = await getUserTableNames();
+  
   const { data, error } = await supabase
-    .from('transactions')
+    .from(transactionsTable)
     .select('*');
   
   if (error) {
@@ -53,10 +53,12 @@ export const fetchTransactionsFromApi = async () => {
 };
 
 export const addStaffToApi = async (staffMember: Omit<StaffMember, 'id'>) => {
-  const tenantId = await getTenantId();
+  const { staffTable } = await getUserTableNames();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
   
   const { data, error } = await supabase
-    .from('staff')
+    .from(staffTable)
     .insert([{
       name: staffMember.name,
       position: staffMember.position,
@@ -64,7 +66,7 @@ export const addStaffToApi = async (staffMember: Omit<StaffMember, 'id'>) => {
       start_date: staffMember.startDate,
       image: staffMember.image,
       active: staffMember.active,
-      tenant_id: tenantId,
+      user_id: user.id,
     }])
     .select()
     .single();
@@ -81,8 +83,10 @@ export const addStaffToApi = async (staffMember: Omit<StaffMember, 'id'>) => {
 };
 
 export const updateStaffInApi = async (id: string, updatedStaff: Partial<StaffMember>) => {
+  const { staffTable } = await getUserTableNames();
+  
   const { error } = await supabase
-    .from('staff')
+    .from(staffTable)
     .update({
       name: updatedStaff.name,
       position: updatedStaff.position,
@@ -100,8 +104,10 @@ export const updateStaffInApi = async (id: string, updatedStaff: Partial<StaffMe
 };
 
 export const deleteStaffFromApi = async (id: string) => {
+  const { staffTable, transactionsTable } = await getUserTableNames();
+
   const { error: transactionError } = await supabase
-    .from('transactions')
+    .from(transactionsTable)
     .delete()
     .eq('staff_id', id);
 
@@ -111,7 +117,7 @@ export const deleteStaffFromApi = async (id: string) => {
   }
 
   const { error: staffError } = await supabase
-    .from('staff')
+    .from(staffTable)
     .delete()
     .eq('id', id);
 
@@ -122,17 +128,18 @@ export const deleteStaffFromApi = async (id: string) => {
 };
 
 export const addTransactionToApi = async (transaction: Omit<Transaction, 'id'>) => {
-  const tenantId = await getTenantId();
+  const { transactionsTable } = await getUserTableNames();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
 
   const { data, error } = await supabase
-    .from('transactions')
+    .from(transactionsTable)
     .insert([{
       staff_id: transaction.staffId,
       amount: transaction.amount,
       type: transaction.type,
       date: transaction.date,
       description: transaction.description,
-      tenant_id: tenantId,
     }])
     .select()
     .single();
@@ -153,8 +160,10 @@ export const addTransactionToApi = async (transaction: Omit<Transaction, 'id'>) 
 };
 
 export const deleteTransactionFromApi = async (id: string) => {
+  const { transactionsTable } = await getUserTableNames();
+  
   const { error } = await supabase
-    .from('transactions')
+    .from(transactionsTable)
     .delete()
     .eq('id', id);
 

@@ -9,116 +9,18 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      staff: {
-        Row: {
-          active: boolean
-          created_at: string
-          email: string | null
-          id: string
-          image: string | null
-          name: string
-          position: string
-          salary: number
-          start_date: string
-          tenant_id: string
-          user_id: string | null
-        }
-        Insert: {
-          active?: boolean
-          created_at?: string
-          email?: string | null
-          id?: string
-          image?: string | null
-          name: string
-          position: string
-          salary: number
-          start_date: string
-          tenant_id: string
-          user_id?: string | null
-        }
-        Update: {
-          active?: boolean
-          created_at?: string
-          email?: string | null
-          id?: string
-          image?: string | null
-          name?: string
-          position?: string
-          salary?: number
-          start_date?: string
-          tenant_id?: string
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      tenants: {
-        Row: {
-          created_at: string
-          id: string
-          name: string
-          owner_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          name: string
-          owner_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          name?: string
-          owner_id?: string
-        }
-        Relationships: []
-      }
-      transactions: {
-        Row: {
-          amount: number
-          created_at: string
-          date: string
-          description: string
-          id: string
-          staff_id: string
-          tenant_id: string
-          type: string
-        }
-        Insert: {
-          amount: number
-          created_at?: string
-          date: string
-          description: string
-          id?: string
-          staff_id: string
-          tenant_id: string
-          type: string
-        }
-        Update: {
-          amount?: number
-          created_at?: string
-          date?: string
-          description?: string
-          id?: string
-          staff_id?: string
-          tenant_id?: string
-          type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "transactions_staff_id_fkey"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "staff"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_user_tables: {
+        Args: {
+          user_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
