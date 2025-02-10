@@ -131,15 +131,14 @@ export const usePasswordProtection = () => {
 
       if (updateError) throw updateError;
 
-      // Call the Edge Function to send the reset email
-      const { data, error } = await supabase.functions.invoke('send-reset-password', {
-        body: JSON.stringify({ 
+      const response = await supabase.functions.invoke('send-reset-password', {
+        body: { 
           email: userEmail, 
           resetToken 
-        })
+        }
       });
 
-      if (error) throw error;
+      if (response.error) throw response.error;
 
       toast({
         title: "Reset Instructions Sent",

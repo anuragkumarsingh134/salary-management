@@ -8,7 +8,7 @@ const resend = new Resend(Deno.env.get("RESEND_API_KEY"))
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': '*',
   'Access-Control-Max-Age': '86400',
 }
 
@@ -26,11 +26,14 @@ serve(async (req) => {
   }
 
   try {
-    const { email, resetToken } = await req.json();
+    const requestBody = await req.text();
+    console.log('Raw request body:', requestBody);
+    
+    const { email, resetToken } = JSON.parse(requestBody);
     
     console.log('Processing reset password request for:', email);
     console.log('RESEND_API_KEY is set:', !!Deno.env.get("RESEND_API_KEY"));
-    console.log('Request body:', { email, resetToken: resetToken ? '[REDACTED]' : undefined });
+    console.log('Parsed request body:', { email, resetToken: resetToken ? '[REDACTED]' : undefined });
 
     if (!email || !resetToken) {
       throw new Error('Email and reset token are required');
@@ -59,7 +62,11 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ success: true, data }),
       {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
         status: 200
       }
     );
@@ -68,11 +75,16 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         error: error.message,
-        stack: error.stack
+        stack: error.stack,
+        details: 'An error occurred while processing the password reset request'
       }),
       { 
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
       }
     );
   }
