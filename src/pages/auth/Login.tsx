@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,22 +12,40 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      // First try to sign in
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      // If sign in fails with invalid credentials, try to sign up
+      if (signInError?.message === "Invalid login credentials") {
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+        });
 
-      toast({
-        title: "Login successful",
-        description: "Welcome back!",
-      });
+        if (signUpError) throw signUpError;
+
+        toast({
+          title: "Verification Required",
+          description: "Please check your email to verify your account.",
+        });
+      } else if (signInError) {
+        // If there's a different error during sign in, throw it
+        throw signInError;
+      } else {
+        // If sign in was successful
+        toast({
+          title: "Login successful",
+          description: "Welcome back!",
+        });
+      }
     } catch (error: any) {
       toast({
         title: "Error",
@@ -43,8 +60,11 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <Card className="w-full max-w-md p-8">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        <form onSubmit={handleLogin} className="space-y-4">
+        <h2 className="text-2xl font-bold mb-6 text-center">Welcome</h2>
+        <p className="text-center text-muted-foreground mb-6">
+          Sign in to your account or create a new one
+        </p>
+        <form onSubmit={handleAuth} className="space-y-4">
           <div>
             <Input
               type="email"
@@ -64,15 +84,9 @@ const Login = () => {
             />
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Loading..." : "Login"}
+            {loading ? "Processing..." : "Continue"}
           </Button>
         </form>
-        <p className="mt-4 text-center text-sm text-muted-foreground">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-primary hover:underline">
-            Register
-          </Link>
-        </p>
       </Card>
     </div>
   );

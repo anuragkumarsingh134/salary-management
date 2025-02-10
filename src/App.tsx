@@ -9,7 +9,6 @@ import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
 import { User } from "@supabase/supabase-js";
 
 const queryClient = new QueryClient();
@@ -44,9 +43,8 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
-            {/* Public routes */}
+            {/* Public route */}
             <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
-            <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
             
             {/* Protected routes */}
             <Route path="/" element={user ? <Index /> : <Navigate to="/login" />} />
