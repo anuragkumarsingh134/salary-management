@@ -131,14 +131,11 @@ export const usePasswordProtection = () => {
 
       if (updateError) throw updateError;
 
-      const response = await supabase.functions.invoke('send-reset-password', {
-        body: { 
-          email: userEmail, 
-          resetToken 
-        }
+      const { error } = await supabase.functions.invoke('send-reset-password', {
+        body: { email: userEmail, resetToken }
       });
 
-      if (response.error) throw response.error;
+      if (error) throw error;
 
       toast({
         title: "Reset Instructions Sent",
