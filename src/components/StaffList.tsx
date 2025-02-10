@@ -65,6 +65,7 @@ const StaffList = ({ onStaffSelect }: StaffListProps) => {
             id="staff-toggle"
             checked={showInactive}
             onCheckedChange={setShowInactive}
+            className="data-[state=checked]:bg-[#ea384c] data-[state=unchecked]:bg-[#F2FCE2]"
           />
           <Label htmlFor="staff-toggle">
             {showInactive ? "Inactive Staff" : "Active Staff"}
