@@ -29,6 +29,7 @@ const LoginForm = ({ onSubmit, onForgotPassword, loading }: LoginFormProps) => {
           required
           className="w-full"
           disabled={loading}
+          autoComplete="email"
         />
       </div>
       <div className="space-y-2">
@@ -40,6 +41,7 @@ const LoginForm = ({ onSubmit, onForgotPassword, loading }: LoginFormProps) => {
           required
           className="w-full"
           disabled={loading}
+          autoComplete="current-password"
         />
       </div>
       <Button 

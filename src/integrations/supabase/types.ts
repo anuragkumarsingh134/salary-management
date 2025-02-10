@@ -103,7 +103,7 @@ export type Database = {
           recovery_email?: string | null
           reset_token?: string | null
           reset_token_expires_at?: string | null
-          show_data_password: string
+          show_data_password?: string
           updated_at?: string
           user_id: string
         }

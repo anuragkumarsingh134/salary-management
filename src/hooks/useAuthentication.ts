@@ -19,6 +19,26 @@ export const useAuthentication = () => {
       });
 
       if (signInError) {
+        // Try to parse the error body
+        let errorBody;
+        try {
+          errorBody = JSON.parse(signInError.message);
+        } catch {
+          errorBody = null;
+        }
+
+        const isEmailNotConfirmed = errorBody?.code === "email_not_confirmed" || 
+                                  signInError.message.includes("Email not confirmed");
+
+        if (isEmailNotConfirmed) {
+          toast({
+            title: "Email Not Confirmed",
+            description: "Please check your email and confirm your account before signing in.",
+            variant: "destructive",
+          });
+          return;
+        }
+
         if (signInError.message === "Invalid login credentials") {
           const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
             email,
