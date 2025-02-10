@@ -80,23 +80,21 @@ const Index = () => {
         <div className="flex justify-between items-center">
           <h1 className="text-4xl font-bold">Dashboard</h1>
           <div className="space-x-4">
+            <Button
+              onClick={() => setAddTransactionOpen(true)}
+              className="bg-primary/90 hover:bg-primary"
+            >
+              <DollarSign className="mr-2 h-4 w-4" />
+              Add Transaction
+            </Button>
             {showData && (
-              <>
-                <Button
-                  onClick={() => setAddTransactionOpen(true)}
-                  className="bg-primary/90 hover:bg-primary"
-                >
-                  <DollarSign className="mr-2 h-4 w-4" />
-                  Add Transaction
-                </Button>
-                <Button
-                  onClick={() => setAddStaffOpen(true)}
-                  className="bg-primary/90 hover:bg-primary"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Staff
-                </Button>
-              </>
+              <Button
+                onClick={() => setAddStaffOpen(true)}
+                className="bg-primary/90 hover:bg-primary"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add Staff
+              </Button>
             )}
             <Button
               onClick={() => setShowData(!showData)}
