@@ -1,6 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { StaffMember, Transaction } from '@/types/staff';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 const getUserTableNames = async () => {
   const { data: { user } } = await supabase.auth.getUser();
@@ -16,8 +17,8 @@ export const fetchStaffFromApi = async () => {
   const { staffTable } = await getUserTableNames();
   
   // Using a type assertion to handle dynamic table names
-  const { data, error } = await (supabase
-    .from(staffTable) as any)
+  const { data, error } = await (supabase as SupabaseClient)
+    .from(staffTable)
     .select('*');
   
   if (error) {
@@ -37,8 +38,8 @@ export const fetchTransactionsFromApi = async () => {
   const { transactionsTable } = await getUserTableNames();
   
   // Using a type assertion to handle dynamic table names
-  const { data, error } = await (supabase
-    .from(transactionsTable) as any)
+  const { data, error } = await (supabase as SupabaseClient)
+    .from(transactionsTable)
     .select('*');
   
   if (error) {
@@ -64,8 +65,8 @@ export const addStaffToApi = async (staffMember: Omit<StaffMember, 'id'>) => {
   if (!user) throw new Error("Not authenticated");
   
   // Using a type assertion to handle dynamic table names
-  const { data, error } = await (supabase
-    .from(staffTable) as any)
+  const { data, error } = await (supabase as SupabaseClient)
+    .from(staffTable)
     .insert([{
       name: staffMember.name,
       position: staffMember.position,
@@ -95,8 +96,8 @@ export const updateStaffInApi = async (id: string, updatedStaff: Partial<StaffMe
   const { staffTable } = await getUserTableNames();
   
   // Using a type assertion to handle dynamic table names
-  const { error } = await (supabase
-    .from(staffTable) as any)
+  const { error } = await (supabase as SupabaseClient)
+    .from(staffTable)
     .update({
       name: updatedStaff.name,
       position: updatedStaff.position,
@@ -117,8 +118,8 @@ export const deleteStaffFromApi = async (id: string) => {
   const { staffTable, transactionsTable } = await getUserTableNames();
 
   // Using type assertions to handle dynamic table names
-  const { error: transactionError } = await (supabase
-    .from(transactionsTable) as any)
+  const { error: transactionError } = await (supabase as SupabaseClient)
+    .from(transactionsTable)
     .delete()
     .eq('staff_id', id);
 
@@ -127,8 +128,8 @@ export const deleteStaffFromApi = async (id: string) => {
     throw transactionError;
   }
 
-  const { error: staffError } = await (supabase
-    .from(staffTable) as any)
+  const { error: staffError } = await (supabase as SupabaseClient)
+    .from(staffTable)
     .delete()
     .eq('id', id);
 
@@ -144,8 +145,8 @@ export const addTransactionToApi = async (transaction: Omit<Transaction, 'id'>) 
   if (!user) throw new Error("Not authenticated");
 
   // Using a type assertion to handle dynamic table names
-  const { data, error } = await (supabase
-    .from(transactionsTable) as any)
+  const { data, error } = await (supabase as SupabaseClient)
+    .from(transactionsTable)
     .insert([{
       staff_id: transaction.staffId,
       amount: transaction.amount,
@@ -177,8 +178,8 @@ export const deleteTransactionFromApi = async (id: string) => {
   const { transactionsTable } = await getUserTableNames();
   
   // Using a type assertion to handle dynamic table names
-  const { error } = await (supabase
-    .from(transactionsTable) as any)
+  const { error } = await (supabase as SupabaseClient)
+    .from(transactionsTable)
     .delete()
     .eq('id', id);
 
