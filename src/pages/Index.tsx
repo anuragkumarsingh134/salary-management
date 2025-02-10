@@ -9,6 +9,14 @@ import AddStaffDialog from "@/components/AddStaffDialog";
 import TransactionList from "@/components/TransactionList";
 import AddTransactionDialog from "@/components/AddTransactionDialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [addStaffOpen, setAddStaffOpen] = useState(false);
@@ -16,12 +24,44 @@ const Index = () => {
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showData, setShowData] = useState(false);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const { toast } = useToast();
+  
   const { 
     fetchStaff, 
     fetchTransactions, 
     subscribeToStaffChanges, 
     subscribeToTransactionChanges 
   } = useStaffStore();
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simple password check - in a real app, this would be more secure
+    if (password === "admin123") {
+      setShowData(true);
+      setPasswordDialogOpen(false);
+      setPassword("");
+      toast({
+        title: "Access Granted",
+        description: "You now have access to view the data.",
+      });
+    } else {
+      toast({
+        title: "Access Denied",
+        description: "Incorrect password. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleShowDataClick = () => {
+    if (!showData) {
+      setPasswordDialogOpen(true);
+    } else {
+      setShowData(false);
+    }
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -97,7 +137,7 @@ const Index = () => {
               </Button>
             )}
             <Button
-              onClick={() => setShowData(!showData)}
+              onClick={handleShowDataClick}
               variant={showData ? "outline" : "default"}
               className="min-w-[140px]"
             >
@@ -115,6 +155,26 @@ const Index = () => {
             </div>
           </>
         )}
+
+        <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Enter Password</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+              <Input
+                type="password"
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoFocus
+              />
+              <Button type="submit" className="w-full">
+                Submit
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
 
         <AddStaffDialog open={addStaffOpen} onOpenChange={setAddStaffOpen} />
         <AddTransactionDialog
