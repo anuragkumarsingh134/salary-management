@@ -13,6 +13,9 @@ export const useAuthentication = () => {
     setLoading(true);
 
     try {
+      // Force refresh the session first
+      await supabase.auth.refreshSession();
+      
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -25,6 +28,26 @@ export const useAuthentication = () => {
           errorBody = JSON.parse(signInError.message);
         } catch {
           errorBody = null;
+        }
+
+        // Get current session to double-check verification status
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user?.email_confirmed_at) {
+          // If email is actually confirmed, proceed with sign in
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          
+          if (error) throw error;
+          if (data.session) {
+            toast({
+              title: "Welcome back!",
+              description: "You have successfully logged in.",
+            });
+            navigate("/");
+            return;
+          }
         }
 
         const isEmailNotConfirmed = errorBody?.code === "email_not_confirmed" || 
