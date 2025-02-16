@@ -62,6 +62,32 @@ export const usePasswordProtection = () => {
         throw fetchError;
       }
 
+      if (!settings.show_data_password) {
+        // First time setting the password
+        const { error: updateError } = await supabase
+          .from('user_settings')
+          .update({ show_data_password: password })
+          .eq('user_id', userId);
+
+        if (updateError) {
+          toast({
+            title: "Error",
+            description: "Failed to set password",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        setShowData(true);
+        setPasswordDialogOpen(false);
+        setPassword("");
+        toast({
+          title: "Password Set",
+          description: "Your password has been set and data is now visible.",
+        });
+        return;
+      }
+
       if (settings.show_data_password === password) {
         setShowData(true);
         setPasswordDialogOpen(false);
