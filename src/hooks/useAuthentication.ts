@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { User } from "@supabase/supabase-js";
 
 export const useAuthentication = () => {
   const [loading, setLoading] = useState(false);
@@ -13,63 +14,48 @@ export const useAuthentication = () => {
     setLoading(true);
 
     try {
-      // First, check if the user already exists
-      const { data: { users }, error: getUserError } = await supabase.auth.admin.listUsers();
-      const existingUser = users?.find(user => user.email === email);
+      // First, try to sign in directly
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      if (existingUser) {
-        // User exists, attempt to sign in
-        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+      if (signInError) {
+        if (signInError.message === "Invalid login credentials") {
+          // If login failed, try to sign up
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              emailRedirectTo: `${window.location.origin}/auth/callback`,
+            },
+          });
 
-        if (signInError) {
-          if (signInError.message === "Invalid login credentials") {
+          if (signUpError) {
+            throw signUpError;
+          }
+
+          if (!signUpData.session) {
             toast({
-              title: "Invalid credentials",
-              description: "Please check your email and password and try again.",
-              variant: "destructive",
+              title: "Verify your email",
+              description: "Please check your email to verify your account.",
             });
           } else {
-            throw signInError;
+            toast({
+              title: "Account created",
+              description: "You have successfully created an account.",
+            });
+            navigate("/");
           }
-          return;
-        }
-
-        if (signInData.session) {
-          toast({
-            title: "Welcome back!",
-            description: "You have successfully logged in.",
-          });
-          navigate("/");
-        }
-      } else {
-        // User doesn't exist, create new account
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
-          },
-        });
-
-        if (signUpError) {
-          throw signUpError;
-        }
-
-        if (!signUpData.session) {
-          toast({
-            title: "Verify your email",
-            description: "Please check your email to verify your account.",
-          });
         } else {
-          toast({
-            title: "Account created",
-            description: "You have successfully created an account.",
-          });
-          navigate("/");
+          throw signInError;
         }
+      } else if (signInData.session) {
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully logged in.",
+        });
+        navigate("/");
       }
     } catch (error: any) {
       console.error("Auth error:", error);
