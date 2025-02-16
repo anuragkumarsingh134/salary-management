@@ -13,60 +13,63 @@ export const useAuthentication = () => {
     setLoading(true);
 
     try {
-      // First, check if user exists by trying to sign in
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      // First, check if the user already exists
+      const { data: { users }, error: getUserError } = await supabase.auth.admin.listUsers();
+      const existingUser = users?.find(user => user.email === email);
 
-      if (signInError) {
-        // Check if user exists but is not confirmed
-        const { data: userCheck } = await supabase.auth.signUp({
+      if (existingUser) {
+        // User exists, attempt to sign in
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
-          options: {
-            emailRedirectTo: window.location.origin,
-          },
         });
 
-        if (userCheck.user && !userCheck.session) {
-          // User exists but email not confirmed
-          toast({
-            title: "Email Not Confirmed",
-            description: "Please check your email and confirm your account before signing in.",
-            variant: "destructive",
-          });
+        if (signInError) {
+          if (signInError.message === "Invalid login credentials") {
+            toast({
+              title: "Invalid credentials",
+              description: "Please check your email and password and try again.",
+              variant: "destructive",
+            });
+          } else {
+            throw signInError;
+          }
           return;
         }
 
-        if (signInError.message === "Invalid login credentials") {
-          // If user doesn't exist, sign them up
-          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-              emailRedirectTo: window.location.origin,
-            },
-          });
-
-          if (signUpError) {
-            console.error("Signup error:", signUpError);
-            throw signUpError;
-          }
-
+        if (signInData.session) {
           toast({
-            title: "Account created",
+            title: "Welcome back!",
+            description: "You have successfully logged in.",
+          });
+          navigate("/");
+        }
+      } else {
+        // User doesn't exist, create new account
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          },
+        });
+
+        if (signUpError) {
+          throw signUpError;
+        }
+
+        if (!signUpData.session) {
+          toast({
+            title: "Verify your email",
             description: "Please check your email to verify your account.",
           });
         } else {
-          throw signInError;
+          toast({
+            title: "Account created",
+            description: "You have successfully created an account.",
+          });
+          navigate("/");
         }
-      } else if (signInData.session) {
-        toast({
-          title: "Welcome back!",
-          description: "You have successfully logged in.",
-        });
-        navigate("/");
       }
     } catch (error: any) {
       console.error("Auth error:", error);
@@ -91,7 +94,7 @@ export const useAuthentication = () => {
         return;
       }
 
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
 
