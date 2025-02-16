@@ -13,47 +13,24 @@ export const useAuthentication = () => {
     setLoading(true);
 
     try {
-      // Force refresh the session first
-      await supabase.auth.refreshSession();
-      
+      // First, check if user exists by trying to sign in
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (signInError) {
-        // Try to parse the error body
-        let errorBody;
-        try {
-          errorBody = JSON.parse(signInError.message);
-        } catch {
-          errorBody = null;
-        }
+        // Check if user exists but is not confirmed
+        const { data: userCheck } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: window.location.origin,
+          },
+        });
 
-        // Get current session to double-check verification status
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user?.email_confirmed_at) {
-          // If email is actually confirmed, proceed with sign in
-          const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-          });
-          
-          if (error) throw error;
-          if (data.session) {
-            toast({
-              title: "Welcome back!",
-              description: "You have successfully logged in.",
-            });
-            navigate("/");
-            return;
-          }
-        }
-
-        const isEmailNotConfirmed = errorBody?.code === "email_not_confirmed" || 
-                                  signInError.message.includes("Email not confirmed");
-
-        if (isEmailNotConfirmed) {
+        if (userCheck.user && !userCheck.session) {
+          // User exists but email not confirmed
           toast({
             title: "Email Not Confirmed",
             description: "Please check your email and confirm your account before signing in.",
@@ -63,6 +40,7 @@ export const useAuthentication = () => {
         }
 
         if (signInError.message === "Invalid login credentials") {
+          // If user doesn't exist, sign them up
           const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
             email,
             password,
@@ -76,18 +54,10 @@ export const useAuthentication = () => {
             throw signUpError;
           }
 
-          if (!signUpData.session) {
-            toast({
-              title: "Account created",
-              description: "Please check your email to verify your account.",
-            });
-          } else {
-            toast({
-              title: "Welcome!",
-              description: "Your account has been created successfully.",
-            });
-            navigate("/");
-          }
+          toast({
+            title: "Account created",
+            description: "Please check your email to verify your account.",
+          });
         } else {
           throw signInError;
         }
@@ -121,41 +91,8 @@ export const useAuthentication = () => {
         return;
       }
 
-      const resetToken = Math.random().toString(36).substring(2, 15);
-      const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 1);
-
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password: "dummy-password-to-check-existence",
-      });
-
-      if (signInError && signInError.message !== "Invalid login credentials") {
-        toast({
-          title: "Error",
-          description: "No account found with this email address",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error("No user found");
-      }
-
-      const { error: updateError } = await supabase
-        .from('user_settings')
-        .update({
-          reset_token: resetToken,
-          reset_token_expires_at: expiresAt.toISOString()
-        })
-        .eq('user_id', user.id);
-
-      if (updateError) throw updateError;
-
-      const { error } = await supabase.functions.invoke('send-reset-password', {
-        body: { email, resetToken }
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
       });
 
       if (error) throw error;

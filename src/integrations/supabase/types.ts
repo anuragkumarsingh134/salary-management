@@ -9,7 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      staff_cf78b08f_a01d_45a6_bd45_37b7ed7e193d: {
+      staff_d5d6d22b_9681_495c_b6ad_4a9862d0e305: {
         Row: {
           active: boolean
           created_at: string
@@ -48,46 +48,7 @@ export type Database = {
         }
         Relationships: []
       }
-      staff_f5e5000b_0cf0_40c9_8dbb_a224c96e9989: {
-        Row: {
-          active: boolean
-          created_at: string
-          email: string | null
-          id: string
-          image: string | null
-          name: string
-          position: string
-          salary: number
-          start_date: string
-          user_id: string | null
-        }
-        Insert: {
-          active?: boolean
-          created_at?: string
-          email?: string | null
-          id?: string
-          image?: string | null
-          name: string
-          position: string
-          salary: number
-          start_date: string
-          user_id?: string | null
-        }
-        Update: {
-          active?: boolean
-          created_at?: string
-          email?: string | null
-          id?: string
-          image?: string | null
-          name?: string
-          position?: string
-          salary?: number
-          start_date?: string
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      transactions_cf78b08f_a01d_45a6_bd45_37b7ed7e193d: {
+      transactions_d5d6d22b_9681_495c_b6ad_4a9862d0e305: {
         Row: {
           amount: number
           created_at: string
@@ -117,48 +78,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_transactions_cf78b08f_a01d_45a6_bd45_37b7ed7e193d_staff_id"
+            foreignKeyName: "fk_transactions_d5d6d22b_9681_495c_b6ad_4a9862d0e305_staff_id"
             columns: ["staff_id"]
             isOneToOne: false
-            referencedRelation: "staff_cf78b08f_a01d_45a6_bd45_37b7ed7e193d"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      transactions_f5e5000b_0cf0_40c9_8dbb_a224c96e9989: {
-        Row: {
-          amount: number
-          created_at: string
-          date: string
-          description: string
-          id: string
-          staff_id: string
-          type: string
-        }
-        Insert: {
-          amount: number
-          created_at?: string
-          date: string
-          description: string
-          id?: string
-          staff_id: string
-          type: string
-        }
-        Update: {
-          amount?: number
-          created_at?: string
-          date?: string
-          description?: string
-          id?: string
-          staff_id?: string
-          type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fk_transactions_f5e5000b_0cf0_40c9_8dbb_a224c96e9989_staff_id"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "staff_f5e5000b_0cf0_40c9_8dbb_a224c96e9989"
+            referencedRelation: "staff_d5d6d22b_9681_495c_b6ad_4a9862d0e305"
             referencedColumns: ["id"]
           },
         ]
