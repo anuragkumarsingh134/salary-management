@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { User } from "@supabase/supabase-js";
 
 export const useAuthentication = () => {
   const [loading, setLoading] = useState(false);
@@ -14,43 +13,30 @@ export const useAuthentication = () => {
     setLoading(true);
 
     try {
-      // First, try to sign in directly
+      // Try to sign in first
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (signInError) {
-        if (signInError.message === "Invalid login credentials") {
-          // If login failed, try to sign up
-          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-              emailRedirectTo: `${window.location.origin}/auth/callback`,
-            },
-          });
+      // If login fails with invalid credentials, try to sign up
+      if (signInError?.message === "Invalid login credentials") {
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+        });
 
-          if (signUpError) {
-            throw signUpError;
-          }
+        if (signUpError) throw signUpError;
 
-          if (!signUpData.session) {
-            toast({
-              title: "Verify your email",
-              description: "Please check your email to verify your account.",
-            });
-          } else {
-            toast({
-              title: "Account created",
-              description: "You have successfully created an account.",
-            });
-            navigate("/");
-          }
-        } else {
-          throw signInError;
-        }
+        toast({
+          title: "Account Created",
+          description: "Please check your email to verify your account.",
+        });
+      } else if (signInError) {
+        // Handle other sign-in errors
+        throw signInError;
       } else if (signInData.session) {
+        // Successful login
         toast({
           title: "Welcome back!",
           description: "You have successfully logged in.",
@@ -60,7 +46,7 @@ export const useAuthentication = () => {
     } catch (error: any) {
       console.error("Auth error:", error);
       toast({
-        title: "Authentication error",
+        title: "Error",
         description: error.message || "An error occurred during authentication",
         variant: "destructive",
       });
@@ -69,34 +55,21 @@ export const useAuthentication = () => {
     }
   };
 
-  const handleForgotPassword = async (email: string, onSuccess: () => void) => {
+  const handleForgotPassword = async (email: string) => {
     try {
-      if (!email) {
-        toast({
-          title: "Error",
-          description: "Please enter your email address",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      
       if (error) throw error;
 
       toast({
-        title: "Reset Instructions Sent",
-        description: "Please check your email for instructions to reset your password.",
+        title: "Password Reset Email Sent",
+        description: "Check your email for the password reset link.",
       });
-
-      onSuccess();
     } catch (error: any) {
-      console.error('Error handling password reset:', error);
+      console.error('Error:', error);
       toast({
         title: "Error",
-        description: error.message || "An error occurred while processing your request.",
+        description: error.message || "Failed to send reset email",
         variant: "destructive",
       });
     }

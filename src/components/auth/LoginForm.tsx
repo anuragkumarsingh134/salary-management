@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 
 interface LoginFormProps {
   onSubmit: (email: string, password: string) => Promise<void>;
-  onForgotPassword: () => void;
+  onForgotPassword: (email: string) => void;
   loading: boolean;
 }
 
@@ -55,7 +55,7 @@ const LoginForm = ({ onSubmit, onForgotPassword, loading }: LoginFormProps) => {
         type="button"
         variant="link"
         className="text-sm w-full"
-        onClick={onForgotPassword}
+        onClick={() => onForgotPassword(email)}
         disabled={loading}
       >
         Forgot your password?
