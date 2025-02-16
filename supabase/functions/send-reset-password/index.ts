@@ -1,8 +1,12 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { Resend } from "npm:resend@2.0.0"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"))
+const supabaseUrl = Deno.env.get('SUPABASE_URL')
+const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+const supabase = createClient(supabaseUrl!, supabaseKey!)
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,25 +26,36 @@ serve(async (req) => {
   }
 
   try {
-    const { email, resetToken } = await req.json()
+    const { email } = await req.json()
     
-    console.log('Processing reset password request for:', email)
+    console.log('Processing password reminder request for:', email)
     console.log('RESEND_API_KEY is set:', !!Deno.env.get("RESEND_API_KEY"))
 
-    if (!email || !resetToken) {
-      throw new Error('Email and reset token are required')
+    if (!email) {
+      throw new Error('Email is required')
+    }
+
+    // Get the user's current password from user_settings
+    const { data: settings, error: fetchError } = await supabase
+      .from('user_settings')
+      .select('show_data_password')
+      .eq('recovery_email', email)
+      .single()
+
+    if (fetchError || !settings?.show_data_password) {
+      throw new Error('No password found for this email')
     }
 
     const { data, error } = await resend.emails.send({
-      from: 'Password Reset <onboarding@resend.dev>',
+      from: 'Password Reminder <onboarding@resend.dev>',
       to: [email],
-      subject: 'Reset Your Password',
+      subject: 'Your Show Data Password',
       html: `
-        <h1>Password Reset Request</h1>
-        <p>You requested to reset your password. Here is your reset token:</p>
-        <p style="font-size: 24px; font-weight: bold; padding: 10px; background-color: #f0f0f0; border-radius: 4px;">${resetToken}</p>
-        <p>This token will expire in 1 hour.</p>
-        <p>If you didn't request this reset, you can safely ignore this email.</p>
+        <h1>Your Password Reminder</h1>
+        <p>You requested your show data password. Here it is:</p>
+        <p style="font-size: 24px; font-weight: bold; padding: 10px; background-color: #f0f0f0; border-radius: 4px;">${settings.show_data_password}</p>
+        <p>Please keep this password safe.</p>
+        <p>If you didn't request this reminder, you can safely ignore this email.</p>
       `
     })
 
@@ -66,7 +81,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         error: error.message,
-        details: 'An error occurred while processing the password reset request'
+        details: 'An error occurred while processing the password reminder request'
       }),
       {
         headers: {

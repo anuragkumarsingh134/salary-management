@@ -133,44 +133,20 @@ export const usePasswordProtection = () => {
         return;
       }
 
-      const userId = (await supabase.auth.getUser()).data.user?.id;
-      if (!userId) {
-        toast({
-          title: "Error",
-          description: "No user found",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const resetToken = Math.random().toString(36).substring(2, 15);
-      const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 1);
-
-      const { error: updateError } = await supabase
-        .from('user_settings')
-        .update({
-          reset_token: resetToken,
-          reset_token_expires_at: expiresAt.toISOString()
-        })
-        .eq('user_id', userId);
-
-      if (updateError) throw updateError;
-
       const { error } = await supabase.functions.invoke('send-reset-password', {
-        body: { email: userEmail, resetToken }
+        body: { email: userEmail }
       });
 
       if (error) throw error;
 
       toast({
-        title: "Reset Instructions Sent",
-        description: "Please check your email for instructions to reset your password.",
+        title: "Password Sent",
+        description: "Your password has been sent to your email address.",
       });
 
       setPasswordDialogOpen(false);
     } catch (error: any) {
-      console.error('Error handling password reset:', error);
+      console.error('Error handling password reminder:', error);
       toast({
         title: "Error",
         description: error.message || "An error occurred while processing your request.",
