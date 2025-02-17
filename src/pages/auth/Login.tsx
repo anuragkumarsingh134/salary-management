@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Link, useNavigate } from "react-router-dom";
+import { AuthResponse, User } from "@supabase/supabase-js";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -19,21 +20,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // First check if the user exists
-      const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers();
-      
-      const userExists = users?.some(user => user.email === email);
-      
-      if (!userExists) {
-        toast({
-          title: "Account Not Found",
-          description: "No account exists with this email. Please sign up first.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Proceed with login
+      // Proceed with login directly
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -42,8 +29,8 @@ const Login = () => {
       if (signInError) {
         if (signInError.message === "Invalid login credentials") {
           toast({
-            title: "Invalid Password",
-            description: "The password you entered is incorrect. Please try again.",
+            title: "Invalid Credentials",
+            description: "The email or password you entered is incorrect. Please try again.",
             variant: "destructive",
           });
         } else {
