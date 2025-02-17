@@ -47,7 +47,9 @@ const App = () => {
           <Routes>
             {/* Public routes */}
             <Route path="/auth/login" element={!user ? <Login /> : <Navigate to="/" />} />
+            <Route path="/login" element={<Navigate to="/auth/login" replace />} />
             <Route path="/auth/signup" element={!user ? <SignUp /> : <Navigate to="/" />} />
+            <Route path="/signup" element={<Navigate to="/auth/signup" replace />} />
             <Route path="/auth/reset-password" element={<ResetPassword />} />
             
             {/* Protected routes */}
