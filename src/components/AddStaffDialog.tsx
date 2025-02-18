@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useStaffStore } from "@/store/staffStore";
 import { useToast } from "@/components/ui/use-toast";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 
 interface AddStaffDialogProps {
   open: boolean;
@@ -19,8 +20,14 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
     name: "",
     position: "",
     salary: "",
-    startDate: format(new Date(), "yyyy-MM-dd"), // Set default to today's date
+    startDate: format(new Date(), "yyyy-MM-dd"),
   });
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputDate = e.target.value;
+    // Convert the date to ISO format for storage
+    setFormData({ ...formData, startDate: inputDate });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +44,12 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
         description: `${formData.name} has been added to the staff list.`,
       });
       onOpenChange(false);
-      setFormData({ name: "", position: "", salary: "", startDate: "" });
+      setFormData({
+        name: "",
+        position: "",
+        salary: "",
+        startDate: format(new Date(), "yyyy-MM-dd"),
+      });
     } catch (error) {
       toast({
         title: "Error adding staff",
@@ -46,6 +58,9 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
       });
     }
   };
+
+  // Convert ISO date to display format for the input
+  const displayDate = formData.startDate ? format(new Date(formData.startDate), "dd/MM/yyyy") : "";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -92,11 +107,18 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
             <Label htmlFor="startDate">Start Date (DD/MM/YYYY)</Label>
             <Input
               id="startDate"
-              type="date"
-              value={formData.startDate}
-              onChange={(e) =>
-                setFormData({ ...formData, startDate: e.target.value })
-              }
+              placeholder="DD/MM/YYYY"
+              value={displayDate}
+              onChange={(e) => {
+                const parts = e.target.value.split('/');
+                if (parts.length === 3) {
+                  const [day, month, year] = parts;
+                  const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                  setFormData({ ...formData, startDate: isoDate });
+                } else {
+                  setFormData({ ...formData, startDate: e.target.value });
+                }
+              }}
               required
             />
           </div>
