@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useStaffStore } from "@/store/staffStore";
 import { Transaction } from "@/types/staff";
 import { useToast } from "@/components/ui/use-toast";
+import { format } from "date-fns";
 
 interface AddTransactionDialogProps {
   open: boolean;
@@ -21,7 +22,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
     staffId: "",
     amount: "",
     type: "salary" as Transaction['type'],
-    date: "",
+    date: format(new Date(), "yyyy-MM-dd"),
     description: "",
   });
 
@@ -60,10 +61,13 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
       staffId: "",
       amount: "",
       type: "salary",
-      date: "",
+      date: format(new Date(), "yyyy-MM-dd"),
       description: "",
     });
   };
+
+  // Convert ISO date to display format for the input
+  const displayDate = formData.date ? format(new Date(formData.date), "dd/MM/yyyy") : "";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -123,14 +127,21 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
             </Select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="date">Date</Label>
+            <Label htmlFor="date">Date (DD/MM/YYYY)</Label>
             <Input
               id="date"
-              type="date"
-              value={formData.date}
-              onChange={(e) =>
-                setFormData({ ...formData, date: e.target.value })
-              }
+              placeholder="DD/MM/YYYY"
+              value={displayDate}
+              onChange={(e) => {
+                const parts = e.target.value.split('/');
+                if (parts.length === 3) {
+                  const [day, month, year] = parts;
+                  const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                  setFormData({ ...formData, date: isoDate });
+                } else {
+                  setFormData({ ...formData, date: e.target.value });
+                }
+              }}
               required
             />
           </div>
