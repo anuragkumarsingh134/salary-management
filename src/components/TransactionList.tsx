@@ -79,7 +79,7 @@ const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
                     ₹{transaction.amount.toLocaleString()}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {format(new Date(transaction.date), "MMM d, yyyy")}
+                    {format(new Date(transaction.date), "dd MMM yyyy")}
                   </p>
                 </div>
                 <Button

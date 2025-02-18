@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useStaffStore } from "@/store/staffStore";
 import { useToast } from "@/components/ui/use-toast";
+import { format } from "date-fns";
 
 interface AddStaffDialogProps {
   open: boolean;
@@ -19,7 +19,7 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
     name: "",
     position: "",
     salary: "",
-    startDate: "",
+    startDate: format(new Date(), "yyyy-MM-dd"), // Set default to today's date
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -89,7 +89,7 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="startDate">Start Date</Label>
+            <Label htmlFor="startDate">Start Date (DD/MM/YYYY)</Label>
             <Input
               id="startDate"
               type="date"
