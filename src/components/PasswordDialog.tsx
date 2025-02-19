@@ -63,15 +63,18 @@ const PasswordDialog = ({
             data-form-type="other"
             autoSave="off"
           >
+            <div className="hidden">
+              <input type="text" autoComplete="username" value="" readOnly />
+              <input type="password" autoComplete="current-password" value="" readOnly />
+            </div>
             <Input
               type="password"
               placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoFocus
-              autoComplete="chrome-off"
-              autoSave="off"
-              name="@@view-data-password-field@@"
+              autoComplete="off"
+              name="view-only-data-key"
               data-form-type="other"
               data-lpignore="true"
               aria-autocomplete="none"
