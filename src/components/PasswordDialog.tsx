@@ -61,6 +61,7 @@ const PasswordDialog = ({
             className="space-y-4" 
             autoComplete="off"
             data-form-type="other"
+            autoSave="off"
           >
             <Input
               type="password"
@@ -68,9 +69,11 @@ const PasswordDialog = ({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoFocus
-              autoComplete="new-password"
+              autoComplete="chrome-off"
               autoSave="off"
-              name="_-_view-data-password"
+              name="@@view-data-password-field@@"
+              data-form-type="other"
+              data-lpignore="true"
               aria-autocomplete="none"
             />
             <div className="flex flex-col space-y-2">
