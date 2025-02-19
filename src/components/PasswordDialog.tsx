@@ -56,15 +56,22 @@ const PasswordDialog = ({
             </Button>
           </div>
         ) : (
-          <form onSubmit={onSubmit} className="space-y-4" autoComplete="off">
+          <form 
+            onSubmit={onSubmit} 
+            className="space-y-4" 
+            autoComplete="off"
+            data-form-type="other"
+          >
             <Input
               type="password"
               placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoFocus
-              autoComplete="off"
-              name="view-data-password"
+              autoComplete="new-password"
+              autoSave="off"
+              name="_-_view-data-password"
+              aria-autocomplete="none"
             />
             <div className="flex flex-col space-y-2">
               <Button type="submit" className="w-full">
