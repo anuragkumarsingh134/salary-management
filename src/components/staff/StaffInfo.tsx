@@ -64,9 +64,11 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
           </p>
         </div>
       </div>
-      <p className="text-xs text-muted-foreground">
-        Started {formatDistanceToNow(new Date(staff.startDate))} ago
-      </p>
+      {staff.startDate && (
+        <p className="text-xs text-muted-foreground">
+          Started {formatDistanceToNow(new Date(staff.startDate))} ago
+        </p>
+      )}
     </div>
   );
 };
