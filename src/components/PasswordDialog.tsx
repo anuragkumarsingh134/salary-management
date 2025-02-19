@@ -30,17 +30,25 @@ const PasswordDialog = ({
 }: PasswordDialogProps) => {
   const [showResetForm, setShowResetForm] = useState(false);
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Maintain password-like behavior while using a text input
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      onSubmit(e as any);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {showResetForm ? "Reset Password" : "Enter Password"}
+            {showResetForm ? "Reset Password" : "Enter Data Key"}
           </DialogTitle>
           <DialogDescription>
             {showResetForm 
               ? "Enter your reset token and new password" 
-              : "Enter your password to view the data"}
+              : "Enter your key to view the data"}
           </DialogDescription>
         </DialogHeader>
         {showResetForm ? (
@@ -52,7 +60,7 @@ const PasswordDialog = ({
               className="text-sm w-full"
               onClick={() => setShowResetForm(false)}
             >
-              Back to Login
+              Back to View Data
             </Button>
           </div>
         ) : (
@@ -63,21 +71,24 @@ const PasswordDialog = ({
             data-form-type="other"
             autoSave="off"
           >
-            <div className="hidden">
-              <input type="text" autoComplete="username" value="" readOnly />
-              <input type="password" autoComplete="current-password" value="" readOnly />
-            </div>
-            <Input
-              type="password"
-              placeholder="Enter password"
+            <input 
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+              type="text"
+              placeholder="Enter data key"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={handleKeyPress}
               autoFocus
               autoComplete="off"
-              name="view-only-data-key"
+              name="data-access-key"
               data-form-type="other"
               data-lpignore="true"
               aria-autocomplete="none"
+              spellCheck="false"
+              style={{ 
+                WebkitTextSecurity: 'disc',
+                MozTextSecurity: 'disc'
+              }}
             />
             <div className="flex flex-col space-y-2">
               <Button type="submit" className="w-full">
@@ -92,7 +103,7 @@ const PasswordDialog = ({
                   setShowResetForm(true);
                 }}
               >
-                Forgot Password?
+                Forgot Key?
               </Button>
             </div>
           </form>
