@@ -2,6 +2,9 @@
 import { supabase } from '@/integrations/supabase/client';
 import { StaffMember, Transaction, StaffRow, TransactionRow } from '@/types/staff';
 
+const STAFF_TABLE = 'staff_38e90acd_eb47_44a1_8b1a_0010c7527061';
+const TRANSACTIONS_TABLE = 'transactions_38e90acd_eb47_44a1_8b1a_0010c7527061';
+
 const convertStaffRowToMember = (row: StaffRow): StaffMember => ({
   id: row.id,
   name: row.name,
@@ -26,9 +29,8 @@ export const fetchStaffFromApi = async () => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const staffTable = `staff_${user.id.replace(/-/g, '_')}` as const;
   const { data, error } = await supabase
-    .from(staffTable)
+    .from(STAFF_TABLE)
     .select('*');
 
   if (error) throw error;
@@ -39,9 +41,8 @@ export const fetchTransactionsFromApi = async () => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const transactionsTable = `transactions_${user.id.replace(/-/g, '_')}` as const;
   const { data, error } = await supabase
-    .from(transactionsTable)
+    .from(TRANSACTIONS_TABLE)
     .select('*');
 
   if (error) throw error;
@@ -52,9 +53,8 @@ export const addStaffToApi = async (staffMember: Omit<StaffMember, 'id'>) => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const staffTable = `staff_${user.id.replace(/-/g, '_')}` as const;
   const { data, error } = await supabase
-    .from(staffTable)
+    .from(STAFF_TABLE)
     .insert([{
       name: staffMember.name,
       position: staffMember.position,
@@ -76,7 +76,6 @@ export const updateStaffInApi = async (id: string, staff: Partial<StaffMember>) 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const staffTable = `staff_${user.id.replace(/-/g, '_')}` as const;
   const updateData: Partial<StaffRow> = {
     ...(staff.name && { name: staff.name }),
     ...(staff.position && { position: staff.position }),
@@ -88,7 +87,7 @@ export const updateStaffInApi = async (id: string, staff: Partial<StaffMember>) 
   };
 
   const { error } = await supabase
-    .from(staffTable)
+    .from(STAFF_TABLE)
     .update(updateData)
     .eq('id', id);
 
@@ -99,9 +98,8 @@ export const deleteStaffFromApi = async (id: string) => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const staffTable = `staff_${user.id.replace(/-/g, '_')}` as const;
   const { error } = await supabase
-    .from(staffTable)
+    .from(STAFF_TABLE)
     .delete()
     .eq('id', id);
 
@@ -112,9 +110,8 @@ export const addTransactionToApi = async (transaction: Omit<Transaction, 'id'>) 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const transactionsTable = `transactions_${user.id.replace(/-/g, '_')}` as const;
   const { data, error } = await supabase
-    .from(transactionsTable)
+    .from(TRANSACTIONS_TABLE)
     .insert([{
       staff_id: transaction.staffId,
       amount: transaction.amount,
@@ -133,7 +130,6 @@ export const updateTransactionInApi = async (id: string, transaction: Partial<Om
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const transactionsTable = `transactions_${user.id.replace(/-/g, '_')}` as const;
   const updateData: Partial<TransactionRow> = {
     ...(transaction.staffId && { staff_id: transaction.staffId }),
     ...(transaction.amount && { amount: transaction.amount }),
@@ -143,7 +139,7 @@ export const updateTransactionInApi = async (id: string, transaction: Partial<Om
   };
 
   const { error } = await supabase
-    .from(transactionsTable)
+    .from(TRANSACTIONS_TABLE)
     .update(updateData)
     .eq('id', id);
 
@@ -154,9 +150,8 @@ export const deleteTransactionFromApi = async (id: string) => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const transactionsTable = `transactions_${user.id.replace(/-/g, '_')}` as const;
   const { error } = await supabase
-    .from(transactionsTable)
+    .from(TRANSACTIONS_TABLE)
     .delete()
     .eq('id', id);
 
