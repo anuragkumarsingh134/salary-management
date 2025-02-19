@@ -56,13 +56,15 @@ const PasswordDialog = ({
             </Button>
           </div>
         ) : (
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} className="space-y-4" autoComplete="off">
             <Input
               type="password"
               placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoFocus
+              autoComplete="off"
+              name="view-data-password"
             />
             <div className="flex flex-col space-y-2">
               <Button type="submit" className="w-full">
