@@ -1,149 +1,69 @@
+# Welcome to your Lovable project
 
-# NEW GK COLLECTIONS
+## Project info
 
-A React-based store management system built with Vite, TypeScript, and Tailwind CSS.
+**URL**: https://lovable.dev/projects/8c5e4c05-3d5d-4c89-9a8b-08f088b26bc2
 
-## System Requirements
+## How can I edit this code?
 
-- Ubuntu 20.04 or higher
-- Node.js 18+ (LTS recommended)
-- npm 9+
-- PM2 (for production deployment)
+There are several ways of editing your application.
 
-## Local Development Setup
+**Use Lovable**
 
-### 1. Install Node.js and npm using nvm
+Simply visit the [Lovable Project](https://lovable.dev/projects/8c5e4c05-3d5d-4c89-9a8b-08f088b26bc2) and start prompting.
 
-```bash
-# Install nvm
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+Changes made via Lovable will be committed automatically to this repo.
 
-# Reload shell configuration
-source ~/.bashrc
+**Use your preferred IDE**
 
-# Install Node.js LTS version
-nvm install --lts
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
-# Use the installed version
-nvm use --lts
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-# Verify installation
-node --version
-npm --version
-```
+Follow these steps:
 
-### 2. Clone and Setup Project
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
 
-```bash
-# Clone the repository
-git clone <YOUR_REPOSITORY_URL>
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
 
-# Navigate to project directory
-cd new-gk-collections
+# Step 3: Install the necessary dependencies.
+npm i
 
-# Install dependencies
-npm install
-
-# Start development server
+# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
 
-The development server will start at `http://localhost:5173`
+**Edit a file directly in GitHub**
 
-## Production Deployment with PM2
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-### 1. Install PM2 Globally
+**Use GitHub Codespaces**
 
-```bash
-# Install PM2 globally
-npm install -g pm2
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-# Verify PM2 installation
-pm2 --version
-```
+## What technologies are used for this project?
 
-### 2. Build and Deploy
+This project is built with .
 
-```bash
-# Build the project
-npm run build
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
 
-# Install serve globally (if not already installed)
-npm install -g serve
+## How can I deploy this project?
 
-# Start the application with PM2
-pm2 serve dist 3000 --name "gk-collections"
+Simply open [Lovable](https://lovable.dev/projects/8c5e4c05-3d5d-4c89-9a8b-08f088b26bc2) and click on Share -> Publish.
 
-# Other useful PM2 commands:
-pm2 status                  # Check application status
-pm2 logs gk-collections    # View application logs
-pm2 restart gk-collections # Restart application
-pm2 stop gk-collections   # Stop application
-pm2 delete gk-collections # Remove application from PM2
+## I want to use a custom domain - is that possible?
 
-# Setup PM2 to start on system boot
-pm2 startup ubuntu
-```
-
-### 3. Monitoring
-
-```bash
-# Monitor all applications
-pm2 monit
-
-# View dashboard
-pm2 plus    # Requires PM2 Plus account
-```
-
-## Environment Variables
-
-Create a `.env` file in the root directory:
-
-```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-
-## Project Structure
-
-```
-├── src/
-│   ├── components/     # React components
-│   ├── pages/         # Route pages
-│   ├── store/         # State management
-│   ├── utils/         # Utility functions
-│   └── main.tsx       # Entry point
-├── public/            # Static assets
-└── dist/             # Production build
-```
-
-## Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Create production build
-- `npm run preview` - Preview production build locally
-- `npm run lint` - Run ESLint
-- `npm run type-check` - Run TypeScript type checking
-
-## Troubleshooting
-
-If you encounter EACCES permissions errors during global installations:
-```bash
-# Fix npm permissions
-sudo chown -R $USER:$GROUP ~/.npm
-sudo chown -R $USER:$GROUP ~/.config
-```
-
-For PM2 permission issues:
-```bash
-# Fix PM2 permissions
-sudo env PATH=$PATH:/usr/bin pm2 startup ubuntu -u $USER
-```
-
-## Support
-
-For issues and feature requests, please create an issue in the repository.
-
-## License
-
-[MIT License](LICENSE)
+We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
