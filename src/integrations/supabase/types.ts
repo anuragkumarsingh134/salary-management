@@ -88,22 +88,34 @@ export type Database = {
       }
       store_settings: {
         Row: {
+          address: string | null
+          country: string | null
           created_at: string
           id: string
+          owner_name: string | null
+          phone: string | null
           store_name: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          address?: string | null
+          country?: string | null
           created_at?: string
           id?: string
+          owner_name?: string | null
+          phone?: string | null
           store_name?: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          address?: string | null
+          country?: string | null
           created_at?: string
           id?: string
+          owner_name?: string | null
+          phone?: string | null
           store_name?: string
           updated_at?: string
           user_id?: string
