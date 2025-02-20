@@ -9,45 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      holidays_38e90acd_eb47_44a1_8b1a_0010c7527061: {
-        Row: {
-          created_at: string
-          end_date: string
-          id: string
-          reason: string
-          staff_id: string
-          start_date: string
-          status: string
-        }
-        Insert: {
-          created_at?: string
-          end_date: string
-          id?: string
-          reason: string
-          staff_id: string
-          start_date: string
-          status?: string
-        }
-        Update: {
-          created_at?: string
-          end_date?: string
-          id?: string
-          reason?: string
-          staff_id?: string
-          start_date?: string
-          status?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "holidays_38e90acd_eb47_44a1_8b1a_0010c7527061_staff_id_fkey"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "staff_38e90acd_eb47_44a1_8b1a_0010c7527061"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      staff_38e90acd_eb47_44a1_8b1a_0010c7527061: {
+      staff_2d0160ab_df50_4bb2_9035_404f7cfc00a6: {
         Row: {
           active: boolean
           created_at: string
@@ -122,7 +84,7 @@ export type Database = {
         }
         Relationships: []
       }
-      transactions_38e90acd_eb47_44a1_8b1a_0010c7527061: {
+      transactions_2d0160ab_df50_4bb2_9035_404f7cfc00a6: {
         Row: {
           amount: number
           created_at: string
@@ -152,10 +114,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_transactions_38e90acd_eb47_44a1_8b1a_0010c7527061_staff_id"
+            foreignKeyName: "fk_transactions_2d0160ab_df50_4bb2_9035_404f7cfc00a6_staff_id"
             columns: ["staff_id"]
             isOneToOne: false
-            referencedRelation: "staff_38e90acd_eb47_44a1_8b1a_0010c7527061"
+            referencedRelation: "staff_2d0160ab_df50_4bb2_9035_404f7cfc00a6"
             referencedColumns: ["id"]
           },
         ]
