@@ -1,8 +1,9 @@
 
-import React from "react";
-import { Plus, DollarSign, Eye, LockKeyhole } from "lucide-react";
+import React, { useState } from "react";
+import { Plus, DollarSign, Eye, LockKeyhole, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStoreSettings } from "@/store/storeSettingsStore";
+import { EditStoreDialog } from "./EditStoreDialog";
 
 interface DashboardHeaderProps {
   onAddTransaction: () => void;
@@ -20,11 +21,22 @@ const DashboardHeader = ({
   showData,
 }: DashboardHeaderProps) => {
   const { settings } = useStoreSettings();
+  const [editStoreOpen, setEditStoreOpen] = useState(false);
 
   return (
     <div className="flex items-center justify-between w-full">
       <div className="space-y-1">
-        <h1 className="text-4xl font-bold shrink-0">Dashboard</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-4xl font-bold shrink-0">Dashboard</h1>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setEditStoreOpen(true)}
+            className="h-8 w-8"
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
+        </div>
         <p className="text-muted-foreground">{settings?.storeName}</p>
       </div>
       <div className="flex items-center gap-2">
@@ -67,6 +79,7 @@ const DashboardHeader = ({
           </Button>
         )}
       </div>
+      <EditStoreDialog open={editStoreOpen} onOpenChange={setEditStoreOpen} />
     </div>
   );
 };

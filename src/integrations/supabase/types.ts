@@ -9,7 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      holidays_2d0160ab_df50_4bb2_9035_404f7cfc00a6: {
+      holidays_b046fcd6_4f7d_417d_a853_c51696b9ee33: {
         Row: {
           created_at: string
           end_date: string
@@ -39,15 +39,15 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "holidays_2d0160ab_df50_4bb2_9035_404f7cfc00a6_staff_id_fkey"
+            foreignKeyName: "fk_holidays_b046fcd6_4f7d_417d_a853_c51696b9ee33_staff_id"
             columns: ["staff_id"]
             isOneToOne: false
-            referencedRelation: "staff_2d0160ab_df50_4bb2_9035_404f7cfc00a6"
+            referencedRelation: "staff_b046fcd6_4f7d_417d_a853_c51696b9ee33"
             referencedColumns: ["id"]
           },
         ]
       }
-      staff_2d0160ab_df50_4bb2_9035_404f7cfc00a6: {
+      staff_b046fcd6_4f7d_417d_a853_c51696b9ee33: {
         Row: {
           active: boolean
           created_at: string
@@ -122,7 +122,7 @@ export type Database = {
         }
         Relationships: []
       }
-      transactions_2d0160ab_df50_4bb2_9035_404f7cfc00a6: {
+      transactions_b046fcd6_4f7d_417d_a853_c51696b9ee33: {
         Row: {
           amount: number
           created_at: string
@@ -152,10 +152,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_transactions_2d0160ab_df50_4bb2_9035_404f7cfc00a6_staff_id"
+            foreignKeyName: "fk_transactions_b046fcd6_4f7d_417d_a853_c51696b9ee33_staff_id"
             columns: ["staff_id"]
             isOneToOne: false
-            referencedRelation: "staff_2d0160ab_df50_4bb2_9035_404f7cfc00a6"
+            referencedRelation: "staff_b046fcd6_4f7d_417d_a853_c51696b9ee33"
             referencedColumns: ["id"]
           },
         ]
