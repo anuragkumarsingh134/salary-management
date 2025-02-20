@@ -1,5 +1,5 @@
 
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, format } from "date-fns";
 import { useState, useEffect } from "react";
 import { StaffMember } from "@/types/staff";
 import { calculateSalaryDetails } from "@/utils/salaryCalculations";
@@ -97,7 +97,8 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
       </div>
       {staff.startDate && (
         <p className="text-xs text-muted-foreground">
-          Started {formatDistanceToNow(new Date(staff.startDate))} ago
+          Started {formatDistanceToNow(new Date(staff.startDate))} ago (
+          {format(new Date(staff.startDate), "dd-MM-yyyy")})
         </p>
       )}
 

@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 
 interface AddHolidayDialogProps {
   open: boolean;
@@ -31,13 +31,17 @@ export const AddHolidayDialog = ({
     e.preventDefault();
 
     try {
+      // Convert display format dates to ISO format for database
+      const startDateISO = format(parse(startDate, "dd-MM-yyyy", new Date()), "yyyy-MM-dd");
+      const endDateISO = format(parse(endDate, "dd-MM-yyyy", new Date()), "yyyy-MM-dd");
+
       const { error } = await supabase
         .from('holidays_38e90acd_eb47_44a1_8b1a_0010c7527061')
         .insert([
           {
             staff_id: staffId,
-            start_date: startDate,
-            end_date: endDate,
+            start_date: startDateISO,
+            end_date: endDateISO,
             reason,
           }
         ]);
@@ -70,24 +74,28 @@ export const AddHolidayDialog = ({
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Start Date</label>
+            <label className="text-sm font-medium">Start Date (DD-MM-YYYY)</label>
             <div className="relative">
               <Input
-                type="date"
+                type="text"
+                placeholder="DD-MM-YYYY"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
+                pattern="\d{2}-\d{2}-\d{4}"
                 required
               />
               <CalendarIcon className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
             </div>
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium">End Date</label>
+            <label className="text-sm font-medium">End Date (DD-MM-YYYY)</label>
             <div className="relative">
               <Input
-                type="date"
+                type="text"
+                placeholder="DD-MM-YYYY"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
+                pattern="\d{2}-\d{2}-\d{4}"
                 required
               />
               <CalendarIcon className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
