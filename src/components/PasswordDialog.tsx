@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, CSSProperties } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,6 +10,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ResetPasswordForm from "./ResetPasswordForm";
+
+// Extend CSSProperties to include our custom properties
+interface ExtendedCSSProperties extends CSSProperties {
+  WebkitTextSecurity?: 'disc' | 'circle' | 'square' | 'none';
+  MozTextSecurity?: 'disc' | 'circle' | 'square' | 'none';
+  textSecurity?: 'disc' | 'circle' | 'square' | 'none';
+}
 
 interface PasswordDialogProps {
   open: boolean;
@@ -35,6 +42,12 @@ const PasswordDialog = ({
       e.preventDefault();
       onSubmit(e as any);
     }
+  };
+
+  const inputStyle: ExtendedCSSProperties = {
+    WebkitTextSecurity: 'disc',
+    MozTextSecurity: 'disc',
+    textSecurity: 'disc'
   };
 
   return (
@@ -84,11 +97,7 @@ const PasswordDialog = ({
               data-lpignore="true"
               aria-autocomplete="none"
               spellCheck="false"
-              style={{
-                WebkitTextSecurity: 'disc' as any,
-                MozTextSecurity: 'disc' as any,
-                textSecurity: 'disc' as any
-              }}
+              style={inputStyle}
             />
             <div className="flex flex-col space-y-2">
               <Button type="submit" className="w-full">
