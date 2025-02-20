@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import { StaffMember } from "@/types/staff";
 import { calculateSalaryDetails } from "@/utils/salaryCalculations";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "lucide-react";
+import { Calendar, List } from "lucide-react";
 import { AddHolidayDialog } from "./AddHolidayDialog";
+import { ManageHolidaysDialog } from "./ManageHolidaysDialog";
 
 interface StaffInfoProps {
   staff: StaffMember;
@@ -14,6 +15,7 @@ interface StaffInfoProps {
 
 export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
   const [addHolidayOpen, setAddHolidayOpen] = useState(false);
+  const [manageHolidaysOpen, setManageHolidaysOpen] = useState(false);
   const [salaryDetails, setSalaryDetails] = useState({
     daysWorked: 0,
     dailyRate: staff.salary / 30,
@@ -21,7 +23,6 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
     holidayDays: 0
   });
 
-  // Fetch salary details including holidays
   useEffect(() => {
     const fetchSalaryDetails = async () => {
       const details = await calculateSalaryDetails(staff.salary, staff.startDate, staff.id);
@@ -42,14 +43,24 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
           <h3 className="text-lg font-semibold">{staff.name}</h3>
           <p className="text-sm text-muted-foreground">{staff.position}</p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setAddHolidayOpen(true)}
-        >
-          <Calendar className="mr-2 h-4 w-4" />
-          Add Holiday
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setManageHolidaysOpen(true)}
+          >
+            <List className="mr-2 h-4 w-4" />
+            Manage Holidays
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setAddHolidayOpen(true)}
+          >
+            <Calendar className="mr-2 h-4 w-4" />
+            Add Holiday
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-2 mt-2">
@@ -105,6 +116,13 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
       <AddHolidayDialog
         open={addHolidayOpen}
         onOpenChange={setAddHolidayOpen}
+        staffId={staff.id}
+        staffName={staff.name}
+      />
+      
+      <ManageHolidaysDialog
+        open={manageHolidaysOpen}
+        onOpenChange={setManageHolidaysOpen}
         staffId={staff.id}
         staffName={staff.name}
       />
