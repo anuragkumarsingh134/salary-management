@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { format, parse } from "date-fns";
+import { format, addDays } from "date-fns";
 
 interface AddHolidayDialogProps {
   open: boolean;
@@ -21,8 +21,7 @@ export const AddHolidayDialog = ({
   staffId,
   staffName,
 }: AddHolidayDialogProps) => {
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [days, setDays] = useState("");
   const [reason, setReason] = useState("");
   const { toast } = useToast();
 
@@ -34,36 +33,34 @@ export const AddHolidayDialog = ({
       if (!user) throw new Error("Not authenticated");
       
       const holidaysTable = `holidays_${user.id.replace(/-/g, '_')}`;
-
-      const startDateISO = format(parse(startDate, "dd-MM-yyyy", new Date()), "yyyy-MM-dd");
-      const endDateISO = format(parse(endDate, "dd-MM-yyyy", new Date()), "yyyy-MM-dd");
+      const startDate = new Date();
+      const endDate = addDays(startDate, parseInt(days) - 1);
 
       const { error } = await supabase
         .from(holidaysTable as any)
         .insert({
           staff_id: staffId,
-          start_date: startDateISO,
-          end_date: endDateISO,
+          start_date: format(startDate, "yyyy-MM-dd"),
+          end_date: format(endDate, "yyyy-MM-dd"),
           reason,
-          status: 'pending'
+          status: 'approved' // Automatically approve holidays
         }) as { error: any };
 
       if (error) throw error;
 
       toast({
         title: "Holiday Added",
-        description: "The holiday request has been submitted successfully.",
+        description: `${days} days of holiday have been deducted from working days.`,
       });
 
       onOpenChange(false);
-      setStartDate("");
-      setEndDate("");
+      setDays("");
       setReason("");
     } catch (error: any) {
       console.error('Error adding holiday:', error);
       toast({
         title: "Error",
-        description: "Failed to add holiday request. Please try again.",
+        description: "Failed to add holiday. Please try again.",
         variant: "destructive",
       });
     }
@@ -76,19 +73,13 @@ export const AddHolidayDialog = ({
           <DialogTitle>Add Holiday for {staffName}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-2">
             <Input
-              type="text"
-              placeholder="Start Date (dd-MM-yyyy)"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              required
-            />
-            <Input
-              type="text"
-              placeholder="End Date (dd-MM-yyyy)"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
+              type="number"
+              placeholder="Number of days"
+              value={days}
+              onChange={(e) => setDays(e.target.value)}
+              min="1"
               required
             />
           </div>
@@ -96,8 +87,9 @@ export const AddHolidayDialog = ({
             placeholder="Reason for holiday"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
+            required
           />
-          <Button type="submit">Submit Holiday Request</Button>
+          <Button type="submit">Add Holiday</Button>
         </form>
       </DialogContent>
     </Dialog>

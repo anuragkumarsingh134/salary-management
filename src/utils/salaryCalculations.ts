@@ -27,7 +27,7 @@ export const calculateSalaryDetails = async (salary: number, startDate: string, 
     const totalDays = differenceInDays(today, parsedStartDate);
     const dailyRate = salary / 30;
 
-    // Fetch holidays for this staff member
+    // Fetch holidays for this staff member (only approved ones)
     const { data: holidays, error } = await supabase
       .from(holidaysTable as any)
       .select('start_date, end_date')
