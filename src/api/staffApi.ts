@@ -1,6 +1,10 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { StaffMember, Transaction, StaffRow, TransactionRow } from '@/types/staff';
+import { Database } from '@/integrations/supabase/types';
+
+type Tables = Database['public']['Tables'];
+type GenericTable = Tables[keyof Tables];
 
 const getTableNames = async () => {
   const { data: { user } } = await supabase.auth.getUser();
@@ -11,7 +15,7 @@ const getTableNames = async () => {
     STAFF_TABLE: `staff_${userId}`,
     TRANSACTIONS_TABLE: `transactions_${userId}`,
     HOLIDAYS_TABLE: `holidays_${userId}`
-  } as const;
+  };
 };
 
 const convertStaffRowToMember = (row: StaffRow): StaffMember => ({
@@ -37,7 +41,7 @@ const convertTransactionRowToTransaction = (row: TransactionRow): Transaction =>
 export const fetchStaffFromApi = async () => {
   const tables = await getTableNames();
   const { data, error } = await supabase
-    .from(tables.STAFF_TABLE)
+    .from(tables.STAFF_TABLE as any)
     .select('*') as { data: StaffRow[] | null; error: any };
 
   if (error) throw error;
@@ -47,7 +51,7 @@ export const fetchStaffFromApi = async () => {
 export const fetchTransactionsFromApi = async () => {
   const tables = await getTableNames();
   const { data, error } = await supabase
-    .from(tables.TRANSACTIONS_TABLE)
+    .from(tables.TRANSACTIONS_TABLE as any)
     .select('*') as { data: TransactionRow[] | null; error: any };
 
   if (error) throw error;
@@ -60,7 +64,7 @@ export const addStaffToApi = async (staffMember: Omit<StaffMember, 'id'>) => {
   if (!user) throw new Error("Not authenticated");
 
   const { data, error } = await supabase
-    .from(tables.STAFF_TABLE)
+    .from(tables.STAFF_TABLE as any)
     .insert([{
       name: staffMember.name,
       position: staffMember.position,
@@ -91,7 +95,7 @@ export const updateStaffInApi = async (id: string, staff: Partial<StaffMember>) 
   };
 
   const { error } = await supabase
-    .from(tables.STAFF_TABLE)
+    .from(tables.STAFF_TABLE as any)
     .update(updateData)
     .eq('id', id) as { error: any };
 
@@ -101,7 +105,7 @@ export const updateStaffInApi = async (id: string, staff: Partial<StaffMember>) 
 export const deleteStaffFromApi = async (id: string) => {
   const tables = await getTableNames();
   const { error } = await supabase
-    .from(tables.STAFF_TABLE)
+    .from(tables.STAFF_TABLE as any)
     .delete()
     .eq('id', id) as { error: any };
 
@@ -111,7 +115,7 @@ export const deleteStaffFromApi = async (id: string) => {
 export const addTransactionToApi = async (transaction: Omit<Transaction, 'id'>) => {
   const tables = await getTableNames();
   const { data, error } = await supabase
-    .from(tables.TRANSACTIONS_TABLE)
+    .from(tables.TRANSACTIONS_TABLE as any)
     .insert([{
       staff_id: transaction.staffId,
       amount: transaction.amount,
@@ -137,7 +141,7 @@ export const updateTransactionInApi = async (id: string, transaction: Partial<Om
   };
 
   const { error } = await supabase
-    .from(tables.TRANSACTIONS_TABLE)
+    .from(tables.TRANSACTIONS_TABLE as any)
     .update(updateData)
     .eq('id', id) as { error: any };
 
@@ -147,7 +151,7 @@ export const updateTransactionInApi = async (id: string, transaction: Partial<Om
 export const deleteTransactionFromApi = async (id: string) => {
   const tables = await getTableNames();
   const { error } = await supabase
-    .from(tables.TRANSACTIONS_TABLE)
+    .from(tables.TRANSACTIONS_TABLE as any)
     .delete()
     .eq('id', id) as { error: any };
 

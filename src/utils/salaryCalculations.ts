@@ -29,7 +29,7 @@ export const calculateSalaryDetails = async (salary: number, startDate: string, 
 
     // Fetch holidays for this staff member
     const { data: holidays, error } = await supabase
-      .from(holidaysTable)
+      .from(holidaysTable as any)
       .select('start_date, end_date')
       .eq('staff_id', staffId)
       .eq('status', 'approved') as { data: Holiday[] | null; error: any };

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { CalendarIcon } from "lucide-react";
 import { format, parse } from "date-fns";
 
 interface AddHolidayDialogProps {
@@ -39,7 +39,7 @@ export const AddHolidayDialog = ({
       const endDateISO = format(parse(endDate, "dd-MM-yyyy", new Date()), "yyyy-MM-dd");
 
       const { error } = await supabase
-        .from(holidaysTable)
+        .from(holidaysTable as any)
         .insert({
           staff_id: staffId,
           start_date: startDateISO,
