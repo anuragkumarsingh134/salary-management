@@ -13,6 +13,10 @@ interface StoreSettingsStore {
   updateStoreName: (name: string) => Promise<void>;
 }
 
+type DatabaseStoreSettings = {
+  store_name: string;
+}
+
 export const useStoreSettings = create<StoreSettingsStore>((set) => ({
   settings: null,
   isLoading: true,
@@ -21,14 +25,14 @@ export const useStoreSettings = create<StoreSettingsStore>((set) => ({
       const { data, error } = await supabase
         .from('store_settings')
         .select('store_name')
-        .single();
+        .maybeSingle() as { data: DatabaseStoreSettings | null; error: any };
 
       if (error) throw error;
 
       set({ 
-        settings: { 
+        settings: data ? { 
           storeName: data.store_name 
-        },
+        } : null,
         isLoading: false
       });
     } catch (error) {
@@ -40,7 +44,7 @@ export const useStoreSettings = create<StoreSettingsStore>((set) => ({
     try {
       const { error } = await supabase
         .from('store_settings')
-        .update({ store_name: name })
+        .update({ store_name: name } as DatabaseStoreSettings)
         .eq('user_id', (await supabase.auth.getUser()).data.user?.id);
 
       if (error) throw error;
