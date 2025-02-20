@@ -5,7 +5,6 @@ import { useStoreSettings } from "@/store/storeSettingsStore";
 import { NavBar } from "@/components/NavBar";
 import StaffList from "@/components/StaffList";
 import AddStaffDialog from "@/components/AddStaffDialog";
-import TransactionList from "@/components/TransactionList";
 import AddTransactionDialog from "@/components/AddTransactionDialog";
 import PasswordDialog from "@/components/PasswordDialog";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
@@ -85,12 +84,7 @@ const Index = () => {
         />
 
         {showData && (
-          <>
-            <StaffList onStaffSelect={setSelectedStaffId} />
-            <div className="flex-1 overflow-auto min-h-0">
-              <TransactionList selectedStaffId={selectedStaffId} />
-            </div>
-          </>
+          <StaffList onStaffSelect={setSelectedStaffId} />
         )}
 
         <PasswordDialog

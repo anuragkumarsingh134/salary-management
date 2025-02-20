@@ -4,10 +4,12 @@ import { useState, useEffect } from "react";
 import { StaffMember } from "@/types/staff";
 import { calculateSalaryDetails } from "@/utils/salaryCalculations";
 import { Button } from "@/components/ui/button";
-import { Calendar, List, RefreshCw } from "lucide-react";
+import { Calendar, List, RefreshCw, History } from "lucide-react";
 import { AddHolidayDialog } from "./AddHolidayDialog";
 import { ManageHolidaysDialog } from "./ManageHolidaysDialog";
 import { useToast } from "@/components/ui/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import TransactionList from "@/components/TransactionList";
 
 interface StaffInfoProps {
   staff: StaffMember;
@@ -17,6 +19,7 @@ interface StaffInfoProps {
 export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
   const [addHolidayOpen, setAddHolidayOpen] = useState(false);
   const [manageHolidaysOpen, setManageHolidaysOpen] = useState(false);
+  const [transactionsOpen, setTransactionsOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { toast } = useToast();
   const [salaryDetails, setSalaryDetails] = useState({
@@ -74,6 +77,14 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
             disabled={isRefreshing}
           >
             <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setTransactionsOpen(true)}
+          >
+            <History className="mr-2 h-4 w-4" />
+            Transactions
           </Button>
           <Button
             variant="outline"
@@ -157,6 +168,15 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
         staffId={staff.id}
         staffName={staff.name}
       />
+
+      <Dialog open={transactionsOpen} onOpenChange={setTransactionsOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Transactions for {staff.name}</DialogTitle>
+          </DialogHeader>
+          <TransactionList selectedStaffId={staff.id} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
