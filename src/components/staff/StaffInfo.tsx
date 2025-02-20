@@ -1,7 +1,11 @@
 
 import { formatDistanceToNow } from "date-fns";
+import { useState } from "react";
 import { StaffMember } from "@/types/staff";
 import { calculateSalaryDetails } from "@/utils/salaryCalculations";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "lucide-react";
+import { AddHolidayDialog } from "./AddHolidayDialog";
 
 interface StaffInfoProps {
   staff: StaffMember;
@@ -9,7 +13,22 @@ interface StaffInfoProps {
 }
 
 export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
-  const salaryDetails = calculateSalaryDetails(staff.salary, staff.startDate);
+  const [addHolidayOpen, setAddHolidayOpen] = useState(false);
+  const [salaryDetails, setSalaryDetails] = useState({
+    daysWorked: 0,
+    dailyRate: staff.salary / 30,
+    totalEarned: 0,
+    holidayDays: 0
+  });
+
+  // Fetch salary details including holidays
+  useEffect(() => {
+    const fetchSalaryDetails = async () => {
+      const details = await calculateSalaryDetails(staff.salary, staff.startDate, staff.id);
+      setSalaryDetails(details);
+    };
+    fetchSalaryDetails();
+  }, [staff.salary, staff.startDate, staff.id]);
 
   return (
     <div className="grid gap-2">
@@ -19,10 +38,18 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
             {staff.name[0]}
           </span>
         </div>
-        <div>
+        <div className="flex-1">
           <h3 className="text-lg font-semibold">{staff.name}</h3>
           <p className="text-sm text-muted-foreground">{staff.position}</p>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setAddHolidayOpen(true)}
+        >
+          <Calendar className="mr-2 h-4 w-4" />
+          Add Holiday
+        </Button>
       </div>
 
       <div className="grid grid-cols-2 gap-2 mt-2">
@@ -38,8 +65,12 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
 
       <div className="grid grid-cols-2 gap-2">
         <div className="p-2 rounded-lg bg-secondary/30">
-          <p className="text-xs text-muted-foreground">Days Worked</p>
+          <p className="text-xs text-muted-foreground">Working Days</p>
           <p className="text-sm font-semibold">{salaryDetails.daysWorked} days</p>
+        </div>
+        <div className="p-2 rounded-lg bg-secondary/30">
+          <p className="text-xs text-muted-foreground">Holiday Days</p>
+          <p className="text-sm font-semibold">{salaryDetails.holidayDays} days</p>
         </div>
         <div className="p-2 rounded-lg bg-secondary/30">
           <p className="text-xs text-muted-foreground">Daily Rate</p>
@@ -69,6 +100,13 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
           Started {formatDistanceToNow(new Date(staff.startDate))} ago
         </p>
       )}
+
+      <AddHolidayDialog
+        open={addHolidayOpen}
+        onOpenChange={setAddHolidayOpen}
+        staffId={staff.id}
+        staffName={staff.name}
+      />
     </div>
   );
 };

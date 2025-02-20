@@ -9,6 +9,44 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      holidays_38e90acd_eb47_44a1_8b1a_0010c7527061: {
+        Row: {
+          created_at: string
+          end_date: string
+          id: string
+          reason: string
+          staff_id: string
+          start_date: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          id?: string
+          reason: string
+          staff_id: string
+          start_date: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          id?: string
+          reason?: string
+          staff_id?: string
+          start_date?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "holidays_38e90acd_eb47_44a1_8b1a_0010c7527061_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff_38e90acd_eb47_44a1_8b1a_0010c7527061"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       staff_38e90acd_eb47_44a1_8b1a_0010c7527061: {
         Row: {
           active: boolean
