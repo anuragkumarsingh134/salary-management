@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
+import StoreSetup from "./pages/auth/StoreSetup";
 import ResetPassword from "./pages/auth/ResetPassword";
 import { User } from "@supabase/supabase-js";
 import { useToast } from "./components/ui/use-toast";
@@ -100,6 +101,7 @@ const App = () => {
             <Route path="/login" element={<Navigate to="/auth/login" replace />} />
             <Route path="/auth/signup" element={!user ? <SignUp /> : <Navigate to="/" />} />
             <Route path="/signup" element={<Navigate to="/auth/signup" replace />} />
+            <Route path="/auth/store-setup" element={user ? <StoreSetup /> : <Navigate to="/auth/login" />} />
             <Route path="/auth/reset-password" element={<ResetPassword />} />
             
             {/* Protected routes */}
