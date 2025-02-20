@@ -54,8 +54,8 @@ export const usePasswordProtection = () => {
           setPasswordDialogOpen(false);
           setPassword("");
           toast({
-            title: "Password Set",
-            description: "Your password has been set and data is now visible.",
+            title: "Key Set",
+            description: "Your key has been set and data is now visible.",
           });
           return;
         }
@@ -72,7 +72,7 @@ export const usePasswordProtection = () => {
         if (updateError) {
           toast({
             title: "Error",
-            description: "Failed to set password",
+            description: "Failed to set key",
             variant: "destructive",
           });
           return;
@@ -82,8 +82,33 @@ export const usePasswordProtection = () => {
         setPasswordDialogOpen(false);
         setPassword("");
         toast({
-          title: "Password Set",
-          description: "Your password has been set and data is now visible.",
+          title: "Key Set",
+          description: "Your key has been set and data is now visible.",
+        });
+        return;
+      }
+
+      if (showData) {
+        // Changing the key
+        const { error: updateError } = await supabase
+          .from('user_settings')
+          .update({ show_data_password: password })
+          .eq('user_id', userId);
+
+        if (updateError) {
+          toast({
+            title: "Error",
+            description: "Failed to change key",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        setPasswordDialogOpen(false);
+        setPassword("");
+        toast({
+          title: "Key Changed",
+          description: "Your key has been updated successfully.",
         });
         return;
       }
@@ -99,7 +124,7 @@ export const usePasswordProtection = () => {
       } else {
         toast({
           title: "Access Denied",
-          description: "Incorrect password. Please try again.",
+          description: "Incorrect key. Please try again.",
           variant: "destructive",
         });
       }
@@ -107,7 +132,7 @@ export const usePasswordProtection = () => {
       console.error('Error handling password:', error);
       toast({
         title: "Error",
-        description: "An error occurred while checking the password.",
+        description: "An error occurred while checking the key.",
         variant: "destructive",
       });
     }
@@ -140,8 +165,8 @@ export const usePasswordProtection = () => {
       if (error) throw error;
 
       toast({
-        title: "Password Sent",
-        description: "Your password has been sent to your email address.",
+        title: "Key Sent",
+        description: "Your key has been sent to your email address.",
       });
 
       setPasswordDialogOpen(false);

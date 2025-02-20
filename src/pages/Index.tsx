@@ -10,6 +10,8 @@ import PasswordDialog from "@/components/PasswordDialog";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import LoadingSkeleton from "@/components/dashboard/LoadingSkeleton";
 import { usePasswordProtection } from "@/hooks/usePasswordProtection";
+import { Button } from "@/components/ui/button";
+import { LockKeyhole } from "lucide-react";
 
 const Index = () => {
   const [addStaffOpen, setAddStaffOpen] = useState(false);
@@ -60,6 +62,10 @@ const Index = () => {
     };
   }, [fetchStaff, fetchTransactions, subscribeToStaffChanges, subscribeToTransactionChanges]);
 
+  const handleChangeKey = () => {
+    setPasswordDialogOpen(true);
+  };
+
   if (isLoading) {
     return <LoadingSkeleton />;
   }
@@ -68,12 +74,25 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <NavBar />
       <div className="container py-8 flex-1 flex flex-col space-y-8 animate-fadeIn">
-        <DashboardHeader
-          onAddTransaction={() => setAddTransactionOpen(true)}
-          onAddStaff={() => setAddStaffOpen(true)}
-          onToggleShowData={handleShowDataClick}
-          showData={showData}
-        />
+        <div className="flex justify-between items-center">
+          <DashboardHeader
+            onAddTransaction={() => setAddTransactionOpen(true)}
+            onAddStaff={() => setAddStaffOpen(true)}
+            onToggleShowData={handleShowDataClick}
+            showData={showData}
+          />
+          {showData && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-4"
+              onClick={handleChangeKey}
+            >
+              <LockKeyhole className="mr-2 h-4 w-4" />
+              Change Key
+            </Button>
+          )}
+        </div>
 
         {showData && (
           <>
