@@ -4,7 +4,6 @@ import { Plus, DollarSign, Eye, LockKeyhole, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStoreSettings } from "@/store/storeSettingsStore";
 import { EditStoreDialog } from "./EditStoreDialog";
-import { Card } from "@/components/ui/card";
 
 interface DashboardHeaderProps {
   onAddTransaction: () => void;
@@ -84,42 +83,6 @@ const DashboardHeader = ({
           )}
         </div>
       </div>
-
-      {showData && settings && (
-        <Card className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <h3 className="font-medium">Store Information</h3>
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Store Name</p>
-                <p className="font-medium">{settings.storeName}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Owner</p>
-                <p className="font-medium">{settings.ownerName}</p>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <h3 className="font-medium">Contact Details</h3>
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Phone</p>
-                <p className="font-medium">{settings.phone}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Country</p>
-                <p className="font-medium">{settings.country}</p>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <h3 className="font-medium">Location</h3>
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Address</p>
-                <p className="font-medium">{settings.address}</p>
-              </div>
-            </div>
-          </div>
-        </Card>
-      )}
 
       <EditStoreDialog open={editStoreOpen} onOpenChange={setEditStoreOpen} />
     </div>
