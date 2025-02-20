@@ -44,6 +44,12 @@ const PasswordDialog = ({
     }
   };
 
+  const handleForgotKeyClick = () => {
+    onForgotPassword();
+    // Don't show reset form immediately - let the email be sent first
+    setShowResetForm(false);
+  };
+
   const inputStyle: ExtendedCSSProperties = {
     WebkitTextSecurity: 'disc',
     MozTextSecurity: 'disc',
@@ -59,7 +65,7 @@ const PasswordDialog = ({
           </DialogTitle>
           <DialogDescription>
             {showResetForm 
-              ? "Enter your reset token and new password" 
+              ? "Enter your new password" 
               : "Enter your key to view the data"}
           </DialogDescription>
         </DialogHeader>
@@ -107,10 +113,7 @@ const PasswordDialog = ({
                 type="button"
                 variant="link"
                 className="text-sm"
-                onClick={() => {
-                  onForgotPassword();
-                  setShowResetForm(true);
-                }}
+                onClick={handleForgotKeyClick}
               >
                 Forgot Key?
               </Button>
