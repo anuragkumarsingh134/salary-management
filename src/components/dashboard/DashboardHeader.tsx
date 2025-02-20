@@ -1,12 +1,13 @@
 
 import React from "react";
-import { Plus, DollarSign, Eye } from "lucide-react";
+import { Plus, DollarSign, Eye, LockKeyhole } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface DashboardHeaderProps {
   onAddTransaction: () => void;
   onAddStaff: () => void;
   onToggleShowData: () => void;
+  onChangeKey: () => void;
   showData: boolean;
 }
 
@@ -14,16 +15,17 @@ const DashboardHeader = ({
   onAddTransaction,
   onAddStaff,
   onToggleShowData,
+  onChangeKey,
   showData,
 }: DashboardHeaderProps) => {
   return (
-    <div className="flex items-center w-full">
-      <h1 className="text-4xl font-bold mr-4">Dashboard</h1>
-      <div className="flex items-center gap-2">
+    <div className="flex items-center gap-4">
+      <h1 className="text-4xl font-bold shrink-0">Dashboard</h1>
+      <div className="flex items-center">
         <Button
           onClick={onAddTransaction}
           size="sm"
-          className="bg-primary/90 hover:bg-primary flex items-center gap-2"
+          className="bg-primary/90 hover:bg-primary flex items-center gap-2 rounded-r-none"
         >
           <DollarSign className="h-4 w-4" />
           Add Transaction
@@ -32,7 +34,7 @@ const DashboardHeader = ({
           <Button
             onClick={onAddStaff}
             size="sm"
-            className="bg-primary/90 hover:bg-primary flex items-center gap-2"
+            className="bg-primary/90 hover:bg-primary flex items-center gap-2 rounded-none border-l border-primary-foreground/20"
           >
             <Plus className="h-4 w-4" />
             Add Staff
@@ -42,11 +44,22 @@ const DashboardHeader = ({
           onClick={onToggleShowData}
           variant={showData ? "outline" : "default"}
           size="sm"
-          className="min-w-[120px] flex items-center gap-2"
+          className="min-w-[120px] flex items-center gap-2 rounded-none border-l"
         >
           <Eye className="h-4 w-4" />
           {showData ? "Hide Data" : "Show Data"}
         </Button>
+        {showData && (
+          <Button
+            onClick={onChangeKey}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 rounded-l-none border-l"
+          >
+            <LockKeyhole className="h-4 w-4" />
+            Change Key
+          </Button>
+        )}
       </div>
     </div>
   );
