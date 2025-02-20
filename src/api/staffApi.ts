@@ -2,8 +2,8 @@
 import { supabase } from '@/integrations/supabase/client';
 import { StaffMember, Transaction, StaffRow, TransactionRow } from '@/types/staff';
 
-const STAFF_TABLE = 'staff_38e90acd_eb47_44a1_8b1a_0010c7527061';
-const TRANSACTIONS_TABLE = 'transactions_38e90acd_eb47_44a1_8b1a_0010c7527061';
+const STAFF_TABLE = 'staff_2d0160ab_df50_4bb2_9035_404f7cfc00a6';
+const TRANSACTIONS_TABLE = 'transactions_2d0160ab_df50_4bb2_9035_404f7cfc00a6';
 
 const convertStaffRowToMember = (row: StaffRow): StaffMember => ({
   id: row.id,
