@@ -40,7 +40,6 @@ const DashboardHeader = ({
               </Button>
             )}
           </div>
-          <p className="text-muted-foreground">{settings?.storeName}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
