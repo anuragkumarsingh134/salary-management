@@ -18,7 +18,6 @@ export const calculateSalaryDetails = async (salary: number, startDate: string, 
   }
 
   try {
-    // Get the current user's ID to construct the table name
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Not authenticated");
     
@@ -39,12 +38,10 @@ export const calculateSalaryDetails = async (salary: number, startDate: string, 
 
     let holidayDays = 0;
     if (holidays) {
-      // Calculate total holiday days
       holidays.forEach(holiday => {
         const holidayStart = parseISO(holiday.start_date);
         const holidayEnd = parseISO(holiday.end_date);
         
-        // Only count holidays within the employment period
         if (isWithinInterval(holidayStart, { start: parsedStartDate, end: today }) ||
             isWithinInterval(holidayEnd, { start: parsedStartDate, end: today })) {
           const daysInRange = eachDayOfInterval({ 

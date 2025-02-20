@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -31,13 +30,11 @@ export const AddHolidayDialog = ({
     e.preventDefault();
 
     try {
-      // Get the current user's ID to construct the table name
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
       
       const holidaysTable = `holidays_${user.id.replace(/-/g, '_')}`;
 
-      // Convert display format dates to ISO format for database
       const startDateISO = format(parse(startDate, "dd-MM-yyyy", new Date()), "yyyy-MM-dd");
       const endDateISO = format(parse(endDate, "dd-MM-yyyy", new Date()), "yyyy-MM-dd");
 
@@ -49,7 +46,7 @@ export const AddHolidayDialog = ({
           end_date: endDateISO,
           reason,
           status: 'pending'
-        });
+        }) as { error: any };
 
       if (error) throw error;
 
@@ -74,51 +71,33 @@ export const AddHolidayDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add Holiday for {staffName}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Start Date (DD-MM-YYYY)</label>
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="DD-MM-YYYY"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                pattern="\d{2}-\d{2}-\d{4}"
-                required
-              />
-              <CalendarIcon className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">End Date (DD-MM-YYYY)</label>
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="DD-MM-YYYY"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                pattern="\d{2}-\d{2}-\d{4}"
-                required
-              />
-              <CalendarIcon className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Reason</label>
-            <Textarea
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              placeholder="Enter reason for holiday..."
+        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
+          <div className="grid grid-cols-2 gap-2">
+            <Input
+              type="text"
+              placeholder="Start Date (dd-MM-yyyy)"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              required
+            />
+            <Input
+              type="text"
+              placeholder="End Date (dd-MM-yyyy)"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
               required
             />
           </div>
-          <Button type="submit" className="w-full">
-            Submit Holiday Request
-          </Button>
+          <Textarea
+            placeholder="Reason for holiday"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+          />
+          <Button type="submit">Submit Holiday Request</Button>
         </form>
       </DialogContent>
     </Dialog>

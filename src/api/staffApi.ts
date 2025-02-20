@@ -2,8 +2,17 @@
 import { supabase } from '@/integrations/supabase/client';
 import { StaffMember, Transaction, StaffRow, TransactionRow } from '@/types/staff';
 
-const STAFF_TABLE = 'staff_2d0160ab_df50_4bb2_9035_404f7cfc00a6';
-const TRANSACTIONS_TABLE = 'transactions_2d0160ab_df50_4bb2_9035_404f7cfc00a6';
+const getTableNames = async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+  
+  const userId = user.id.replace(/-/g, '_');
+  return {
+    STAFF_TABLE: `staff_${userId}`,
+    TRANSACTIONS_TABLE: `transactions_${userId}`,
+    HOLIDAYS_TABLE: `holidays_${userId}`
+  } as const;
+};
 
 const convertStaffRowToMember = (row: StaffRow): StaffMember => ({
   id: row.id,
@@ -26,35 +35,32 @@ const convertTransactionRowToTransaction = (row: TransactionRow): Transaction =>
 });
 
 export const fetchStaffFromApi = async () => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
-
+  const tables = await getTableNames();
   const { data, error } = await supabase
-    .from(STAFF_TABLE)
-    .select('*');
+    .from(tables.STAFF_TABLE)
+    .select('*') as { data: StaffRow[] | null; error: any };
 
   if (error) throw error;
-  return (data as StaffRow[]).map(convertStaffRowToMember);
+  return (data || []).map(convertStaffRowToMember);
 };
 
 export const fetchTransactionsFromApi = async () => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
-
+  const tables = await getTableNames();
   const { data, error } = await supabase
-    .from(TRANSACTIONS_TABLE)
-    .select('*');
+    .from(tables.TRANSACTIONS_TABLE)
+    .select('*') as { data: TransactionRow[] | null; error: any };
 
   if (error) throw error;
-  return (data as TransactionRow[]).map(convertTransactionRowToTransaction);
+  return (data || []).map(convertTransactionRowToTransaction);
 };
 
 export const addStaffToApi = async (staffMember: Omit<StaffMember, 'id'>) => {
+  const tables = await getTableNames();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
   const { data, error } = await supabase
-    .from(STAFF_TABLE)
+    .from(tables.STAFF_TABLE)
     .insert([{
       name: staffMember.name,
       position: staffMember.position,
@@ -66,16 +72,14 @@ export const addStaffToApi = async (staffMember: Omit<StaffMember, 'id'>) => {
       user_id: user.id
     }])
     .select()
-    .single();
+    .single() as { data: StaffRow; error: any };
 
   if (error) throw error;
-  return convertStaffRowToMember(data as StaffRow);
+  return convertStaffRowToMember(data);
 };
 
 export const updateStaffInApi = async (id: string, staff: Partial<StaffMember>) => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
-
+  const tables = await getTableNames();
   const updateData: Partial<StaffRow> = {
     ...(staff.name && { name: staff.name }),
     ...(staff.position && { position: staff.position }),
@@ -87,31 +91,27 @@ export const updateStaffInApi = async (id: string, staff: Partial<StaffMember>) 
   };
 
   const { error } = await supabase
-    .from(STAFF_TABLE)
+    .from(tables.STAFF_TABLE)
     .update(updateData)
-    .eq('id', id);
+    .eq('id', id) as { error: any };
 
   if (error) throw error;
 };
 
 export const deleteStaffFromApi = async (id: string) => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
-
+  const tables = await getTableNames();
   const { error } = await supabase
-    .from(STAFF_TABLE)
+    .from(tables.STAFF_TABLE)
     .delete()
-    .eq('id', id);
+    .eq('id', id) as { error: any };
 
   if (error) throw error;
 };
 
 export const addTransactionToApi = async (transaction: Omit<Transaction, 'id'>) => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
-
+  const tables = await getTableNames();
   const { data, error } = await supabase
-    .from(TRANSACTIONS_TABLE)
+    .from(tables.TRANSACTIONS_TABLE)
     .insert([{
       staff_id: transaction.staffId,
       amount: transaction.amount,
@@ -120,16 +120,14 @@ export const addTransactionToApi = async (transaction: Omit<Transaction, 'id'>) 
       description: transaction.description,
     }])
     .select()
-    .single();
+    .single() as { data: TransactionRow; error: any };
 
   if (error) throw error;
-  return convertTransactionRowToTransaction(data as TransactionRow);
+  return convertTransactionRowToTransaction(data);
 };
 
 export const updateTransactionInApi = async (id: string, transaction: Partial<Omit<Transaction, 'id'>>) => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
-
+  const tables = await getTableNames();
   const updateData: Partial<TransactionRow> = {
     ...(transaction.staffId && { staff_id: transaction.staffId }),
     ...(transaction.amount && { amount: transaction.amount }),
@@ -139,21 +137,19 @@ export const updateTransactionInApi = async (id: string, transaction: Partial<Om
   };
 
   const { error } = await supabase
-    .from(TRANSACTIONS_TABLE)
+    .from(tables.TRANSACTIONS_TABLE)
     .update(updateData)
-    .eq('id', id);
+    .eq('id', id) as { error: any };
 
   if (error) throw error;
 };
 
 export const deleteTransactionFromApi = async (id: string) => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
-
+  const tables = await getTableNames();
   const { error } = await supabase
-    .from(TRANSACTIONS_TABLE)
+    .from(tables.TRANSACTIONS_TABLE)
     .delete()
-    .eq('id', id);
+    .eq('id', id) as { error: any };
 
   if (error) throw error;
 };
