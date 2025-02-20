@@ -28,14 +28,16 @@ const DashboardHeader = ({
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           <h1 className="text-4xl font-bold shrink-0">Dashboard</h1>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setEditStoreOpen(true)}
-            className="h-8 w-8"
-          >
-            <Settings className="h-4 w-4" />
-          </Button>
+          {showData && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setEditStoreOpen(true)}
+              className="h-8 w-8"
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
+          )}
         </div>
         <p className="text-muted-foreground">{settings?.storeName}</p>
       </div>
