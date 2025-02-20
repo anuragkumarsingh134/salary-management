@@ -1,6 +1,6 @@
 
 import { formatDistanceToNow } from "date-fns";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StaffMember } from "@/types/staff";
 import { calculateSalaryDetails } from "@/utils/salaryCalculations";
 import { Button } from "@/components/ui/button";

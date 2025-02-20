@@ -1,5 +1,6 @@
 
 import { differenceInDays, parseISO, isWithinInterval, eachDayOfInterval } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
 
 export const calculateSalaryDetails = async (salary: number, startDate: string, staffId: string) => {
   if (!startDate) {
