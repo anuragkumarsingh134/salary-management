@@ -16,8 +16,6 @@ interface AddHolidayDialogProps {
   staffName: string;
 }
 
-const HOLIDAYS_TABLE = 'holidays_2d0160ab_df50_4bb2_9035_404f7cfc00a6';
-
 export const AddHolidayDialog = ({
   open,
   onOpenChange,
@@ -33,12 +31,18 @@ export const AddHolidayDialog = ({
     e.preventDefault();
 
     try {
+      // Get the current user's ID to construct the table name
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+      
+      const holidaysTable = `holidays_${user.id.replace(/-/g, '_')}`;
+
       // Convert display format dates to ISO format for database
       const startDateISO = format(parse(startDate, "dd-MM-yyyy", new Date()), "yyyy-MM-dd");
       const endDateISO = format(parse(endDate, "dd-MM-yyyy", new Date()), "yyyy-MM-dd");
 
       const { error } = await supabase
-        .from(HOLIDAYS_TABLE)
+        .from(holidaysTable)
         .insert({
           staff_id: staffId,
           start_date: startDateISO,
@@ -59,6 +63,7 @@ export const AddHolidayDialog = ({
       setEndDate("");
       setReason("");
     } catch (error: any) {
+      console.error('Error adding holiday:', error);
       toast({
         title: "Error",
         description: "Failed to add holiday request. Please try again.",
