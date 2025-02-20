@@ -74,18 +74,21 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <NavBar />
       <div className="container py-8 flex-1 flex flex-col space-y-8 animate-fadeIn">
-        <div className="flex items-center justify-between">
-          <DashboardHeader
-            onAddTransaction={() => setAddTransactionOpen(true)}
-            onAddStaff={() => setAddStaffOpen(true)}
-            onToggleShowData={handleShowDataClick}
-            showData={showData}
-          />
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            <DashboardHeader
+              onAddTransaction={() => setAddTransactionOpen(true)}
+              onAddStaff={() => setAddStaffOpen(true)}
+              onToggleShowData={handleShowDataClick}
+              showData={showData}
+            />
+          </div>
           {showData && (
             <Button
               variant="outline"
               size="sm"
               onClick={handleChangeKey}
+              className="shrink-0"
             >
               <LockKeyhole className="h-4 w-4 mr-2" />
               Change Key
