@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import { StaffMember } from "@/types/staff";
 import { calculateSalaryDetails } from "@/utils/salaryCalculations";
 import { Button } from "@/components/ui/button";
-import { Calendar, List } from "lucide-react";
+import { Calendar, List, RefreshCw } from "lucide-react";
 import { AddHolidayDialog } from "./AddHolidayDialog";
 import { ManageHolidaysDialog } from "./ManageHolidaysDialog";
+import { useToast } from "@/components/ui/use-toast";
 
 interface StaffInfoProps {
   staff: StaffMember;
@@ -16,6 +17,8 @@ interface StaffInfoProps {
 export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
   const [addHolidayOpen, setAddHolidayOpen] = useState(false);
   const [manageHolidaysOpen, setManageHolidaysOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const { toast } = useToast();
   const [salaryDetails, setSalaryDetails] = useState({
     daysWorked: 0,
     dailyRate: staff.salary / 30,
@@ -23,13 +26,33 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
     holidayDays: 0
   });
 
+  const fetchSalaryDetails = async () => {
+    const details = await calculateSalaryDetails(staff.salary, staff.startDate, staff.id);
+    setSalaryDetails(details);
+  };
+
   useEffect(() => {
-    const fetchSalaryDetails = async () => {
-      const details = await calculateSalaryDetails(staff.salary, staff.startDate, staff.id);
-      setSalaryDetails(details);
-    };
     fetchSalaryDetails();
   }, [staff.salary, staff.startDate, staff.id]);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await fetchSalaryDetails();
+      toast({
+        title: "Data Refreshed",
+        description: "Staff information has been updated.",
+      });
+    } catch (error) {
+      toast({
+        title: "Refresh Failed",
+        description: "Failed to refresh staff information.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   return (
     <div className="grid gap-2">
@@ -44,6 +67,14 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
           <p className="text-sm text-muted-foreground">{staff.position}</p>
         </div>
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+          >
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          </Button>
           <Button
             variant="outline"
             size="sm"
