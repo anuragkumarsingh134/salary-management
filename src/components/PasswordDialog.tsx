@@ -31,7 +31,6 @@ const PasswordDialog = ({
   const [showResetForm, setShowResetForm] = useState(false);
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Maintain password-like behavior while using a text input
     if (e.key === 'Enter') {
       e.preventDefault();
       onSubmit(e as any);
@@ -85,9 +84,10 @@ const PasswordDialog = ({
               data-lpignore="true"
               aria-autocomplete="none"
               spellCheck="false"
-              style={{ 
-                WebkitTextSecurity: 'disc',
-                MozTextSecurity: 'disc'
+              style={{
+                WebkitTextSecurity: 'disc' as any,
+                MozTextSecurity: 'disc' as any,
+                textSecurity: 'disc' as any
               }}
             />
             <div className="flex flex-col space-y-2">
