@@ -1,5 +1,7 @@
+
 import { useState, useEffect } from "react";
 import { useStaffStore } from "@/store/staffStore";
+import { useStoreSettings } from "@/store/storeSettingsStore";
 import { NavBar } from "@/components/NavBar";
 import StaffList from "@/components/StaffList";
 import AddStaffDialog from "@/components/AddStaffDialog";
@@ -34,12 +36,15 @@ const Index = () => {
     subscribeToTransactionChanges 
   } = useStaffStore();
 
+  const { fetchSettings } = useStoreSettings();
+
   useEffect(() => {
     const loadData = async () => {
       try {
         await Promise.all([
           fetchStaff(),
-          fetchTransactions()
+          fetchTransactions(),
+          fetchSettings()
         ]);
       } catch (error) {
         console.error('Error loading data:', error);
@@ -57,7 +62,7 @@ const Index = () => {
       unsubscribeStaff();
       unsubscribeTransactions();
     };
-  }, [fetchStaff, fetchTransactions, subscribeToStaffChanges, subscribeToTransactionChanges]);
+  }, [fetchStaff, fetchTransactions, fetchSettings, subscribeToStaffChanges, subscribeToTransactionChanges]);
 
   const handleChangeKey = () => {
     setPasswordDialogOpen(true);
