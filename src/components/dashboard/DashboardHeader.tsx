@@ -19,13 +19,13 @@ const DashboardHeader = ({
   showData,
 }: DashboardHeaderProps) => {
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center justify-between w-full">
       <h1 className="text-4xl font-bold shrink-0">Dashboard</h1>
-      <div className="flex items-center">
+      <div className="flex items-center gap-2">
         <Button
           onClick={onAddTransaction}
           size="sm"
-          className="bg-primary/90 hover:bg-primary flex items-center gap-2 rounded-r-none"
+          className="bg-primary/90 hover:bg-primary flex items-center gap-2"
         >
           <DollarSign className="h-4 w-4" />
           Add Transaction
@@ -34,7 +34,7 @@ const DashboardHeader = ({
           <Button
             onClick={onAddStaff}
             size="sm"
-            className="bg-primary/90 hover:bg-primary flex items-center gap-2 rounded-none border-l border-primary-foreground/20"
+            className="bg-primary/90 hover:bg-primary flex items-center gap-2"
           >
             <Plus className="h-4 w-4" />
             Add Staff
@@ -44,7 +44,7 @@ const DashboardHeader = ({
           onClick={onToggleShowData}
           variant={showData ? "outline" : "default"}
           size="sm"
-          className="min-w-[120px] flex items-center gap-2 rounded-none border-l"
+          className="min-w-[120px] flex items-center gap-2"
         >
           <Eye className="h-4 w-4" />
           {showData ? "Hide Data" : "Show Data"}
@@ -54,7 +54,7 @@ const DashboardHeader = ({
             onClick={onChangeKey}
             variant="outline"
             size="sm"
-            className="flex items-center gap-2 rounded-l-none border-l"
+            className="flex items-center gap-2"
           >
             <LockKeyhole className="h-4 w-4" />
             Change Key
