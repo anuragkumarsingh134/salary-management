@@ -16,6 +16,8 @@ interface AddHolidayDialogProps {
   staffName: string;
 }
 
+const HOLIDAYS_TABLE = 'holidays_2d0160ab_df50_4bb2_9035_404f7cfc00a6';
+
 export const AddHolidayDialog = ({
   open,
   onOpenChange,
@@ -36,15 +38,14 @@ export const AddHolidayDialog = ({
       const endDateISO = format(parse(endDate, "dd-MM-yyyy", new Date()), "yyyy-MM-dd");
 
       const { error } = await supabase
-        .from('holidays_38e90acd_eb47_44a1_8b1a_0010c7527061')
-        .insert([
-          {
-            staff_id: staffId,
-            start_date: startDateISO,
-            end_date: endDateISO,
-            reason,
-          }
-        ]);
+        .from(HOLIDAYS_TABLE)
+        .insert({
+          staff_id: staffId,
+          start_date: startDateISO,
+          end_date: endDateISO,
+          reason,
+          status: 'pending'
+        });
 
       if (error) throw error;
 

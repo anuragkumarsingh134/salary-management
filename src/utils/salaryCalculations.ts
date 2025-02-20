@@ -2,6 +2,13 @@
 import { differenceInDays, parseISO, isWithinInterval, eachDayOfInterval } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 
+const HOLIDAYS_TABLE = 'holidays_2d0160ab_df50_4bb2_9035_404f7cfc00a6';
+
+interface Holiday {
+  start_date: string;
+  end_date: string;
+}
+
 export const calculateSalaryDetails = async (salary: number, startDate: string, staffId: string) => {
   if (!startDate) {
     return {
@@ -19,18 +26,20 @@ export const calculateSalaryDetails = async (salary: number, startDate: string, 
     const dailyRate = salary / 30;
 
     // Fetch holidays for this staff member
-    const { data: holidays } = await supabase
-      .from('holidays_38e90acd_eb47_44a1_8b1a_0010c7527061')
+    const { data: holidays, error } = await supabase
+      .from(HOLIDAYS_TABLE)
       .select('start_date, end_date')
       .eq('staff_id', staffId)
-      .eq('status', 'approved');
+      .eq('status', 'approved') as { data: Holiday[] | null; error: any };
+
+    if (error) throw error;
 
     let holidayDays = 0;
     if (holidays) {
       // Calculate total holiday days
       holidays.forEach(holiday => {
-        const holidayStart = new Date(holiday.start_date);
-        const holidayEnd = new Date(holiday.end_date);
+        const holidayStart = parseISO(holiday.start_date);
+        const holidayEnd = parseISO(holiday.end_date);
         
         // Only count holidays within the employment period
         if (isWithinInterval(holidayStart, { start: parsedStartDate, end: today }) ||
