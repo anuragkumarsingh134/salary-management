@@ -1,5 +1,5 @@
 
-import { differenceInDays, parseISO, isWithinInterval, eachDayOfInterval } from "date-fns";
+import { differenceInDays, parseISO } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Holiday {
@@ -41,15 +41,8 @@ export const calculateSalaryDetails = async (salary: number, startDate: string, 
       holidays.forEach(holiday => {
         const holidayStart = parseISO(holiday.start_date);
         const holidayEnd = parseISO(holiday.end_date);
-        
-        if (isWithinInterval(holidayStart, { start: parsedStartDate, end: today }) ||
-            isWithinInterval(holidayEnd, { start: parsedStartDate, end: today })) {
-          const daysInRange = eachDayOfInterval({ 
-            start: holidayStart > parsedStartDate ? holidayStart : parsedStartDate,
-            end: holidayEnd < today ? holidayEnd : today 
-          });
-          holidayDays += daysInRange.length;
-        }
+        // Add 1 to include both start and end dates
+        holidayDays += differenceInDays(holidayEnd, holidayStart) + 1;
       });
     }
 
