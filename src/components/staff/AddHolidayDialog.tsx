@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { format, addDays } from "date-fns";
+import { useStaffStore } from "@/store/staffStore";
 
 interface AddHolidayDialogProps {
   open: boolean;
@@ -24,6 +25,7 @@ export const AddHolidayDialog = ({
   const [days, setDays] = useState("");
   const [reason, setReason] = useState("");
   const { toast } = useToast();
+  const { fetchStaff } = useStaffStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +49,9 @@ export const AddHolidayDialog = ({
         }) as { error: any };
 
       if (error) throw error;
+
+      // Refresh staff data after adding holiday
+      await fetchStaff();
 
       toast({
         title: "Holiday Added",
