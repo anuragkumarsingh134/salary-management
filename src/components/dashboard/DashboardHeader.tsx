@@ -17,12 +17,13 @@ const DashboardHeader = ({
   showData,
 }: DashboardHeaderProps) => {
   return (
-    <div className="flex justify-between items-center">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
       <h1 className="text-4xl font-bold">Dashboard</h1>
-      <div className="space-x-4">
+      <div className="flex items-center gap-3 flex-wrap">
         <Button
           onClick={onAddTransaction}
           className="bg-primary/90 hover:bg-primary"
+          size="sm"
         >
           <DollarSign className="mr-2 h-4 w-4" />
           Add Transaction
@@ -31,6 +32,7 @@ const DashboardHeader = ({
           <Button
             onClick={onAddStaff}
             className="bg-primary/90 hover:bg-primary"
+            size="sm"
           >
             <Plus className="mr-2 h-4 w-4" />
             Add Staff
@@ -39,7 +41,8 @@ const DashboardHeader = ({
         <Button
           onClick={onToggleShowData}
           variant={showData ? "outline" : "default"}
-          className="min-w-[140px]"
+          size="sm"
+          className="min-w-[120px]"
         >
           <Eye className="mr-2 h-4 w-4" />
           {showData ? "Hide Data" : "Show Data"}

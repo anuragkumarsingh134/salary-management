@@ -74,7 +74,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <NavBar />
       <div className="container py-8 flex-1 flex flex-col space-y-8 animate-fadeIn">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <DashboardHeader
             onAddTransaction={() => setAddTransactionOpen(true)}
             onAddStaff={() => setAddStaffOpen(true)}
@@ -85,7 +85,7 @@ const Index = () => {
             <Button
               variant="outline"
               size="sm"
-              className="ml-4"
+              className="sm:ml-4"
               onClick={handleChangeKey}
             >
               <LockKeyhole className="mr-2 h-4 w-4" />
