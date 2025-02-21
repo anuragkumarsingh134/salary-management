@@ -62,7 +62,7 @@ The development server will start on port 8081. Access the application at:
 
 1. Start the application:
 ```bash
-pm2 start npm --name "store-management" -- start
+pm2 start npm --name "store-management" -- run preview
 ```
 
 2. Other useful PM2 commands:
@@ -143,7 +143,7 @@ module.exports = {
   apps: [{
     name: "store-management",
     script: "npm",
-    args: "start",
+    args: "run preview",
     env: {
       NODE_ENV: "production",
     },
@@ -172,7 +172,7 @@ Common issues and solutions:
    - Check if the build was successful
    - Verify the correct Node.js version is being used
    - Check system logs: `pm2 logs`
-   - Ensure the "start" script exists in package.json
+   - Make sure to use `npm run preview` instead of `npm start`
 
 2. If the application crashes:
    - Check PM2 logs: `pm2 logs store-management`
