@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useStaffStore } from "@/store/staffStore";
 import { Transaction } from "@/types/staff";
 import { useToast } from "@/components/ui/use-toast";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
+import { DatePicker } from "@/components/ui/date-picker";
 
 interface EditTransactionDialogProps {
   open: boolean;
@@ -19,11 +20,11 @@ interface EditTransactionDialogProps {
 const EditTransactionDialog = ({ open, onOpenChange, transaction }: EditTransactionDialogProps) => {
   const { toast } = useToast();
   const { staff, updateTransaction } = useStaffStore();
+  const [date, setDate] = useState<Date>(new Date(transaction.date));
   const [formData, setFormData] = useState({
     staffId: transaction.staffId,
     amount: transaction.amount.toString(),
     type: transaction.type,
-    date: transaction.date,
     description: transaction.description,
   });
 
@@ -32,46 +33,49 @@ const EditTransactionDialog = ({ open, onOpenChange, transaction }: EditTransact
       staffId: transaction.staffId,
       amount: transaction.amount.toString(),
       type: transaction.type,
-      date: transaction.date,
       description: transaction.description,
     });
+    setDate(new Date(transaction.date));
   }, [transaction]);
 
-  // Filter to only show active staff members
   const activeStaff = staff.filter(member => member.active);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check if selected staff member exists and is active
     const selectedStaff = staff.find(s => s.id === formData.staffId);
     if (!selectedStaff || !selectedStaff.active) {
       toast({
         title: "Error",
-        description: "Cannot add transaction for inactive staff member.",
+        description: "Cannot update transaction for inactive staff member.",
         variant: "destructive"
       });
       return;
     }
 
-    await updateTransaction(transaction.id, {
-      staffId: formData.staffId,
-      amount: Number(formData.amount),
-      type: formData.type,
-      date: formData.date,
-      description: formData.description,
-    });
+    try {
+      await updateTransaction(transaction.id, {
+        staffId: formData.staffId,
+        amount: Number(formData.amount),
+        type: formData.type,
+        date: format(date, "yyyy-MM-dd"),
+        description: formData.description,
+      });
 
-    toast({
-      title: "Transaction updated",
-      description: "The transaction has been updated successfully.",
-    });
-    
-    onOpenChange(false);
+      toast({
+        title: "Transaction updated",
+        description: "The transaction has been updated successfully.",
+      });
+      
+      onOpenChange(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update transaction. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
-
-  // Convert ISO date to display format for the input
-  const displayDate = formData.date ? format(new Date(formData.date), "dd/MM/yyyy") : "";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -131,23 +135,8 @@ const EditTransactionDialog = ({ open, onOpenChange, transaction }: EditTransact
             </Select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="date">Date (DD/MM/YYYY)</Label>
-            <Input
-              id="date"
-              placeholder="DD/MM/YYYY"
-              value={displayDate}
-              onChange={(e) => {
-                const parts = e.target.value.split('/');
-                if (parts.length === 3) {
-                  const [day, month, year] = parts;
-                  const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-                  setFormData({ ...formData, date: isoDate });
-                } else {
-                  setFormData({ ...formData, date: e.target.value });
-                }
-              }}
-              required
-            />
+            <Label>Date</Label>
+            <DatePicker date={date} onDateChange={(newDate) => newDate && setDate(newDate)} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>

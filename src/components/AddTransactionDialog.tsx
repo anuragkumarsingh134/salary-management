@@ -8,11 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useStaffStore } from "@/store/staffStore";
 import { Transaction } from "@/types/staff";
 import { useToast } from "@/components/ui/use-toast";
-import { format, parse } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { DatePicker } from "@/components/ui/date-picker";
 
 interface AddTransactionDialogProps {
   open: boolean;
@@ -30,19 +27,11 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
     description: "",
   });
 
-  // Filter to only show active staff members
   const activeStaff = staff.filter(member => member.active);
-
-  const handleDateSelect = (newDate: Date | undefined) => {
-    if (newDate) {
-      setDate(newDate);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check if selected staff member exists and is active
     const selectedStaff = staff.find(s => s.id === formData.staffId);
     if (!selectedStaff || !selectedStaff.active) {
       toast({
@@ -53,27 +42,35 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
       return;
     }
 
-    await addTransaction({
-      staffId: formData.staffId,
-      amount: Number(formData.amount),
-      type: formData.type,
-      date: format(date, "yyyy-MM-dd"),
-      description: formData.description,
-    });
+    try {
+      await addTransaction({
+        staffId: formData.staffId,
+        amount: Number(formData.amount),
+        type: formData.type,
+        date: format(date, "yyyy-MM-dd"),
+        description: formData.description,
+      });
 
-    toast({
-      title: "Transaction added",
-      description: "The transaction has been recorded successfully.",
-    });
-    
-    onOpenChange(false);
-    setFormData({
-      staffId: "",
-      amount: "",
-      type: "salary",
-      description: "",
-    });
-    setDate(new Date());
+      toast({
+        title: "Transaction added",
+        description: "The transaction has been recorded successfully.",
+      });
+      
+      onOpenChange(false);
+      setFormData({
+        staffId: "",
+        amount: "",
+        type: "salary",
+        description: "",
+      });
+      setDate(new Date());
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add transaction. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -135,28 +132,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
           </div>
           <div className="space-y-2">
             <Label>Date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {format(date, "PPP")}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={handleDateSelect}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <DatePicker date={date} onDateChange={(newDate) => newDate && setDate(newDate)} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
