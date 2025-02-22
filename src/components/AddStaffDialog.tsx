@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useStaffStore } from "@/store/staffStore";
 import { useToast } from "@/components/ui/use-toast";
-import { format, parse } from "date-fns";
+import { format, isValid, parseISO } from "date-fns";
 
 interface AddStaffDialogProps {
   open: boolean;
@@ -59,8 +59,18 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
     }
   };
 
-  // Convert ISO date to display format for the input
-  const displayDate = formData.startDate ? format(new Date(formData.startDate), "dd/MM/yyyy") : "";
+  // Safely format the date for display
+  const getDisplayDate = () => {
+    try {
+      const date = parseISO(formData.startDate);
+      if (isValid(date)) {
+        return format(date, "dd/MM/yyyy");
+      }
+      return "";
+    } catch {
+      return "";
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -108,15 +118,13 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
             <Input
               id="startDate"
               placeholder="DD/MM/YYYY"
-              value={displayDate}
+              value={getDisplayDate()}
               onChange={(e) => {
                 const parts = e.target.value.split('/');
                 if (parts.length === 3) {
                   const [day, month, year] = parts;
                   const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
                   setFormData({ ...formData, startDate: isoDate });
-                } else {
-                  setFormData({ ...formData, startDate: e.target.value });
                 }
               }}
               required
