@@ -1,5 +1,5 @@
 
-import { differenceInDays, parseISO } from "date-fns";
+import { differenceInDays, parseISO, isValid } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Holiday {
@@ -23,6 +23,18 @@ export const calculateSalaryDetails = async (salary: number, startDate: string, 
     
     const holidaysTable = `holidays_${user.id.replace(/-/g, '_')}`;
     const parsedStartDate = parseISO(startDate);
+    
+    // Validate the parsed start date
+    if (!isValid(parsedStartDate)) {
+      console.error('Invalid start date:', startDate);
+      return {
+        daysWorked: 0,
+        dailyRate: salary / 30,
+        totalEarned: 0,
+        holidayDays: 0
+      };
+    }
+
     const today = new Date();
     const totalDays = differenceInDays(today, parsedStartDate);
     const dailyRate = salary / 30;
@@ -39,8 +51,15 @@ export const calculateSalaryDetails = async (salary: number, startDate: string, 
     let holidayDays = 0;
     if (holidays) {
       holidays.forEach(holiday => {
+        // Validate each holiday date before processing
         const holidayStart = parseISO(holiday.start_date);
         const holidayEnd = parseISO(holiday.end_date);
+        
+        if (!isValid(holidayStart) || !isValid(holidayEnd)) {
+          console.error('Invalid holiday dates:', holiday);
+          return; // Skip this holiday if dates are invalid
+        }
+
         // Add 1 to include both start and end dates
         holidayDays += differenceInDays(holidayEnd, holidayStart) + 1;
       });
