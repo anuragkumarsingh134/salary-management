@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useStaffStore } from "@/store/staffStore";
 import { useToast } from "@/components/ui/use-toast";
-import { format, isValid, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -24,12 +24,12 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
     name: "",
     position: "",
     salary: "",
-    startDate: format(new Date(), "yyyy-MM-dd"),
+    startDate: new Date(),
   });
 
   const handleDateChange = (date: Date | undefined) => {
     if (date) {
-      setFormData({ ...formData, startDate: format(date, "yyyy-MM-dd") });
+      setFormData({ ...formData, startDate: date });
     }
   };
 
@@ -40,7 +40,7 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
         name: formData.name,
         position: formData.position,
         salary: Number(formData.salary),
-        startDate: formData.startDate,
+        startDate: format(formData.startDate, "yyyy-MM-dd"),
         active: true,
       });
       toast({
@@ -52,7 +52,7 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
         name: "",
         position: "",
         salary: "",
-        startDate: format(new Date(), "yyyy-MM-dd"),
+        startDate: new Date(),
       });
     } catch (error) {
       toast({
@@ -116,17 +116,13 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {formData.startDate ? (
-                    format(parseISO(formData.startDate), "PPP")
-                  ) : (
-                    <span>Pick a date</span>
-                  )}
+                  {format(formData.startDate, "PPP")}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
-                  selected={parseISO(formData.startDate)}
+                  selected={formData.startDate}
                   onSelect={handleDateChange}
                   initialFocus
                 />
