@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,16 +20,16 @@ interface AddStaffDialogProps {
 const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
   const { toast } = useToast();
   const addStaff = useStaffStore((state) => state.addStaff);
+  const [date, setDate] = useState<Date>(new Date());
   const [formData, setFormData] = useState({
     name: "",
     position: "",
     salary: "",
-    startDate: new Date(),
   });
 
-  const handleDateChange = (date: Date | undefined) => {
-    if (date) {
-      setFormData({ ...formData, startDate: date });
+  const handleDateSelect = (newDate: Date | undefined) => {
+    if (newDate) {
+      setDate(newDate);
     }
   };
 
@@ -40,7 +40,7 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
         name: formData.name,
         position: formData.position,
         salary: Number(formData.salary),
-        startDate: format(formData.startDate, "yyyy-MM-dd"),
+        startDate: format(date, "yyyy-MM-dd"),
         active: true,
       });
       toast({
@@ -52,8 +52,8 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
         name: "",
         position: "",
         salary: "",
-        startDate: new Date(),
       });
+      setDate(new Date());
     } catch (error) {
       toast({
         title: "Error adding staff",
@@ -68,6 +68,9 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add New Staff Member</DialogTitle>
+          <DialogDescription>
+            Fill in the details below to add a new staff member.
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -105,25 +108,25 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="startDate">Start Date</Label>
+            <Label>Start Date</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant={"outline"}
                   className={cn(
                     "w-full justify-start text-left font-normal",
-                    !formData.startDate && "text-muted-foreground"
+                    !date && "text-muted-foreground"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {format(formData.startDate, "PPP")}
+                  {format(date, "PPP")}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="w-auto p-0">
                 <Calendar
                   mode="single"
-                  selected={formData.startDate}
-                  onSelect={handleDateChange}
+                  selected={date}
+                  onSelect={handleDateSelect}
                   initialFocus
                 />
               </PopoverContent>
