@@ -7,6 +7,10 @@ import { Label } from "@/components/ui/label";
 import { useStaffStore } from "@/store/staffStore";
 import { useToast } from "@/components/ui/use-toast";
 import { format, isValid, parseISO } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { CalendarIcon } from "lucide-react";
 
 interface AddStaffDialogProps {
   open: boolean;
@@ -23,10 +27,10 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
     startDate: format(new Date(), "yyyy-MM-dd"),
   });
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputDate = e.target.value;
-    // Convert the date to ISO format for storage
-    setFormData({ ...formData, startDate: inputDate });
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      setFormData({ ...formData, startDate: format(date, "yyyy-MM-dd") });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,19 +60,6 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
         description: "There was an error adding the staff member. Please try again.",
         variant: "destructive",
       });
-    }
-  };
-
-  // Safely format the date for display
-  const getDisplayDate = () => {
-    try {
-      const date = parseISO(formData.startDate);
-      if (isValid(date)) {
-        return format(date, "dd/MM/yyyy");
-      }
-      return "";
-    } catch {
-      return "";
     }
   };
 
@@ -114,21 +105,33 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="startDate">Start Date (DD/MM/YYYY)</Label>
-            <Input
-              id="startDate"
-              placeholder="DD/MM/YYYY"
-              value={getDisplayDate()}
-              onChange={(e) => {
-                const parts = e.target.value.split('/');
-                if (parts.length === 3) {
-                  const [day, month, year] = parts;
-                  const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-                  setFormData({ ...formData, startDate: isoDate });
-                }
-              }}
-              required
-            />
+            <Label htmlFor="startDate">Start Date</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !formData.startDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {formData.startDate ? (
+                    format(parseISO(formData.startDate), "PPP")
+                  ) : (
+                    <span>Pick a date</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={parseISO(formData.startDate)}
+                  onSelect={handleDateChange}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
           </div>
           <Button type="submit" className="w-full">
             Add Staff Member
