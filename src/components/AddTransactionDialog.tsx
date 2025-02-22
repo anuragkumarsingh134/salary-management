@@ -8,7 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useStaffStore } from "@/store/staffStore";
 import { Transaction } from "@/types/staff";
 import { useToast } from "@/components/ui/use-toast";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { CalendarIcon } from "lucide-react";
 
 interface AddTransactionDialogProps {
   open: boolean;
@@ -18,16 +22,22 @@ interface AddTransactionDialogProps {
 const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps) => {
   const { toast } = useToast();
   const { staff, addTransaction } = useStaffStore();
+  const [date, setDate] = useState<Date>(new Date());
   const [formData, setFormData] = useState({
     staffId: "",
     amount: "",
     type: "salary" as Transaction['type'],
-    date: format(new Date(), "yyyy-MM-dd"),
     description: "",
   });
 
   // Filter to only show active staff members
   const activeStaff = staff.filter(member => member.active);
+
+  const handleDateSelect = (newDate: Date | undefined) => {
+    if (newDate) {
+      setDate(newDate);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +57,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
       staffId: formData.staffId,
       amount: Number(formData.amount),
       type: formData.type,
-      date: formData.date,
+      date: format(date, "yyyy-MM-dd"),
       description: formData.description,
     });
 
@@ -61,13 +71,10 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
       staffId: "",
       amount: "",
       type: "salary",
-      date: format(new Date(), "yyyy-MM-dd"),
       description: "",
     });
+    setDate(new Date());
   };
-
-  // Convert ISO date to display format for the input
-  const displayDate = formData.date ? format(new Date(formData.date), "dd/MM/yyyy") : "";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -127,23 +134,29 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
             </Select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="date">Date (DD/MM/YYYY)</Label>
-            <Input
-              id="date"
-              placeholder="DD/MM/YYYY"
-              value={displayDate}
-              onChange={(e) => {
-                const parts = e.target.value.split('/');
-                if (parts.length === 3) {
-                  const [day, month, year] = parts;
-                  const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-                  setFormData({ ...formData, date: isoDate });
-                } else {
-                  setFormData({ ...formData, date: e.target.value });
-                }
-              }}
-              required
-            />
+            <Label>Date</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {format(date, "PPP")}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={handleDateSelect}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
