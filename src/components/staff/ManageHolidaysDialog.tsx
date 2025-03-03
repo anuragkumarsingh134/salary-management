@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { useStaffStore } from "@/store/staffStore";
 import { HolidayList } from "./HolidayList";
 import { EditHolidayForm } from "./EditHolidayForm";
@@ -105,15 +105,14 @@ export const ManageHolidaysDialog = ({
       if (!user) throw new Error("Not authenticated");
       
       const holidaysTable = `holidays_${user.id.replace(/-/g, '_')}`;
-      const startDate = new Date();
+      const startDate = parseISO(editingHoliday.start_date);
       const endDate = new Date(startDate);
-      endDate.setDate(endDate.getDate() + parseInt(days) - 1);
+      endDate.setDate(startDate.getDate() + parseInt(days) - 1);
 
       const { error } = await supabase
         .from(holidaysTable as any)
         .update({
           reason,
-          start_date: format(startDate, "yyyy-MM-dd"),
           end_date: format(endDate, "yyyy-MM-dd"),
         })
         .eq('id', editingHoliday.id);
@@ -139,7 +138,10 @@ export const ManageHolidaysDialog = ({
   };
 
   const startEdit = (holiday: Holiday) => {
-    const daysDiff = new Date(holiday.end_date).getDate() - new Date(holiday.start_date).getDate() + 1;
+    const startDate = parseISO(holiday.start_date);
+    const endDate = parseISO(holiday.end_date);
+    const daysDiff = Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    
     setDays(daysDiff.toString());
     setReason(holiday.reason);
     setEditingHoliday(holiday);

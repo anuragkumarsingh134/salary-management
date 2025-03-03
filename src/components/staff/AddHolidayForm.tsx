@@ -1,5 +1,4 @@
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,20 +24,13 @@ export const AddHolidayForm = ({
   onDateChange,
   onSubmit,
 }: AddHolidayFormProps) => {
-  const handleDateChange = (newDate: Date | undefined) => {
-    if (newDate) {
-      console.log("Holiday start date changed:", newDate);
-      onDateChange(newDate);
-    }
-  };
-
   return (
     <form onSubmit={onSubmit} className="grid gap-4 py-4">
       <div className="space-y-2">
         <Label>Start Date</Label>
         <DatePicker 
           date={startDate} 
-          onDateChange={handleDateChange} 
+          onDateChange={onDateChange} 
         />
       </div>
       <div className="space-y-2">
