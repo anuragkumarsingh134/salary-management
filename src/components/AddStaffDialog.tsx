@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -5,8 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useStaffStore } from "@/store/staffStore";
 import { useToast } from "@/components/ui/use-toast";
-import { format } from "date-fns";
-import { DatePicker } from "@/components/ui/date-picker";
+import { format, parse, isValid } from "date-fns";
 
 interface AddStaffDialogProps {
   open: boolean;
@@ -16,28 +16,59 @@ interface AddStaffDialogProps {
 const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
   const { toast } = useToast();
   const addStaff = useStaffStore((state) => state.addStaff);
-  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [dateValue, setDateValue] = useState(format(new Date(), "dd-MM-yyyy"));
   const [formData, setFormData] = useState({
     name: "",
     position: "",
     salary: "",
   });
 
-  const handleDateSelect = (date: Date | undefined) => {
-    if (date) {
-      console.log("New date selected in AddStaffDialog:", date);
-      setStartDate(date);
-    }
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setDateValue(value);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Try to parse the date before submitting
+    let startDate;
+    try {
+      if (/^\d{2}-\d{2}-\d{4}$/.test(dateValue)) {
+        const parsedDate = parse(dateValue, "dd-MM-yyyy", new Date());
+        if (isValid(parsedDate)) {
+          startDate = format(parsedDate, "yyyy-MM-dd");
+        } else {
+          toast({
+            title: "Invalid date",
+            description: "Please enter a valid date in the format DD-MM-YYYY",
+            variant: "destructive",
+          });
+          return;
+        }
+      } else {
+        toast({
+          title: "Invalid date format",
+          description: "Please enter the date in the format DD-MM-YYYY",
+          variant: "destructive",
+        });
+        return;
+      }
+    } catch (error) {
+      toast({
+        title: "Error parsing date",
+        description: "Please enter a valid date in the format DD-MM-YYYY",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       await addStaff({
         name: formData.name,
         position: formData.position,
         salary: Number(formData.salary),
-        startDate: format(startDate, "yyyy-MM-dd"),
+        startDate,
         active: true,
       });
       toast({
@@ -50,7 +81,7 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
         position: "",
         salary: "",
       });
-      setStartDate(new Date());
+      setDateValue(format(new Date(), "dd-MM-yyyy"));
     } catch (error) {
       toast({
         title: "Error adding staff",
@@ -106,9 +137,10 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
           </div>
           <div className="space-y-2">
             <Label>Start Date</Label>
-            <DatePicker 
-              date={startDate} 
-              onDateChange={handleDateSelect} 
+            <Input 
+              value={dateValue} 
+              onChange={handleDateChange} 
+              placeholder="DD-MM-YYYY"
             />
           </div>
           <Button type="submit" className="w-full">

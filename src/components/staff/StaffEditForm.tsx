@@ -1,9 +1,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DatePicker } from "@/components/ui/date-picker";
 import { StaffMember } from "@/types/staff";
-import { parseISO, format } from "date-fns";
+import { format, isValid, parse } from "date-fns";
 import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 
@@ -18,27 +17,40 @@ export const StaffEditForm = ({
   onEditFormChange,
   onSave,
 }: StaffEditFormProps) => {
-  const [startDate, setStartDate] = useState<Date | undefined>(
-    editForm.startDate ? parseISO(editForm.startDate) : undefined
+  const [dateInputValue, setDateInputValue] = useState<string>(
+    editForm.startDate ? format(new Date(editForm.startDate), "dd-MM-yyyy") : ""
   );
 
   useEffect(() => {
     // Update local date state when editForm prop changes
     if (editForm.startDate) {
       try {
-        const parsedDate = parseISO(editForm.startDate);
-        setStartDate(parsedDate);
+        const parsedDate = new Date(editForm.startDate);
+        if (isValid(parsedDate)) {
+          setDateInputValue(format(parsedDate, "dd-MM-yyyy"));
+        }
       } catch (error) {
         console.error('Error parsing staff start date:', error);
       }
     }
   }, [editForm.startDate]);
 
-  const handleDateChange = (date: Date | undefined) => {
-    console.log("Staff start date changed:", date);
-    setStartDate(date);
-    if (date) {
-      onEditFormChange({ startDate: format(date, 'yyyy-MM-dd') });
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setDateInputValue(value);
+    
+    // Try to parse the input as a date
+    if (value && /^\d{2}-\d{2}-\d{4}$/.test(value)) {
+      try {
+        const parsedDate = parse(value, "dd-MM-yyyy", new Date());
+        if (isValid(parsedDate)) {
+          onEditFormChange({ startDate: format(parsedDate, 'yyyy-MM-dd') });
+        }
+      } catch (error) {
+        console.error("Error parsing date:", error);
+      }
+    } else if (!value) {
+      onEditFormChange({ startDate: undefined });
     }
   };
 
@@ -75,9 +87,11 @@ export const StaffEditForm = ({
         </div>
         <div className="space-y-2">
           <Label htmlFor="startDate">Start Date</Label>
-          <DatePicker 
-            date={startDate} 
-            onDateChange={handleDateChange} 
+          <Input
+            id="startDate"
+            value={dateInputValue}
+            onChange={handleDateChange}
+            placeholder="DD-MM-YYYY"
           />
         </div>
       </div>

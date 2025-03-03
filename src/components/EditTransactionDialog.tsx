@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -7,8 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useStaffStore } from "@/store/staffStore";
 import { Transaction } from "@/types/staff";
 import { useToast } from "@/components/ui/use-toast";
-import { format, parseISO } from "date-fns";
-import { DatePicker } from "@/components/ui/date-picker";
+import { format, parse, isValid } from "date-fns";
 
 interface EditTransactionDialogProps {
   open: boolean;
@@ -19,9 +19,7 @@ interface EditTransactionDialogProps {
 const EditTransactionDialog = ({ open, onOpenChange, transaction }: EditTransactionDialogProps) => {
   const { toast } = useToast();
   const { staff, updateTransaction } = useStaffStore();
-  const [transactionDate, setTransactionDate] = useState<Date>(
-    parseISO(transaction.date)
-  );
+  const [dateValue, setDateValue] = useState(transaction.date);
   const [formData, setFormData] = useState({
     staffId: transaction.staffId,
     amount: transaction.amount.toString(),
@@ -38,23 +36,14 @@ const EditTransactionDialog = ({ open, onOpenChange, transaction }: EditTransact
       description: transaction.description,
     });
     
-    // Ensure we're working with valid date objects
-    try {
-      const date = parseISO(transaction.date);
-      setTransactionDate(date);
-    } catch (error) {
-      console.error('Error parsing transaction date:', error);
-      setTransactionDate(new Date());
-    }
+    setDateValue(transaction.date);
   }, [transaction]);
 
   const activeStaff = staff.filter(member => member.active);
 
-  const handleDateChange = (date: Date | undefined) => {
-    if (date) {
-      console.log("Edit transaction date changed:", date);
-      setTransactionDate(date);
-    }
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setDateValue(value);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -70,12 +59,44 @@ const EditTransactionDialog = ({ open, onOpenChange, transaction }: EditTransact
       return;
     }
 
+    // Try to parse the date before submitting
+    let transactionDate;
+    try {
+      if (/^\d{2}-\d{2}-\d{4}$/.test(dateValue)) {
+        const parsedDate = parse(dateValue, "dd-MM-yyyy", new Date());
+        if (isValid(parsedDate)) {
+          transactionDate = format(parsedDate, "yyyy-MM-dd");
+        } else {
+          toast({
+            title: "Invalid date",
+            description: "Please enter a valid date in the format DD-MM-YYYY",
+            variant: "destructive",
+          });
+          return;
+        }
+      } else {
+        toast({
+          title: "Invalid date format",
+          description: "Please enter the date in the format DD-MM-YYYY",
+          variant: "destructive",
+        });
+        return;
+      }
+    } catch (error) {
+      toast({
+        title: "Error parsing date",
+        description: "Please enter a valid date in the format DD-MM-YYYY",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       await updateTransaction(transaction.id, {
         staffId: formData.staffId,
         amount: Number(formData.amount),
         type: formData.type,
-        date: format(transactionDate, "yyyy-MM-dd"),
+        date: dateValue, // Use the original format for storage
         description: formData.description,
       });
 
@@ -153,9 +174,10 @@ const EditTransactionDialog = ({ open, onOpenChange, transaction }: EditTransact
           </div>
           <div className="space-y-2">
             <Label>Date</Label>
-            <DatePicker 
-              date={transactionDate} 
-              onDateChange={handleDateChange} 
+            <Input 
+              value={dateValue} 
+              onChange={handleDateChange} 
+              placeholder="DD-MM-YYYY"
             />
           </div>
           <div className="space-y-2">

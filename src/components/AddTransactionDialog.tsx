@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -7,8 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useStaffStore } from "@/store/staffStore";
 import { Transaction } from "@/types/staff";
 import { useToast } from "@/components/ui/use-toast";
-import { format } from "date-fns";
-import { DatePicker } from "@/components/ui/date-picker";
+import { format, parse, isValid } from "date-fns";
 
 interface AddTransactionDialogProps {
   open: boolean;
@@ -18,7 +18,7 @@ interface AddTransactionDialogProps {
 const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps) => {
   const { toast } = useToast();
   const { staff, addTransaction } = useStaffStore();
-  const [transactionDate, setTransactionDate] = useState<Date>(new Date());
+  const [dateValue, setDateValue] = useState(format(new Date(), "dd-MM-yyyy"));
   const [formData, setFormData] = useState({
     staffId: "",
     amount: "",
@@ -28,11 +28,9 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
 
   const activeStaff = staff.filter(member => member.active);
 
-  const handleDateChange = (date: Date | undefined) => {
-    if (date) {
-      console.log("New transaction date selected:", date);
-      setTransactionDate(date);
-    }
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setDateValue(value);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -48,12 +46,44 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
       return;
     }
 
+    // Try to parse the date before submitting
+    let transactionDate;
+    try {
+      if (/^\d{2}-\d{2}-\d{4}$/.test(dateValue)) {
+        const parsedDate = parse(dateValue, "dd-MM-yyyy", new Date());
+        if (isValid(parsedDate)) {
+          transactionDate = format(parsedDate, "dd-MM-yyyy");
+        } else {
+          toast({
+            title: "Invalid date",
+            description: "Please enter a valid date in the format DD-MM-YYYY",
+            variant: "destructive",
+          });
+          return;
+        }
+      } else {
+        toast({
+          title: "Invalid date format",
+          description: "Please enter the date in the format DD-MM-YYYY",
+          variant: "destructive",
+        });
+        return;
+      }
+    } catch (error) {
+      toast({
+        title: "Error parsing date",
+        description: "Please enter a valid date in the format DD-MM-YYYY",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       await addTransaction({
         staffId: formData.staffId,
         amount: Number(formData.amount),
         type: formData.type,
-        date: format(transactionDate, "dd-MM-yyyy"),
+        date: transactionDate,
         description: formData.description,
       });
 
@@ -69,7 +99,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
         type: "salary",
         description: "",
       });
-      setTransactionDate(new Date());
+      setDateValue(format(new Date(), "dd-MM-yyyy"));
     } catch (error) {
       toast({
         title: "Error",
@@ -138,9 +168,10 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
           </div>
           <div className="space-y-2">
             <Label>Date</Label>
-            <DatePicker 
-              date={transactionDate} 
-              onDateChange={handleDateChange} 
+            <Input 
+              value={dateValue} 
+              onChange={handleDateChange} 
+              placeholder="DD-MM-YYYY"
             />
           </div>
           <div className="space-y-2">

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { DatePicker } from "@/components/ui/date-picker";
+import { format, parse, isValid } from "date-fns";
 
 interface AddHolidayFormProps {
   days: string;
@@ -24,13 +24,32 @@ export const AddHolidayForm = ({
   onDateChange,
   onSubmit,
 }: AddHolidayFormProps) => {
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    
+    // Try to parse the input as a date
+    if (value && /^\d{2}-\d{2}-\d{4}$/.test(value)) {
+      try {
+        const parsedDate = parse(value, "dd-MM-yyyy", new Date());
+        if (isValid(parsedDate)) {
+          onDateChange(parsedDate);
+        }
+      } catch (error) {
+        console.error("Error parsing date:", error);
+      }
+    } else if (!value) {
+      onDateChange(undefined);
+    }
+  };
+
   return (
     <form onSubmit={onSubmit} className="grid gap-4 py-4">
       <div className="space-y-2">
         <Label>Start Date</Label>
-        <DatePicker 
-          date={startDate} 
-          onDateChange={onDateChange} 
+        <Input
+          value={format(startDate, "dd-MM-yyyy")}
+          onChange={handleDateChange}
+          placeholder="DD-MM-YYYY"
         />
       </div>
       <div className="space-y-2">
