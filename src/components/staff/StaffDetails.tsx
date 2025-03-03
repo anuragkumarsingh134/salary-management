@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
@@ -8,6 +7,7 @@ import { StaffEditForm } from "./StaffEditForm";
 import { StaffInfo } from "./StaffInfo";
 import { Dialog } from "@/components/ui/dialog";
 import TransactionList from "@/components/TransactionList";
+import { format } from "date-fns";
 
 interface StaffDetailsProps {
   staff: StaffMember;
