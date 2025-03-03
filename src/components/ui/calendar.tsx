@@ -52,17 +52,6 @@ function Calendar({
         day_hidden: "invisible",
         ...classNames,
       }}
-      formatters={{
-        formatWeekdayName: (weekday) => {
-          return weekday.toLocaleString('en-US', { weekday: 'short' });
-        },
-        formatDay: (date) => {
-          return date.getDate().toString();
-        },
-        formatCaption: (date, options) => {
-          return date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
-        },
-      }}
       components={{
         IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
         IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
