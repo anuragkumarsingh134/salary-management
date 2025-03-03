@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Plus, DollarSign, Eye } from "lucide-react";
+import { Plus, DollarSign, Eye, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface DashboardHeaderProps {
@@ -8,6 +8,7 @@ interface DashboardHeaderProps {
   onAddStaff: () => void;
   onToggleShowData: () => void;
   showData: boolean;
+  onChangeKey?: () => void;
 }
 
 const DashboardHeader = ({
@@ -15,6 +16,7 @@ const DashboardHeader = ({
   onAddStaff,
   onToggleShowData,
   showData,
+  onChangeKey,
 }: DashboardHeaderProps) => {
   return (
     <div className="flex justify-between items-center">
@@ -44,6 +46,16 @@ const DashboardHeader = ({
           <Eye className="mr-2 h-4 w-4" />
           {showData ? "Hide Data" : "Show Data"}
         </Button>
+        {showData && onChangeKey && (
+          <Button
+            onClick={onChangeKey}
+            variant="outline"
+            className="min-w-[140px]"
+          >
+            <KeyRound className="mr-2 h-4 w-4" />
+            Change Key
+          </Button>
+        )}
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -121,6 +120,16 @@ export const usePasswordProtection = () => {
     }
   };
 
+  const handleChangeKey = () => {
+    setPassword(""); // Clear any existing password
+    setPasswordDialogOpen(true);
+    
+    toast({
+      title: "Change Key",
+      description: "Enter your new key to update your access credentials.",
+    });
+  };
+
   const handleForgotPassword = async () => {
     try {
       const userEmail = (await supabase.auth.getUser()).data.user?.email;
@@ -164,5 +173,6 @@ export const usePasswordProtection = () => {
     handlePasswordSubmit,
     handleShowDataClick,
     handleForgotPassword,
+    handleChangeKey,
   };
 };

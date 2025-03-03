@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useStaffStore } from "@/store/staffStore";
 import { NavBar } from "@/components/NavBar";
@@ -26,6 +25,7 @@ const Index = () => {
     handlePasswordSubmit,
     handleShowDataClick,
     handleForgotPassword,
+    handleChangeKey,
   } = usePasswordProtection();
 
   const { 
@@ -73,6 +73,7 @@ const Index = () => {
           onAddStaff={() => setAddStaffOpen(true)}
           onToggleShowData={handleShowDataClick}
           showData={showData}
+          onChangeKey={handleChangeKey}
         />
 
         {showData && (
