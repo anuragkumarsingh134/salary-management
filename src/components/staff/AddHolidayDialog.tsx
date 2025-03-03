@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { format, addDays } from "date-fns";
 import { useStaffStore } from "@/store/staffStore";
 import { DatePicker } from "@/components/ui/date-picker";
+import { Label } from "@/components/ui/label";
 
 interface AddHolidayDialogProps {
   open: boolean;
