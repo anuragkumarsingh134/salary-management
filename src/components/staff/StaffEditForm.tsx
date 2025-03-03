@@ -33,6 +33,8 @@ export const StaffEditForm = ({
     setStartDate(date);
     if (date) {
       onEditFormChange({ startDate: format(date, 'yyyy-MM-dd') });
+    } else {
+      onEditFormChange({ startDate: undefined });
     }
   };
 

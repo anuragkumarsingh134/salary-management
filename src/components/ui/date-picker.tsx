@@ -19,6 +19,7 @@ interface DatePickerProps {
 
 export function DatePicker({ date, onDateChange, placeholder = "Select date" }: DatePickerProps) {
   // Use a local state to ensure the calendar selection works properly
+  const [open, setOpen] = React.useState(false);
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(date);
 
   // Update local state when prop changes
@@ -31,10 +32,11 @@ export function DatePicker({ date, onDateChange, placeholder = "Select date" }: 
     console.log("Calendar date selected:", newDate);
     setSelectedDate(newDate);
     onDateChange(newDate);
+    setOpen(false); // Close the popover after selection
   };
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant={"outline"}
