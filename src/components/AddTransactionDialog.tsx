@@ -132,7 +132,14 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
           </div>
           <div className="space-y-2">
             <Label>Date</Label>
-            <DatePicker date={date} onDateChange={(newDate) => newDate && setDate(newDate)} />
+            <DatePicker 
+              date={date} 
+              onDateChange={(newDate) => {
+                if (newDate) {
+                  setDate(newDate);
+                }
+              }} 
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>

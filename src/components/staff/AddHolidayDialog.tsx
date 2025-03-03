@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { format, addDays } from "date-fns";
 import { useStaffStore } from "@/store/staffStore";
+import { DatePicker } from "@/components/ui/date-picker";
 
 interface AddHolidayDialogProps {
   open: boolean;
@@ -24,6 +25,7 @@ export const AddHolidayDialog = ({
 }: AddHolidayDialogProps) => {
   const [days, setDays] = useState("");
   const [reason, setReason] = useState("");
+  const [startDate, setStartDate] = useState<Date>(new Date());
   const { toast } = useToast();
   const { fetchStaff } = useStaffStore();
 
@@ -35,7 +37,6 @@ export const AddHolidayDialog = ({
       if (!user) throw new Error("Not authenticated");
       
       const holidaysTable = `holidays_${user.id.replace(/-/g, '_')}`;
-      const startDate = new Date();
       const endDate = addDays(startDate, parseInt(days) - 1);
 
       const { error } = await supabase
@@ -61,6 +62,7 @@ export const AddHolidayDialog = ({
       onOpenChange(false);
       setDays("");
       setReason("");
+      setStartDate(new Date());
     } catch (error: any) {
       console.error('Error adding holiday:', error);
       toast({
@@ -79,6 +81,18 @@ export const AddHolidayDialog = ({
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4 py-4">
           <div className="space-y-2">
+            <Label>Start Date</Label>
+            <DatePicker 
+              date={startDate} 
+              onDateChange={(newDate) => {
+                if (newDate) {
+                  setStartDate(newDate);
+                }
+              }} 
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Number of Days</Label>
             <Input
               type="number"
               placeholder="Number of days"
