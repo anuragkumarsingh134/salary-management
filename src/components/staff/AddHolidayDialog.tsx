@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { format, addDays } from "date-fns";
+import { format, addDays, parse, isValid } from "date-fns";
 import { useStaffStore } from "@/store/staffStore";
 import { AddHolidayForm } from "./AddHolidayForm";
 
@@ -22,8 +22,16 @@ export const AddHolidayDialog = ({
 }: AddHolidayDialogProps) => {
   const [days, setDays] = useState("");
   const [reason, setReason] = useState("");
+  const [startDate, setStartDate] = useState<Date>(new Date());
   const { toast } = useToast();
   const { fetchStaff } = useStaffStore();
+
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      console.log("Holiday start date selected:", date);
+      setStartDate(date);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +41,6 @@ export const AddHolidayDialog = ({
       if (!user) throw new Error("Not authenticated");
       
       const holidaysTable = `holidays_${user.id.replace(/-/g, '_')}`;
-      const startDate = new Date(); // Use current date as start date
       const endDate = addDays(startDate, parseInt(days) - 1);
 
       const { error } = await supabase
@@ -43,11 +50,12 @@ export const AddHolidayDialog = ({
           start_date: format(startDate, "yyyy-MM-dd"),
           end_date: format(endDate, "yyyy-MM-dd"),
           reason,
-          status: 'approved'
+          status: 'approved' // Automatically approve holidays
         }) as { error: any };
 
       if (error) throw error;
 
+      // Refresh staff data after adding holiday
       await fetchStaff();
 
       toast({
@@ -70,6 +78,7 @@ export const AddHolidayDialog = ({
   const resetForm = () => {
     setDays("");
     setReason("");
+    setStartDate(new Date());
   };
 
   return (
@@ -81,8 +90,10 @@ export const AddHolidayDialog = ({
         <AddHolidayForm
           days={days}
           reason={reason}
+          startDate={startDate}
           onDaysChange={setDays}
           onReasonChange={setReason}
+          onDateChange={handleDateChange}
           onSubmit={handleSubmit}
         />
       </DialogContent>
