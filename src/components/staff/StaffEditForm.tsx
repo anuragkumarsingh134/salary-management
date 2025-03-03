@@ -29,6 +29,7 @@ export const StaffEditForm = ({
   }, [editForm.startDate]);
 
   const handleDateChange = (date: Date | undefined) => {
+    console.log("Staff start date changed:", date);
     setStartDate(date);
     if (date) {
       onEditFormChange({ startDate: format(date, 'yyyy-MM-dd') });
@@ -68,7 +69,10 @@ export const StaffEditForm = ({
         </div>
         <div className="space-y-2">
           <Label htmlFor="startDate">Start Date</Label>
-          <DatePicker date={startDate} onDateChange={handleDateChange} />
+          <DatePicker 
+            date={startDate} 
+            onDateChange={handleDateChange} 
+          />
         </div>
       </div>
       <Button onClick={onSave} className="w-full mt-4">Save Changes</Button>

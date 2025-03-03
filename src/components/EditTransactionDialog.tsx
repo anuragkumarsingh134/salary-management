@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useStaffStore } from "@/store/staffStore";
 import { Transaction } from "@/types/staff";
 import { useToast } from "@/components/ui/use-toast";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { DatePicker } from "@/components/ui/date-picker";
 
 interface EditTransactionDialogProps {
@@ -20,7 +19,7 @@ interface EditTransactionDialogProps {
 const EditTransactionDialog = ({ open, onOpenChange, transaction }: EditTransactionDialogProps) => {
   const { toast } = useToast();
   const { staff, updateTransaction } = useStaffStore();
-  const [date, setDate] = useState<Date>(new Date(transaction.date));
+  const [transactionDate, setTransactionDate] = useState<Date>(new Date(transaction.date));
   const [formData, setFormData] = useState({
     staffId: transaction.staffId,
     amount: transaction.amount.toString(),
@@ -35,10 +34,17 @@ const EditTransactionDialog = ({ open, onOpenChange, transaction }: EditTransact
       type: transaction.type,
       description: transaction.description,
     });
-    setDate(new Date(transaction.date));
+    setTransactionDate(new Date(transaction.date));
   }, [transaction]);
 
   const activeStaff = staff.filter(member => member.active);
+
+  const handleDateChange = (newDate: Date | undefined) => {
+    if (newDate) {
+      console.log("Edit transaction date changed:", newDate);
+      setTransactionDate(newDate);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,7 +64,7 @@ const EditTransactionDialog = ({ open, onOpenChange, transaction }: EditTransact
         staffId: formData.staffId,
         amount: Number(formData.amount),
         type: formData.type,
-        date: format(date, "yyyy-MM-dd"),
+        date: format(transactionDate, "yyyy-MM-dd"),
         description: formData.description,
       });
 
@@ -137,12 +143,8 @@ const EditTransactionDialog = ({ open, onOpenChange, transaction }: EditTransact
           <div className="space-y-2">
             <Label>Date</Label>
             <DatePicker 
-              date={date} 
-              onDateChange={(newDate) => {
-                if (newDate) {
-                  setDate(newDate);
-                }
-              }} 
+              date={transactionDate} 
+              onDateChange={handleDateChange} 
             />
           </div>
           <div className="space-y-2">

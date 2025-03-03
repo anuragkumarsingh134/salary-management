@@ -29,14 +29,17 @@ export function DatePicker({ date, onDateChange, placeholder = "Select date" }: 
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "MM-dd-yyyy") : placeholder}
+          {date ? format(date, "yyyy-MM-dd") : placeholder}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
         <Calendar
           mode="single"
           selected={date}
-          onSelect={onDateChange}
+          onSelect={(selectedDate) => {
+            console.log("Date selected:", selectedDate);
+            onDateChange(selectedDate);
+          }}
           initialFocus
         />
       </PopoverContent>

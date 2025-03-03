@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -19,7 +18,7 @@ interface AddTransactionDialogProps {
 const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps) => {
   const { toast } = useToast();
   const { staff, addTransaction } = useStaffStore();
-  const [date, setDate] = useState<Date>(new Date());
+  const [transactionDate, setTransactionDate] = useState<Date>(new Date());
   const [formData, setFormData] = useState({
     staffId: "",
     amount: "",
@@ -28,6 +27,13 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
   });
 
   const activeStaff = staff.filter(member => member.active);
+
+  const handleDateChange = (newDate: Date | undefined) => {
+    if (newDate) {
+      console.log("New transaction date selected:", newDate);
+      setTransactionDate(newDate);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +53,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
         staffId: formData.staffId,
         amount: Number(formData.amount),
         type: formData.type,
-        date: format(date, "yyyy-MM-dd"),
+        date: format(transactionDate, "yyyy-MM-dd"),
         description: formData.description,
       });
 
@@ -63,7 +69,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
         type: "salary",
         description: "",
       });
-      setDate(new Date());
+      setTransactionDate(new Date());
     } catch (error) {
       toast({
         title: "Error",
@@ -133,12 +139,8 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
           <div className="space-y-2">
             <Label>Date</Label>
             <DatePicker 
-              date={date} 
-              onDateChange={(newDate) => {
-                if (newDate) {
-                  setDate(newDate);
-                }
-              }} 
+              date={transactionDate} 
+              onDateChange={handleDateChange} 
             />
           </div>
           <div className="space-y-2">

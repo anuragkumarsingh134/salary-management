@@ -30,6 +30,13 @@ export const AddHolidayDialog = ({
   const { toast } = useToast();
   const { fetchStaff } = useStaffStore();
 
+  const handleDateChange = (newDate: Date | undefined) => {
+    if (newDate) {
+      console.log("Holiday start date changed:", newDate);
+      setStartDate(newDate);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -85,11 +92,7 @@ export const AddHolidayDialog = ({
             <Label>Start Date</Label>
             <DatePicker 
               date={startDate} 
-              onDateChange={(newDate) => {
-                if (newDate) {
-                  setStartDate(newDate);
-                }
-              }} 
+              onDateChange={handleDateChange} 
             />
           </div>
           <div className="space-y-2">

@@ -17,7 +17,7 @@ interface AddStaffDialogProps {
 const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
   const { toast } = useToast();
   const addStaff = useStaffStore((state) => state.addStaff);
-  const [date, setDate] = useState<Date>(new Date());
+  const [startDate, setStartDate] = useState<Date>(new Date());
   const [formData, setFormData] = useState({
     name: "",
     position: "",
@@ -26,7 +26,8 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
 
   const handleDateSelect = (newDate: Date | undefined) => {
     if (newDate) {
-      setDate(newDate);
+      console.log("New date selected in AddStaffDialog:", newDate);
+      setStartDate(newDate);
     }
   };
 
@@ -37,7 +38,7 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
         name: formData.name,
         position: formData.position,
         salary: Number(formData.salary),
-        startDate: format(date, "yyyy-MM-dd"),
+        startDate: format(startDate, "yyyy-MM-dd"),
         active: true,
       });
       toast({
@@ -50,7 +51,7 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
         position: "",
         salary: "",
       });
-      setDate(new Date());
+      setStartDate(new Date());
     } catch (error) {
       toast({
         title: "Error adding staff",
@@ -106,7 +107,10 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
           </div>
           <div className="space-y-2">
             <Label>Start Date</Label>
-            <DatePicker date={date} onDateChange={handleDateSelect} />
+            <DatePicker 
+              date={startDate} 
+              onDateChange={handleDateSelect} 
+            />
           </div>
           <Button type="submit" className="w-full">
             Add Staff Member
