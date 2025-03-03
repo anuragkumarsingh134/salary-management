@@ -46,6 +46,7 @@ const StaffList = ({ onStaffSelect }: StaffListProps) => {
       <StaffDetails
         staff={selectedStaffMember}
         totalTransactions={totalTransactions}
+        staffTransactions={staffTransactions}
         onClose={() => handleStaffSelect(null)}
         onUpdate={updateStaff}
         onDelete={deleteStaff}
@@ -58,21 +59,21 @@ const StaffList = ({ onStaffSelect }: StaffListProps) => {
   const currentStaff = showInactive ? inactiveStaff : activeStaff;
 
   return (
-    <Card className="p-6 glassmorphism">
+    <Card className="p-6">
       <div className="space-y-4">
         <div className="flex items-center space-x-2">
           <Switch
             id="staff-toggle"
             checked={showInactive}
             onCheckedChange={setShowInactive}
-            className="data-[state=checked]:bg-[#ea384c] data-[state=unchecked]:bg-[#00FF00]"
+            className="data-[state=checked]:bg-red-500 data-[state=unchecked]:bg-green-500"
           />
-          <Label htmlFor="staff-toggle">
+          <Label htmlFor="staff-toggle" className="font-semibold">
             {showInactive ? "Inactive Staff" : "Active Staff"}
           </Label>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 mt-4">
           {currentStaff.map((member) => (
             <StaffCard
               key={member.id}

@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Plus, DollarSign, Eye, KeyRound } from "lucide-react";
+import { DollarSign, Plus, Eye, EyeOff, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface DashboardHeaderProps {
@@ -19,12 +19,13 @@ const DashboardHeader = ({
   onChangeKey,
 }: DashboardHeaderProps) => {
   return (
-    <div className="flex justify-between items-center">
-      <h1 className="text-4xl font-bold">Dashboard</h1>
-      <div className="space-x-4">
+    <div className="flex justify-between items-center py-4">
+      <h1 className="text-3xl font-bold">Dashboard</h1>
+      <div className="flex space-x-2">
         <Button
           onClick={onAddTransaction}
-          className="bg-primary/90 hover:bg-primary"
+          variant="default"
+          className="bg-gray-800 hover:bg-gray-700"
         >
           <DollarSign className="mr-2 h-4 w-4" />
           Add Transaction
@@ -32,7 +33,8 @@ const DashboardHeader = ({
         {showData && (
           <Button
             onClick={onAddStaff}
-            className="bg-primary/90 hover:bg-primary"
+            variant="default"
+            className="bg-gray-800 hover:bg-gray-700"
           >
             <Plus className="mr-2 h-4 w-4" />
             Add Staff
@@ -40,17 +42,26 @@ const DashboardHeader = ({
         )}
         <Button
           onClick={onToggleShowData}
-          variant={showData ? "outline" : "default"}
-          className="min-w-[140px]"
+          variant="outline"
+          className="border-gray-300"
         >
-          <Eye className="mr-2 h-4 w-4" />
-          {showData ? "Hide Data" : "Show Data"}
+          {showData ? (
+            <>
+              <EyeOff className="mr-2 h-4 w-4" />
+              Hide Data
+            </>
+          ) : (
+            <>
+              <Eye className="mr-2 h-4 w-4" />
+              Show Data
+            </>
+          )}
         </Button>
         {showData && onChangeKey && (
           <Button
             onClick={onChangeKey}
             variant="outline"
-            className="min-w-[140px]"
+            className="border-gray-300"
           >
             <KeyRound className="mr-2 h-4 w-4" />
             Change Key

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useStaffStore } from "@/store/staffStore";
 import { NavBar } from "@/components/NavBar";
@@ -8,13 +9,13 @@ import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import LoadingSkeleton from "@/components/dashboard/LoadingSkeleton";
 import { usePasswordProtection } from "@/hooks/usePasswordProtection";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { ExternalLink } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [addStaffOpen, setAddStaffOpen] = useState(false);
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
   
   const { 
     showData,
@@ -65,16 +66,14 @@ const Index = () => {
     return <LoadingSkeleton />;
   }
 
-  // This function is for the DashboardHeader component
   const handleAddTransaction = () => {
-    // Navigate to transactions page where a user can add a transaction
-    window.location.href = "/transactions";
+    navigate("/transactions");
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <NavBar />
-      <div className="container py-8 flex-1 flex flex-col space-y-8 animate-fadeIn">
+      <div className="container py-6 flex-1 flex flex-col space-y-6 animate-fadeIn">
         <DashboardHeader
           onAddStaff={() => setAddStaffOpen(true)}
           onToggleShowData={handleShowDataClick}
@@ -84,17 +83,7 @@ const Index = () => {
         />
 
         {showData && (
-          <>
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-semibold">Staff Members</h2>
-              <Button asChild variant="outline">
-                <Link to="/transactions">
-                  <ExternalLink className="mr-2 h-4 w-4" /> View Transactions
-                </Link>
-              </Button>
-            </div>
-            <StaffList onStaffSelect={setSelectedStaffId} />
-          </>
+          <StaffList onStaffSelect={setSelectedStaffId} />
         )}
 
         <PasswordDialog

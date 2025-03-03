@@ -2,7 +2,7 @@
 import { Card } from "@/components/ui/card";
 import { useStaffStore } from "@/store/staffStore";
 import { format } from "date-fns";
-import { Trash, Edit } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -35,7 +35,7 @@ const TransactionList = ({ selectedStaffId, onStaffSelect, onEditTransaction }: 
     : transactions;
 
   return (
-    <Card className="p-6 glassmorphism">
+    <Card className="p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-semibold">Transactions</h2>
         
@@ -61,26 +61,26 @@ const TransactionList = ({ selectedStaffId, onStaffSelect, onEditTransaction }: 
         )}
       </div>
       
-      <div className="space-y-4">
+      <div className="space-y-3">
         {filteredTransactions.length > 0 ? (
           filteredTransactions.map((transaction) => (
             <div
               key={transaction.id}
-              className="flex items-center justify-between p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors"
+              className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
             >
               <div>
-                <h3 className="font-medium">{getStaffName(transaction.staffId)}</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="font-semibold">{getStaffName(transaction.staffId)}</h3>
+                <p className="text-sm text-gray-500">
                   {transaction.description}
                 </p>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-6">
                 <div className="text-right">
-                  <p className="font-medium">
+                  <p className="font-semibold">
                     ₹{transaction.amount.toLocaleString()}
                   </p>
-                  <p className="text-sm text-muted-foreground">
-                    {format(new Date(transaction.date), "MMM d, yyyy")}
+                  <p className="text-sm text-gray-500">
+                    {format(new Date(transaction.date), "d MMM yyyy")}
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -92,9 +92,9 @@ const TransactionList = ({ selectedStaffId, onStaffSelect, onEditTransaction }: 
                         e.stopPropagation();
                         onEditTransaction(transaction.id);
                       }}
-                      className="text-blue-500 hover:text-blue-700"
+                      className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
                     >
-                      <Edit className="h-4 w-4" />
+                      <Pencil className="h-4 w-4" />
                     </Button>
                   )}
                   <Button
@@ -104,16 +104,16 @@ const TransactionList = ({ selectedStaffId, onStaffSelect, onEditTransaction }: 
                       e.stopPropagation();
                       handleDelete(transaction.id);
                     }}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
                   >
-                    <Trash className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
             </div>
           ))
         ) : (
-          <p className="text-muted-foreground text-center py-8">
+          <p className="text-gray-500 text-center py-8">
             No transactions found
           </p>
         )}
