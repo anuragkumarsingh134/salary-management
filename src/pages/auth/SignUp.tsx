@@ -28,10 +28,10 @@ const SignUp = () => {
 
       toast({
         title: "Account Created",
-        description: "Please setup your store details.",
+        description: "Please check your email to verify your account.",
       });
       
-      navigate("/auth/store-setup");
+      navigate("/auth/login");
     } catch (error: any) {
       console.error("Sign up error:", error);
       toast({

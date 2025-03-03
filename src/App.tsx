@@ -10,79 +10,28 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
-import StoreSetup from "./pages/auth/StoreSetup";
 import ResetPassword from "./pages/auth/ResetPassword";
 import { User } from "@supabase/supabase-js";
-import { useToast } from "./components/ui/use-toast";
 
 const queryClient = new QueryClient();
-
-const SESSION_TIMEOUT = 3600000; // 1 hour in milliseconds
 
 const App = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
-  let inactivityTimer: NodeJS.Timeout;
-
-  const resetInactivityTimer = () => {
-    if (inactivityTimer) {
-      clearTimeout(inactivityTimer);
-    }
-    
-    if (user) {
-      inactivityTimer = setTimeout(async () => {
-        try {
-          await supabase.auth.signOut();
-          toast({
-            title: "Session Expired",
-            description: "You have been logged out due to inactivity",
-          });
-        } catch (error) {
-          console.error("Error signing out:", error);
-        }
-      }, SESSION_TIMEOUT);
-    }
-  };
 
   useEffect(() => {
     // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
-      if (session?.user) {
-        resetInactivityTimer();
-      }
     });
 
     // Listen for changes on auth state (sign in, sign out, etc.)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
-      if (session?.user) {
-        resetInactivityTimer();
-      }
     });
 
-    // Set up activity listeners
-    const activityEvents = ['mousedown', 'keydown', 'touchstart', 'mousemove'];
-    const handleUserActivity = () => {
-      resetInactivityTimer();
-    };
-
-    activityEvents.forEach(event => {
-      window.addEventListener(event, handleUserActivity);
-    });
-
-    // Cleanup function
-    return () => {
-      subscription.unsubscribe();
-      if (inactivityTimer) {
-        clearTimeout(inactivityTimer);
-      }
-      activityEvents.forEach(event => {
-        window.removeEventListener(event, handleUserActivity);
-      });
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
   if (loading) {
@@ -101,7 +50,6 @@ const App = () => {
             <Route path="/login" element={<Navigate to="/auth/login" replace />} />
             <Route path="/auth/signup" element={!user ? <SignUp /> : <Navigate to="/" />} />
             <Route path="/signup" element={<Navigate to="/auth/signup" replace />} />
-            <Route path="/auth/store-setup" element={user ? <StoreSetup /> : <Navigate to="/auth/login" />} />
             <Route path="/auth/reset-password" element={<ResetPassword />} />
             
             {/* Protected routes */}

@@ -39,24 +39,6 @@ const Login = () => {
         return;
       }
 
-      // Check if store setup is complete
-      const { data: storeData, error: storeError } = await supabase
-        .from('store_settings')
-        .select('store_name, owner_name, country, phone, address')
-        .maybeSingle();
-
-      if (storeError) throw storeError;
-
-      // If any required field is null or empty, redirect to store setup
-      if (!storeData || !storeData.store_name || !storeData.owner_name || !storeData.country || !storeData.phone || !storeData.address) {
-        toast({
-          title: "Welcome!",
-          description: "Please complete your store setup to continue.",
-        });
-        navigate("/auth/store-setup");
-        return;
-      }
-
       toast({
         title: "Welcome back!",
         description: "You have successfully logged in.",

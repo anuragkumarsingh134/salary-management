@@ -1,15 +1,7 @@
 
-import { formatDistanceToNow, format } from "date-fns";
-import { useState, useEffect } from "react";
+import { formatDistanceToNow } from "date-fns";
 import { StaffMember } from "@/types/staff";
 import { calculateSalaryDetails } from "@/utils/salaryCalculations";
-import { Button } from "@/components/ui/button";
-import { Calendar, List, RefreshCw, History } from "lucide-react";
-import { AddHolidayDialog } from "./AddHolidayDialog";
-import { ManageHolidaysDialog } from "./ManageHolidaysDialog";
-import { useToast } from "@/components/ui/use-toast";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import TransactionList from "@/components/TransactionList";
 
 interface StaffInfoProps {
   staff: StaffMember;
@@ -17,45 +9,7 @@ interface StaffInfoProps {
 }
 
 export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
-  const [addHolidayOpen, setAddHolidayOpen] = useState(false);
-  const [manageHolidaysOpen, setManageHolidaysOpen] = useState(false);
-  const [transactionsOpen, setTransactionsOpen] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const { toast } = useToast();
-  const [salaryDetails, setSalaryDetails] = useState({
-    daysWorked: 0,
-    dailyRate: staff.salary / 30,
-    totalEarned: 0,
-    holidayDays: 0
-  });
-
-  const fetchSalaryDetails = async () => {
-    const details = await calculateSalaryDetails(staff.salary, staff.startDate, staff.id);
-    setSalaryDetails(details);
-  };
-
-  useEffect(() => {
-    fetchSalaryDetails();
-  }, [staff.salary, staff.startDate, staff.id]);
-
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    try {
-      await fetchSalaryDetails();
-      toast({
-        title: "Data Refreshed",
-        description: "Staff information has been updated.",
-      });
-    } catch (error) {
-      toast({
-        title: "Refresh Failed",
-        description: "Failed to refresh staff information.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
+  const salaryDetails = calculateSalaryDetails(staff.salary, staff.startDate);
 
   return (
     <div className="grid gap-2">
@@ -65,43 +19,9 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
             {staff.name[0]}
           </span>
         </div>
-        <div className="flex-1">
+        <div>
           <h3 className="text-lg font-semibold">{staff.name}</h3>
           <p className="text-sm text-muted-foreground">{staff.position}</p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-          >
-            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setTransactionsOpen(true)}
-          >
-            <History className="mr-2 h-4 w-4" />
-            Transactions
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setManageHolidaysOpen(true)}
-          >
-            <List className="mr-2 h-4 w-4" />
-            Manage Holidays
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setAddHolidayOpen(true)}
-          >
-            <Calendar className="mr-2 h-4 w-4" />
-            Add Holiday
-          </Button>
         </div>
       </div>
 
@@ -118,12 +38,8 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
 
       <div className="grid grid-cols-2 gap-2">
         <div className="p-2 rounded-lg bg-secondary/30">
-          <p className="text-xs text-muted-foreground">Working Days</p>
+          <p className="text-xs text-muted-foreground">Days Worked</p>
           <p className="text-sm font-semibold">{salaryDetails.daysWorked} days</p>
-        </div>
-        <div className="p-2 rounded-lg bg-secondary/30">
-          <p className="text-xs text-muted-foreground">Holiday Days</p>
-          <p className="text-sm font-semibold">{salaryDetails.holidayDays} days</p>
         </div>
         <div className="p-2 rounded-lg bg-secondary/30">
           <p className="text-xs text-muted-foreground">Daily Rate</p>
@@ -148,35 +64,9 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
           </p>
         </div>
       </div>
-      {staff.startDate && (
-        <p className="text-xs text-muted-foreground">
-          Started {formatDistanceToNow(new Date(staff.startDate))} ago (
-          {format(new Date(staff.startDate), "dd-MM-yyyy")})
-        </p>
-      )}
-
-      <AddHolidayDialog
-        open={addHolidayOpen}
-        onOpenChange={setAddHolidayOpen}
-        staffId={staff.id}
-        staffName={staff.name}
-      />
-      
-      <ManageHolidaysDialog
-        open={manageHolidaysOpen}
-        onOpenChange={setManageHolidaysOpen}
-        staffId={staff.id}
-        staffName={staff.name}
-      />
-
-      <Dialog open={transactionsOpen} onOpenChange={setTransactionsOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Transactions for {staff.name}</DialogTitle>
-          </DialogHeader>
-          <TransactionList selectedStaffId={staff.id} />
-        </DialogContent>
-      </Dialog>
+      <p className="text-xs text-muted-foreground">
+        Started {formatDistanceToNow(new Date(staff.startDate))} ago
+      </p>
     </div>
   );
 };

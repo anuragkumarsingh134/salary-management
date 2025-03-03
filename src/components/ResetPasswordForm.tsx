@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 
 const ResetPasswordForm = () => {
+  const [token, setToken] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -21,6 +22,34 @@ const ResetPasswordForm = () => {
         toast({
           title: "Error",
           description: "No user found",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Verify the token
+      const { data: settings, error: fetchError } = await supabase
+        .from('user_settings')
+        .select('reset_token, reset_token_expires_at')
+        .eq('user_id', userId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      if (!settings.reset_token || settings.reset_token !== token) {
+        toast({
+          title: "Invalid Token",
+          description: "The reset token is invalid. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check if token is expired
+      if (settings.reset_token_expires_at && new Date(settings.reset_token_expires_at) < new Date()) {
+        toast({
+          title: "Token Expired",
+          description: "The reset token has expired. Please request a new one.",
           variant: "destructive",
         });
         return;
@@ -44,6 +73,7 @@ const ResetPasswordForm = () => {
       });
 
       // Clear the form
+      setToken("");
       setNewPassword("");
     } catch (error: any) {
       console.error('Error resetting password:', error);
@@ -62,11 +92,22 @@ const ResetPasswordForm = () => {
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-bold">Reset Password</h2>
         <p className="text-muted-foreground">
-          Enter your new password
+          Enter your reset token and new password
         </p>
       </div>
 
       <form onSubmit={handleResetPassword} className="space-y-4">
+        <div className="space-y-2">
+          <Input
+            type="text"
+            placeholder="Reset Token"
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
+            required
+            className="w-full"
+            disabled={loading}
+          />
+        </div>
         <div className="space-y-2">
           <Input
             type="password"

@@ -10,7 +10,6 @@ import {
   deleteStaffFromApi,
   addTransactionToApi,
   deleteTransactionFromApi,
-  updateTransactionInApi,
 } from '@/api/staffApi';
 
 interface StaffStore {
@@ -22,7 +21,6 @@ interface StaffStore {
   updateStaff: (id: string, staff: Partial<StaffMember>) => Promise<void>;
   deleteStaff: (id: string) => Promise<void>;
   addTransaction: (transaction: Omit<Transaction, 'id'>) => Promise<void>;
-  updateTransaction: (id: string, transaction: Partial<Omit<Transaction, 'id'>>) => Promise<void>;
   deleteTransaction: (id: string) => Promise<void>;
   subscribeToStaffChanges: () => () => void;
   subscribeToTransactionChanges: () => () => void;
@@ -72,15 +70,6 @@ export const useStaffStore = create<StaffStore>()((set) => ({
     const newTransaction = await addTransactionToApi(transaction);
     set((state) => ({
       transactions: [...state.transactions, newTransaction],
-    }));
-  },
-
-  updateTransaction: async (id, transaction) => {
-    await updateTransactionInApi(id, transaction);
-    set((state) => ({
-      transactions: state.transactions.map((t) =>
-        t.id === id ? { ...t, ...transaction } : t
-      ),
     }));
   },
 

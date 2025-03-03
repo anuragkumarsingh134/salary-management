@@ -1,10 +1,10 @@
 
 import { useState, useEffect } from "react";
 import { useStaffStore } from "@/store/staffStore";
-import { useStoreSettings } from "@/store/storeSettingsStore";
 import { NavBar } from "@/components/NavBar";
 import StaffList from "@/components/StaffList";
 import AddStaffDialog from "@/components/AddStaffDialog";
+import TransactionList from "@/components/TransactionList";
 import AddTransactionDialog from "@/components/AddTransactionDialog";
 import PasswordDialog from "@/components/PasswordDialog";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
@@ -35,15 +35,12 @@ const Index = () => {
     subscribeToTransactionChanges 
   } = useStaffStore();
 
-  const { fetchSettings } = useStoreSettings();
-
   useEffect(() => {
     const loadData = async () => {
       try {
         await Promise.all([
           fetchStaff(),
-          fetchTransactions(),
-          fetchSettings()
+          fetchTransactions()
         ]);
       } catch (error) {
         console.error('Error loading data:', error);
@@ -61,11 +58,7 @@ const Index = () => {
       unsubscribeStaff();
       unsubscribeTransactions();
     };
-  }, [fetchStaff, fetchTransactions, fetchSettings, subscribeToStaffChanges, subscribeToTransactionChanges]);
-
-  const handleChangeKey = () => {
-    setPasswordDialogOpen(true);
-  };
+  }, [fetchStaff, fetchTransactions, subscribeToStaffChanges, subscribeToTransactionChanges]);
 
   if (isLoading) {
     return <LoadingSkeleton />;
@@ -79,12 +72,16 @@ const Index = () => {
           onAddTransaction={() => setAddTransactionOpen(true)}
           onAddStaff={() => setAddStaffOpen(true)}
           onToggleShowData={handleShowDataClick}
-          onChangeKey={handleChangeKey}
           showData={showData}
         />
 
         {showData && (
-          <StaffList onStaffSelect={setSelectedStaffId} />
+          <>
+            <StaffList onStaffSelect={setSelectedStaffId} />
+            <div className="flex-1 overflow-auto min-h-0">
+              <TransactionList selectedStaffId={selectedStaffId} />
+            </div>
+          </>
         )}
 
         <PasswordDialog

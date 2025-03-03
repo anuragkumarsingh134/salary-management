@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -7,11 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useStaffStore } from "@/store/staffStore";
 import { Transaction } from "@/types/staff";
 import { useToast } from "@/components/ui/use-toast";
-import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
 
 interface AddTransactionDialogProps {
   open: boolean;
@@ -21,19 +17,21 @@ interface AddTransactionDialogProps {
 const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps) => {
   const { toast } = useToast();
   const { staff, addTransaction } = useStaffStore();
-  const [date, setDate] = useState<Date>(new Date());
   const [formData, setFormData] = useState({
     staffId: "",
     amount: "",
     type: "salary" as Transaction['type'],
+    date: "",
     description: "",
   });
 
+  // Filter to only show active staff members
   const activeStaff = staff.filter(member => member.active);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Check if selected staff member exists and is active
     const selectedStaff = staff.find(s => s.id === formData.staffId);
     if (!selectedStaff || !selectedStaff.active) {
       toast({
@@ -44,35 +42,27 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
       return;
     }
 
-    try {
-      await addTransaction({
-        staffId: formData.staffId,
-        amount: Number(formData.amount),
-        type: formData.type,
-        date: format(date, "yyyy-MM-dd"),
-        description: formData.description,
-      });
+    await addTransaction({
+      staffId: formData.staffId,
+      amount: Number(formData.amount),
+      type: formData.type,
+      date: formData.date,
+      description: formData.description,
+    });
 
-      toast({
-        title: "Transaction added",
-        description: "The transaction has been recorded successfully.",
-      });
-      
-      onOpenChange(false);
-      setFormData({
-        staffId: "",
-        amount: "",
-        type: "salary",
-        description: "",
-      });
-      setDate(new Date());
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to add transaction. Please try again.",
-        variant: "destructive"
-      });
-    }
+    toast({
+      title: "Transaction added",
+      description: "The transaction has been recorded successfully.",
+    });
+    
+    onOpenChange(false);
+    setFormData({
+      staffId: "",
+      amount: "",
+      type: "salary",
+      date: "",
+      description: "",
+    });
   };
 
   return (
@@ -133,32 +123,16 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Date</Label>
-            <div className="grid gap-2">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="date"
-                    variant={"outline"}
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(date, "PPP")}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={(newDate) => newDate && setDate(newDate)}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+            <Label htmlFor="date">Date</Label>
+            <Input
+              id="date"
+              type="date"
+              value={formData.date}
+              onChange={(e) =>
+                setFormData({ ...formData, date: e.target.value })
+              }
+              required
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
