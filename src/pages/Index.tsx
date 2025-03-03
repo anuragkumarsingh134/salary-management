@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useStaffStore } from "@/store/staffStore";
 import { NavBar } from "@/components/NavBar";
@@ -66,6 +65,12 @@ const Index = () => {
     return <LoadingSkeleton />;
   }
 
+  // This function is for the DashboardHeader component
+  const handleAddTransaction = () => {
+    // Navigate to transactions page where a user can add a transaction
+    window.location.href = "/transactions";
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <NavBar />
@@ -75,6 +80,7 @@ const Index = () => {
           onToggleShowData={handleShowDataClick}
           showData={showData}
           onChangeKey={handleChangeKey}
+          onAddTransaction={handleAddTransaction}
         />
 
         {showData && (

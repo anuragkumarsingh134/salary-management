@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { StaffMember, Transaction } from '@/types/staff';
 import { SupabaseClient } from '@supabase/supabase-js';
@@ -172,6 +171,27 @@ export const addTransactionToApi = async (transaction: Omit<Transaction, 'id'>) 
     date: data.date,
     description: data.description,
   };
+};
+
+export const updateTransactionInApi = async (id: string, updatedTransaction: Partial<Transaction>) => {
+  const { transactionsTable } = await getUserTableNames();
+  
+  // Using a type assertion to handle dynamic table names
+  const { error } = await (supabase as SupabaseClient)
+    .from(transactionsTable)
+    .update({
+      staff_id: updatedTransaction.staffId,
+      amount: updatedTransaction.amount,
+      type: updatedTransaction.type,
+      date: updatedTransaction.date,
+      description: updatedTransaction.description,
+    })
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error updating transaction:', error);
+    throw error;
+  }
 };
 
 export const deleteTransactionFromApi = async (id: string) => {
