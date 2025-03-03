@@ -1,15 +1,11 @@
 
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { format, addDays } from "date-fns";
 import { useStaffStore } from "@/store/staffStore";
-import { DatePicker } from "@/components/ui/date-picker";
-import { Label } from "@/components/ui/label";
+import { AddHolidayForm } from "./AddHolidayForm";
 
 interface AddHolidayDialogProps {
   open: boolean;
@@ -29,13 +25,6 @@ export const AddHolidayDialog = ({
   const [startDate, setStartDate] = useState<Date>(new Date());
   const { toast } = useToast();
   const { fetchStaff } = useStaffStore();
-
-  const handleDateChange = (newDate: Date | undefined) => {
-    if (newDate) {
-      console.log("Holiday start date changed:", newDate);
-      setStartDate(newDate);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,9 +57,7 @@ export const AddHolidayDialog = ({
       });
 
       onOpenChange(false);
-      setDays("");
-      setReason("");
-      setStartDate(new Date());
+      resetForm();
     } catch (error: any) {
       console.error('Error adding holiday:', error);
       toast({
@@ -81,39 +68,27 @@ export const AddHolidayDialog = ({
     }
   };
 
+  const resetForm = () => {
+    setDays("");
+    setReason("");
+    setStartDate(new Date());
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add Holiday for {staffName}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-          <div className="space-y-2">
-            <Label>Start Date</Label>
-            <DatePicker 
-              date={startDate} 
-              onDateChange={handleDateChange} 
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Number of Days</Label>
-            <Input
-              type="number"
-              placeholder="Number of days"
-              value={days}
-              onChange={(e) => setDays(e.target.value)}
-              min="1"
-              required
-            />
-          </div>
-          <Textarea
-            placeholder="Reason for holiday"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            required
-          />
-          <Button type="submit">Add Holiday</Button>
-        </form>
+        <AddHolidayForm
+          days={days}
+          reason={reason}
+          startDate={startDate}
+          onDaysChange={setDays}
+          onReasonChange={setReason}
+          onDateChange={setStartDate}
+          onSubmit={handleSubmit}
+        />
       </DialogContent>
     </Dialog>
   );
