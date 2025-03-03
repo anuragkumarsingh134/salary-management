@@ -50,7 +50,6 @@ export const AddHolidayForm = ({
           value={format(startDate, "dd-MM-yyyy")}
           onChange={handleDateChange}
           placeholder="DD-MM-YYYY"
-          required
         />
       </div>
       <div className="space-y-2">
