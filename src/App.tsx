@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
 import ResetPassword from "./pages/auth/ResetPassword";
+import TransactionsPage from "./pages/TransactionsPage";
 import { User } from "@supabase/supabase-js";
 
 const queryClient = new QueryClient();
@@ -54,6 +55,7 @@ const App = () => {
             
             {/* Protected routes */}
             <Route path="/" element={user ? <Index /> : <Navigate to="/auth/login" />} />
+            <Route path="/transactions" element={user ? <TransactionsPage /> : <Navigate to="/auth/login" />} />
             
             {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />

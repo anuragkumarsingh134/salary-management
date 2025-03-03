@@ -2,19 +2,20 @@
 import { Card } from "@/components/ui/card";
 import { useStaffStore } from "@/store/staffStore";
 import { format } from "date-fns";
-import { Trash, ChevronDown, ChevronUp } from "lucide-react";
+import { Trash, Edit } from "lucide-react";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
-import { useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface TransactionListProps {
   selectedStaffId?: string | null;
+  onStaffSelect?: (staffId: string) => void;
+  onEditTransaction?: (transactionId: string) => void;
 }
 
-const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
+const TransactionList = ({ selectedStaffId, onStaffSelect, onEditTransaction }: TransactionListProps) => {
   const { transactions, staff, deleteTransaction } = useStaffStore();
   const { toast } = useToast();
-  const [isExpanded, setIsExpanded] = useState(false);
 
   const getStaffName = (staffId: string) => {
     return staff.find((s) => s.id === staffId)?.name || "Unknown";
@@ -28,41 +29,41 @@ const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
     });
   };
 
-  // Don't render the card if no staff is selected
-  if (!selectedStaffId) {
-    return null;
-  }
-
-  // Get the staff member to check if they exist
-  const selectedStaffMember = staff.find(s => s.id === selectedStaffId);
-  if (!selectedStaffMember) {
-    return null;
-  }
-
-  // Show transactions for the selected staff member, regardless of active status
-  const staffTransactions = transactions.filter(t => t.staffId === selectedStaffId);
+  // Filter transactions based on selectedStaffId if provided
+  const filteredTransactions = selectedStaffId 
+    ? transactions.filter(t => t.staffId === selectedStaffId)
+    : transactions;
 
   return (
     <Card className="p-6 glassmorphism">
-      <div 
-        className="flex items-center justify-between cursor-pointer"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        <h2 className="text-2xl font-semibold">
-          Recent Transactions for {selectedStaffMember.name}
-        </h2>
-        <Button variant="ghost" size="icon">
-          {isExpanded ? (
-            <ChevronUp className="h-4 w-4" />
-          ) : (
-            <ChevronDown className="h-4 w-4" />
-          )}
-        </Button>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-semibold">Transactions</h2>
+        
+        {onStaffSelect && (
+          <div className="w-64">
+            <Select 
+              value={selectedStaffId || ""} 
+              onValueChange={(value) => onStaffSelect(value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Filter by staff member" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All Staff Members</SelectItem>
+                {staff.map((member) => (
+                  <SelectItem key={member.id} value={member.id}>
+                    {member.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
       
-      {isExpanded && (
-        <div className="space-y-4 mt-4">
-          {staffTransactions.map((transaction) => (
+      <div className="space-y-4">
+        {filteredTransactions.length > 0 ? (
+          filteredTransactions.map((transaction) => (
             <div
               key={transaction.id}
               className="flex items-center justify-between p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors"
@@ -82,27 +83,41 @@ const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
                     {format(new Date(transaction.date), "MMM d, yyyy")}
                   </p>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(transaction.id);
-                  }}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <Trash className="h-4 w-4" />
-                </Button>
+                <div className="flex gap-2">
+                  {onEditTransaction && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEditTransaction(transaction.id);
+                      }}
+                      className="text-blue-500 hover:text-blue-700"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(transaction.id);
+                    }}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <Trash className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
-          ))}
-          {staffTransactions.length === 0 && (
-            <p className="text-muted-foreground text-center py-8">
-              No transactions recorded for this staff member
-            </p>
-          )}
-        </div>
-      )}
+          ))
+        ) : (
+          <p className="text-muted-foreground text-center py-8">
+            No transactions found
+          </p>
+        )}
+      </div>
     </Card>
   );
 };
