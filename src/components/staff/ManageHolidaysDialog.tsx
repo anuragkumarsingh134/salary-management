@@ -1,14 +1,12 @@
 
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { format, parseISO, differenceInDays } from "date-fns";
+import { format } from "date-fns";
 import { useStaffStore } from "@/store/staffStore";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Pencil, Trash } from "lucide-react";
+import { HolidayList } from "./HolidayList";
+import { EditHolidayForm } from "./EditHolidayForm";
 
 interface Holiday {
   id: string;
@@ -124,9 +122,7 @@ export const ManageHolidaysDialog = ({
 
       await fetchStaff();
       await fetchHolidays();
-      setEditingHoliday(null);
-      setDays("");
-      setReason("");
+      resetEditingState();
 
       toast({
         title: "Holiday Updated",
@@ -143,10 +139,16 @@ export const ManageHolidaysDialog = ({
   };
 
   const startEdit = (holiday: Holiday) => {
-    const daysDiff = differenceInDays(parseISO(holiday.end_date), parseISO(holiday.start_date)) + 1;
+    const daysDiff = new Date(holiday.end_date).getDate() - new Date(holiday.start_date).getDate() + 1;
     setDays(daysDiff.toString());
     setReason(holiday.reason);
     setEditingHoliday(holiday);
+  };
+
+  const resetEditingState = () => {
+    setEditingHoliday(null);
+    setDays("");
+    setReason("");
   };
 
   return (
@@ -157,72 +159,20 @@ export const ManageHolidaysDialog = ({
         </DialogHeader>
 
         {editingHoliday ? (
-          <form onSubmit={handleEdit} className="grid gap-4 py-4">
-            <Input
-              type="number"
-              placeholder="Number of days"
-              value={days}
-              onChange={(e) => setDays(e.target.value)}
-              min="1"
-              required
-            />
-            <Textarea
-              placeholder="Reason for holiday"
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              required
-            />
-            <div className="flex gap-2">
-              <Button type="submit">Update Holiday</Button>
-              <Button type="button" variant="outline" onClick={() => {
-                setEditingHoliday(null);
-                setDays("");
-                setReason("");
-              }}>
-                Cancel
-              </Button>
-            </div>
-          </form>
+          <EditHolidayForm
+            days={days}
+            reason={reason}
+            onDaysChange={setDays}
+            onReasonChange={setReason}
+            onSubmit={handleEdit}
+            onCancel={resetEditingState}
+          />
         ) : (
-          <div className="space-y-4">
-            {holidays.length === 0 ? (
-              <p className="text-center text-muted-foreground py-4">No holidays found</p>
-            ) : (
-              holidays.map((holiday) => (
-                <div
-                  key={holiday.id}
-                  className="flex items-center justify-between p-4 rounded-lg border"
-                >
-                  <div>
-                    <p className="font-medium">
-                      {differenceInDays(parseISO(holiday.end_date), parseISO(holiday.start_date)) + 1} days
-                    </p>
-                    <p className="text-sm text-muted-foreground">{holiday.reason}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {format(parseISO(holiday.start_date), "yyyy-MM-dd")} -{" "}
-                      {format(parseISO(holiday.end_date), "yyyy-MM-dd")}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => startEdit(holiday)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(holiday.id)}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+          <HolidayList 
+            holidays={holidays} 
+            onEdit={startEdit} 
+            onDelete={handleDelete} 
+          />
         )}
       </DialogContent>
     </Dialog>
