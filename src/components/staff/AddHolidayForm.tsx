@@ -27,18 +27,21 @@ export const AddHolidayForm = ({
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     
-    // Try to parse the input as a date
-    if (value && /^\d{2}-\d{2}-\d{4}$/.test(value)) {
+    if (value) {
       try {
         const parsedDate = parse(value, "dd-MM-yyyy", new Date());
         if (isValid(parsedDate)) {
+          console.log("Valid date parsed:", parsedDate);
           onDateChange(parsedDate);
+        } else {
+          console.log("Invalid date format");
         }
       } catch (error) {
         console.error("Error parsing date:", error);
       }
-    } else if (!value) {
-      onDateChange(undefined);
+    } else {
+      // If input is empty, we'll use the current date
+      onDateChange(new Date());
     }
   };
 
@@ -51,6 +54,7 @@ export const AddHolidayForm = ({
           onChange={handleDateChange}
           placeholder="DD-MM-YYYY"
         />
+        <p className="text-xs text-muted-foreground">Format: DD-MM-YYYY</p>
       </div>
       <div className="space-y-2">
         <Label>Number of Days</Label>
