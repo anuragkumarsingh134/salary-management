@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { format, parse, isValid } from "date-fns";
+import { useState, useEffect } from "react";
 
 interface AddHolidayFormProps {
   days: string;
@@ -24,14 +25,29 @@ export const AddHolidayForm = ({
   onDateChange,
   onSubmit,
 }: AddHolidayFormProps) => {
+  const [dateInputValue, setDateInputValue] = useState<string>(
+    format(startDate, "dd-MM-yyyy")
+  );
+
+  useEffect(() => {
+    // Update local date state when startDate prop changes
+    if (startDate) {
+      try {
+        setDateInputValue(format(startDate, "dd-MM-yyyy"));
+      } catch (error) {
+        console.error('Error formatting date:', error);
+      }
+    }
+  }, [startDate]);
+
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    setDateInputValue(value);
     
-    if (value) {
+    // Try to parse the input as a date
+    if (value && /^\d{2}-\d{2}-\d{4}$/.test(value)) {
       try {
-        // Parse the date input using the correct format
         const parsedDate = parse(value, "dd-MM-yyyy", new Date());
-        
         if (isValid(parsedDate)) {
           console.log("Valid date parsed:", parsedDate, "Original input:", value);
           onDateChange(parsedDate);
@@ -41,8 +57,7 @@ export const AddHolidayForm = ({
       } catch (error) {
         console.error("Error parsing date:", error, "Input value:", value);
       }
-    } else {
-      // If input is empty, we'll use the current date
+    } else if (!value) {
       onDateChange(new Date());
     }
   };
@@ -53,7 +68,7 @@ export const AddHolidayForm = ({
         <Label>Start Date</Label>
         <Input
           type="text"
-          value={format(startDate, "dd-MM-yyyy")}
+          value={dateInputValue}
           onChange={handleDateChange}
           placeholder="DD-MM-YYYY"
         />
