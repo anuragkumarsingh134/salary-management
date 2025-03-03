@@ -43,6 +43,13 @@ export const AddHolidayDialog = ({
       const holidaysTable = `holidays_${user.id.replace(/-/g, '_')}`;
       const endDate = addDays(startDate, parseInt(days) - 1);
 
+      console.log("Submitting holiday:", {
+        startDate: format(startDate, "yyyy-MM-dd"),
+        endDate: format(endDate, "yyyy-MM-dd"),
+        days,
+        reason
+      });
+
       const { error } = await supabase
         .from(holidaysTable as any)
         .insert({

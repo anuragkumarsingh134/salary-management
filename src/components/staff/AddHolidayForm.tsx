@@ -29,15 +29,17 @@ export const AddHolidayForm = ({
     
     if (value) {
       try {
+        // Parse the date input using the correct format
         const parsedDate = parse(value, "dd-MM-yyyy", new Date());
+        
         if (isValid(parsedDate)) {
-          console.log("Valid date parsed:", parsedDate);
+          console.log("Valid date parsed:", parsedDate, "Original input:", value);
           onDateChange(parsedDate);
         } else {
-          console.log("Invalid date format");
+          console.log("Invalid date format:", value);
         }
       } catch (error) {
-        console.error("Error parsing date:", error);
+        console.error("Error parsing date:", error, "Input value:", value);
       }
     } else {
       // If input is empty, we'll use the current date
@@ -50,6 +52,7 @@ export const AddHolidayForm = ({
       <div className="space-y-2">
         <Label>Start Date</Label>
         <Input
+          type="text"
           value={format(startDate, "dd-MM-yyyy")}
           onChange={handleDateChange}
           placeholder="DD-MM-YYYY"
