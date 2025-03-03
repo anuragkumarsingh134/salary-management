@@ -4,44 +4,46 @@ import { StaffMember, Transaction } from '@/types/staff';
 import { supabase } from '@/integrations/supabase/client';
 import {
   fetchStaffFromApi,
-  fetchTransactionsFromApi,
   addStaffToApi,
   updateStaffInApi,
   deleteStaffFromApi,
+} from '@/api/staffApi';
+import {
+  fetchTransactionsFromApi,
   addTransactionToApi,
-  deleteTransactionFromApi,
   updateTransactionInApi,
+  deleteTransactionFromApi,
 } from '@/api/staffApi';
 
-interface StaffStore {
+interface StaffState {
   staff: StaffMember[];
-  transactions: Transaction[];
   fetchStaff: () => Promise<void>;
-  fetchTransactions: () => Promise<void>;
   addStaff: (staff: Omit<StaffMember, 'id'>) => Promise<void>;
   updateStaff: (id: string, staff: Partial<StaffMember>) => Promise<void>;
   deleteStaff: (id: string) => Promise<void>;
+  subscribeToStaffChanges: () => () => void;
+  unsubscribeFromStaffChanges: () => void;
+}
+
+interface TransactionState {
+  transactions: Transaction[];
+  fetchTransactions: () => Promise<void>;
   addTransaction: (transaction: Omit<Transaction, 'id'>) => Promise<void>;
   updateTransaction: (id: string, transaction: Partial<Transaction>) => Promise<void>;
   deleteTransaction: (id: string) => Promise<void>;
-  subscribeToStaffChanges: () => () => void;
   subscribeToTransactionChanges: () => () => void;
-  unsubscribeFromStaffChanges: () => void;
   unsubscribeFromTransactionChanges: () => void;
 }
 
+type StaffStore = StaffState & TransactionState;
+
 export const useStaffStore = create<StaffStore>()((set) => ({
+  // Staff state
   staff: [],
-  transactions: [],
   
   fetchStaff: async () => {
     const staff = await fetchStaffFromApi();
     set({ staff });
-  },
-
-  fetchTransactions: async () => {
-    const transactions = await fetchTransactionsFromApi();
-    set({ transactions });
   },
 
   addStaff: async (staffMember) => {
@@ -65,29 +67,6 @@ export const useStaffStore = create<StaffStore>()((set) => ({
     set((state) => ({
       staff: state.staff.filter((staff) => staff.id !== id),
       transactions: state.transactions.filter((t) => t.staffId !== id),
-    }));
-  },
-
-  addTransaction: async (transaction) => {
-    const newTransaction = await addTransactionToApi(transaction);
-    set((state) => ({
-      transactions: [...state.transactions, newTransaction],
-    }));
-  },
-
-  updateTransaction: async (id, updatedTransaction) => {
-    await updateTransactionInApi(id, updatedTransaction);
-    set((state) => ({
-      transactions: state.transactions.map((transaction) =>
-        transaction.id === id ? { ...transaction, ...updatedTransaction } : transaction
-      ),
-    }));
-  },
-
-  deleteTransaction: async (id) => {
-    await deleteTransactionFromApi(id);
-    set((state) => ({
-      transactions: state.transactions.filter((t) => t.id !== id),
     }));
   },
 
@@ -116,6 +95,41 @@ export const useStaffStore = create<StaffStore>()((set) => ({
     };
   },
 
+  unsubscribeFromStaffChanges: () => {
+    supabase.removeAllChannels();
+  },
+
+  // Transaction state
+  transactions: [],
+  
+  fetchTransactions: async () => {
+    const transactions = await fetchTransactionsFromApi();
+    set({ transactions });
+  },
+
+  addTransaction: async (transaction) => {
+    const newTransaction = await addTransactionToApi(transaction);
+    set((state) => ({
+      transactions: [...state.transactions, newTransaction],
+    }));
+  },
+
+  updateTransaction: async (id, updatedTransaction) => {
+    await updateTransactionInApi(id, updatedTransaction);
+    set((state) => ({
+      transactions: state.transactions.map((transaction) =>
+        transaction.id === id ? { ...transaction, ...updatedTransaction } : transaction
+      ),
+    }));
+  },
+
+  deleteTransaction: async (id) => {
+    await deleteTransactionFromApi(id);
+    set((state) => ({
+      transactions: state.transactions.filter((t) => t.id !== id),
+    }));
+  },
+
   subscribeToTransactionChanges: () => {
     const channel = supabase
       .channel('transaction_changes')
@@ -139,10 +153,6 @@ export const useStaffStore = create<StaffStore>()((set) => ({
         supabase.removeChannel(channel);
       }
     };
-  },
-
-  unsubscribeFromStaffChanges: () => {
-    supabase.removeAllChannels();
   },
 
   unsubscribeFromTransactionChanges: () => {
