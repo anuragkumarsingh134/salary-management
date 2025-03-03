@@ -1,21 +1,21 @@
 
 import { useState, useEffect } from "react";
 import { useStaffStore } from "@/store/staffStore";
+import { useStoreSettings } from "@/store/storeSettingsStore";
 import { NavBar } from "@/components/NavBar";
 import StaffList from "@/components/StaffList";
 import AddStaffDialog from "@/components/AddStaffDialog";
+import AddTransactionDialog from "@/components/AddTransactionDialog";
 import PasswordDialog from "@/components/PasswordDialog";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import LoadingSkeleton from "@/components/dashboard/LoadingSkeleton";
 import { usePasswordProtection } from "@/hooks/usePasswordProtection";
-import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [addStaffOpen, setAddStaffOpen] = useState(false);
+  const [addTransactionOpen, setAddTransactionOpen] = useState(false);
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
   
   const { 
     showData,
@@ -26,8 +26,6 @@ const Index = () => {
     handlePasswordSubmit,
     handleShowDataClick,
     handleForgotPassword,
-    handleChangeKey,
-    isChangingKey,
   } = usePasswordProtection();
 
   const { 
@@ -37,12 +35,15 @@ const Index = () => {
     subscribeToTransactionChanges 
   } = useStaffStore();
 
+  const { fetchSettings } = useStoreSettings();
+
   useEffect(() => {
     const loadData = async () => {
       try {
         await Promise.all([
           fetchStaff(),
-          fetchTransactions()
+          fetchTransactions(),
+          fetchSettings()
         ]);
       } catch (error) {
         console.error('Error loading data:', error);
@@ -60,26 +61,26 @@ const Index = () => {
       unsubscribeStaff();
       unsubscribeTransactions();
     };
-  }, [fetchStaff, fetchTransactions, subscribeToStaffChanges, subscribeToTransactionChanges]);
+  }, [fetchStaff, fetchTransactions, fetchSettings, subscribeToStaffChanges, subscribeToTransactionChanges]);
+
+  const handleChangeKey = () => {
+    setPasswordDialogOpen(true);
+  };
 
   if (isLoading) {
     return <LoadingSkeleton />;
   }
 
-  const handleAddTransaction = () => {
-    navigate("/transactions");
-  };
-
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col">
       <NavBar />
-      <div className="container py-6 flex-1 flex flex-col space-y-6 animate-fadeIn">
+      <div className="container py-8 flex-1 flex flex-col space-y-8 animate-fadeIn">
         <DashboardHeader
+          onAddTransaction={() => setAddTransactionOpen(true)}
           onAddStaff={() => setAddStaffOpen(true)}
           onToggleShowData={handleShowDataClick}
-          showData={showData}
           onChangeKey={handleChangeKey}
-          onAddTransaction={handleAddTransaction}
+          showData={showData}
         />
 
         {showData && (
@@ -93,10 +94,13 @@ const Index = () => {
           setPassword={setPassword}
           onSubmit={handlePasswordSubmit}
           onForgotPassword={handleForgotPassword}
-          isChangingKey={isChangingKey}
         />
 
         <AddStaffDialog open={addStaffOpen} onOpenChange={setAddStaffOpen} />
+        <AddTransactionDialog
+          open={addTransactionOpen}
+          onOpenChange={setAddTransactionOpen}
+        />
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,27 +8,35 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useStaffStore } from "@/store/staffStore";
 import { Transaction } from "@/types/staff";
 import { useToast } from "@/components/ui/use-toast";
-import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
+import { format, parse } from "date-fns";
+import { DatePicker } from "@/components/ui/date-picker";
 
-interface AddTransactionDialogProps {
+interface EditTransactionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  transaction: Transaction;
 }
 
-const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps) => {
+const EditTransactionDialog = ({ open, onOpenChange, transaction }: EditTransactionDialogProps) => {
   const { toast } = useToast();
-  const { staff, addTransaction } = useStaffStore();
-  const [date, setDate] = useState<Date>(new Date());
+  const { staff, updateTransaction } = useStaffStore();
+  const [date, setDate] = useState<Date>(new Date(transaction.date));
   const [formData, setFormData] = useState({
-    staffId: "",
-    amount: "",
-    type: "salary" as Transaction['type'],
-    description: "",
+    staffId: transaction.staffId,
+    amount: transaction.amount.toString(),
+    type: transaction.type,
+    description: transaction.description,
   });
+
+  useEffect(() => {
+    setFormData({
+      staffId: transaction.staffId,
+      amount: transaction.amount.toString(),
+      type: transaction.type,
+      description: transaction.description,
+    });
+    setDate(new Date(transaction.date));
+  }, [transaction]);
 
   const activeStaff = staff.filter(member => member.active);
 
@@ -38,14 +47,14 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
     if (!selectedStaff || !selectedStaff.active) {
       toast({
         title: "Error",
-        description: "Cannot add transaction for inactive staff member.",
+        description: "Cannot update transaction for inactive staff member.",
         variant: "destructive"
       });
       return;
     }
 
     try {
-      await addTransaction({
+      await updateTransaction(transaction.id, {
         staffId: formData.staffId,
         amount: Number(formData.amount),
         type: formData.type,
@@ -54,22 +63,15 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
       });
 
       toast({
-        title: "Transaction added",
-        description: "The transaction has been recorded successfully.",
+        title: "Transaction updated",
+        description: "The transaction has been updated successfully.",
       });
       
       onOpenChange(false);
-      setFormData({
-        staffId: "",
-        amount: "",
-        type: "salary",
-        description: "",
-      });
-      setDate(new Date());
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to add transaction. Please try again.",
+        description: "Failed to update transaction. Please try again.",
         variant: "destructive"
       });
     }
@@ -79,7 +81,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add New Transaction</DialogTitle>
+          <DialogTitle>Edit Transaction</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -134,31 +136,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
           </div>
           <div className="space-y-2">
             <Label>Date</Label>
-            <div className="grid gap-2">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="date"
-                    variant={"outline"}
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(date, "PPP")}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={(newDate) => newDate && setDate(newDate)}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+            <DatePicker date={date} onDateChange={(newDate) => newDate && setDate(newDate)} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
@@ -172,7 +150,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
             />
           </div>
           <Button type="submit" className="w-full">
-            Add Transaction
+            Update Transaction
           </Button>
         </form>
       </DialogContent>
@@ -180,4 +158,4 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
   );
 };
 
-export default AddTransactionDialog;
+export default EditTransactionDialog;

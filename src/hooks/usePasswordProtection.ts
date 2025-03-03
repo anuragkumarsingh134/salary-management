@@ -7,7 +7,6 @@ export const usePasswordProtection = () => {
   const [showData, setShowData] = useState(false);
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [password, setPassword] = useState("");
-  const [isChangingKey, setIsChangingKey] = useState(false);
   const { toast } = useToast();
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
@@ -54,18 +53,43 @@ export const usePasswordProtection = () => {
           setShowData(true);
           setPasswordDialogOpen(false);
           setPassword("");
-          setIsChangingKey(false);
           toast({
-            title: "Password Set",
-            description: "Your password has been set and data is now visible.",
+            title: "Key Set",
+            description: "Your key has been set and data is now visible.",
           });
           return;
         }
         throw fetchError;
       }
 
-      // If changing key, update the existing password
-      if (isChangingKey) {
+      if (!settings.show_data_password) {
+        // First time setting the password
+        const { error: updateError } = await supabase
+          .from('user_settings')
+          .update({ show_data_password: password })
+          .eq('user_id', userId);
+
+        if (updateError) {
+          toast({
+            title: "Error",
+            description: "Failed to set key",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        setShowData(true);
+        setPasswordDialogOpen(false);
+        setPassword("");
+        toast({
+          title: "Key Set",
+          description: "Your key has been set and data is now visible.",
+        });
+        return;
+      }
+
+      if (showData) {
+        // Changing the key
         const { error: updateError } = await supabase
           .from('user_settings')
           .update({ show_data_password: password })
@@ -82,41 +106,13 @@ export const usePasswordProtection = () => {
 
         setPasswordDialogOpen(false);
         setPassword("");
-        setIsChangingKey(false);
         toast({
           title: "Key Changed",
-          description: "Your access key has been updated successfully.",
+          description: "Your key has been updated successfully.",
         });
         return;
       }
 
-      // First time setting the password
-      if (!settings.show_data_password) {
-        const { error: updateError } = await supabase
-          .from('user_settings')
-          .update({ show_data_password: password })
-          .eq('user_id', userId);
-
-        if (updateError) {
-          toast({
-            title: "Error",
-            description: "Failed to set password",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        setShowData(true);
-        setPasswordDialogOpen(false);
-        setPassword("");
-        toast({
-          title: "Password Set",
-          description: "Your password has been set and data is now visible.",
-        });
-        return;
-      }
-
-      // Normal password validation
       if (settings.show_data_password === password) {
         setShowData(true);
         setPasswordDialogOpen(false);
@@ -128,7 +124,7 @@ export const usePasswordProtection = () => {
       } else {
         toast({
           title: "Access Denied",
-          description: "Incorrect password. Please try again.",
+          description: "Incorrect key. Please try again.",
           variant: "destructive",
         });
       }
@@ -136,7 +132,7 @@ export const usePasswordProtection = () => {
       console.error('Error handling password:', error);
       toast({
         title: "Error",
-        description: "An error occurred while checking the password.",
+        description: "An error occurred while checking the key.",
         variant: "destructive",
       });
     }
@@ -144,22 +140,10 @@ export const usePasswordProtection = () => {
 
   const handleShowDataClick = () => {
     if (!showData) {
-      setIsChangingKey(false);
       setPasswordDialogOpen(true);
     } else {
       setShowData(false);
     }
-  };
-
-  const handleChangeKey = () => {
-    setPassword(""); // Clear any existing password
-    setIsChangingKey(true);
-    setPasswordDialogOpen(true);
-    
-    toast({
-      title: "Change Key",
-      description: "Enter your new key to update your access credentials.",
-    });
   };
 
   const handleForgotPassword = async () => {
@@ -181,8 +165,8 @@ export const usePasswordProtection = () => {
       if (error) throw error;
 
       toast({
-        title: "Password Sent",
-        description: "Your password has been sent to your email address.",
+        title: "Key Sent",
+        description: "Your key has been sent to your email address.",
       });
 
       setPasswordDialogOpen(false);
@@ -205,7 +189,5 @@ export const usePasswordProtection = () => {
     handlePasswordSubmit,
     handleShowDataClick,
     handleForgotPassword,
-    handleChangeKey,
-    isChangingKey,
   };
 };

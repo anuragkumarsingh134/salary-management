@@ -2,20 +2,21 @@
 import { Card } from "@/components/ui/card";
 import { useStaffStore } from "@/store/staffStore";
 import { format } from "date-fns";
-import { Pencil, Trash2 } from "lucide-react";
+import { Trash, Pencil } from "lucide-react";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { useState } from "react";
+import { Transaction } from "@/types/staff";
+import EditTransactionDialog from "./EditTransactionDialog";
 
 interface TransactionListProps {
   selectedStaffId?: string | null;
-  onStaffSelect?: (staffId: string) => void;
-  onEditTransaction?: (transactionId: string) => void;
 }
 
-const TransactionList = ({ selectedStaffId, onStaffSelect, onEditTransaction }: TransactionListProps) => {
+const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
   const { transactions, staff, deleteTransaction } = useStaffStore();
   const { toast } = useToast();
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
 
   const getStaffName = (staffId: string) => {
     return staff.find((s) => s.id === staffId)?.name || "Unknown";
@@ -29,74 +30,56 @@ const TransactionList = ({ selectedStaffId, onStaffSelect, onEditTransaction }: 
     });
   };
 
-  // Filter transactions based on selectedStaffId if provided
-  const filteredTransactions = selectedStaffId 
-    ? transactions.filter(t => t.staffId === selectedStaffId)
-    : transactions;
+  // Don't render the card if no staff is selected
+  if (!selectedStaffId) {
+    return null;
+  }
+
+  // Get the staff member to check if they exist
+  const selectedStaffMember = staff.find(s => s.id === selectedStaffId);
+  if (!selectedStaffMember) {
+    return null;
+  }
+
+  // Show transactions for the selected staff member, regardless of active status
+  const staffTransactions = transactions.filter(t => t.staffId === selectedStaffId);
 
   return (
-    <Card className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-semibold">Transactions</h2>
-        
-        {onStaffSelect && (
-          <div className="w-64">
-            <Select 
-              value={selectedStaffId || ""} 
-              onValueChange={(value) => onStaffSelect(value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Filter by staff member" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">All Staff Members</SelectItem>
-                {staff.map((member) => (
-                  <SelectItem key={member.id} value={member.id}>
-                    {member.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
-      </div>
-      
-      <div className="space-y-3">
-        {filteredTransactions.length > 0 ? (
-          filteredTransactions.map((transaction) => (
+    <>
+      <Card className="p-6 glassmorphism">
+        <div className="space-y-4">
+          {staffTransactions.map((transaction) => (
             <div
               key={transaction.id}
-              className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+              className="flex items-center justify-between p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors"
             >
               <div>
-                <h3 className="font-semibold">{getStaffName(transaction.staffId)}</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="font-medium">{getStaffName(transaction.staffId)}</h3>
+                <p className="text-sm text-muted-foreground">
                   {transaction.description}
                 </p>
               </div>
-              <div className="flex items-center gap-6">
+              <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <p className="font-semibold">
+                  <p className="font-medium">
                     ₹{transaction.amount.toLocaleString()}
                   </p>
-                  <p className="text-sm text-gray-500">
-                    {format(new Date(transaction.date), "d MMM yyyy")}
+                  <p className="text-sm text-muted-foreground">
+                    {format(new Date(transaction.date), "dd MMM yyyy")}
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  {onEditTransaction && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEditTransaction(transaction.id);
-                      }}
-                      className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingTransaction(transaction);
+                    }}
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -104,21 +87,31 @@ const TransactionList = ({ selectedStaffId, onStaffSelect, onEditTransaction }: 
                       e.stopPropagation();
                       handleDelete(transaction.id);
                     }}
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                    className="text-red-500 hover:text-red-700"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
             </div>
-          ))
-        ) : (
-          <p className="text-gray-500 text-center py-8">
-            No transactions found
-          </p>
-        )}
-      </div>
-    </Card>
+          ))}
+          {staffTransactions.length === 0 && (
+            <p className="text-muted-foreground text-center py-8">
+              No transactions recorded for this staff member
+            </p>
+          )}
+        </div>
+      </Card>
+      {editingTransaction && (
+        <EditTransactionDialog
+          open={!!editingTransaction}
+          onOpenChange={(open) => {
+            if (!open) setEditingTransaction(null);
+          }}
+          transaction={editingTransaction}
+        />
+      )}
+    </>
   );
 };
 

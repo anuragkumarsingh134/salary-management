@@ -1,73 +1,86 @@
 
-import React from "react";
-import { DollarSign, Plus, Eye, EyeOff, KeyRound } from "lucide-react";
+import React, { useState } from "react";
+import { Plus, DollarSign, Eye, LockKeyhole, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useStoreSettings } from "@/store/storeSettingsStore";
+import { EditStoreDialog } from "./EditStoreDialog";
 
 interface DashboardHeaderProps {
   onAddTransaction: () => void;
   onAddStaff: () => void;
   onToggleShowData: () => void;
+  onChangeKey: () => void;
   showData: boolean;
-  onChangeKey?: () => void;
 }
 
 const DashboardHeader = ({
   onAddTransaction,
   onAddStaff,
   onToggleShowData,
-  showData,
   onChangeKey,
+  showData,
 }: DashboardHeaderProps) => {
+  const { settings } = useStoreSettings();
+  const [editStoreOpen, setEditStoreOpen] = useState(false);
+
   return (
-    <div className="flex justify-between items-center py-4">
-      <h1 className="text-3xl font-bold">Dashboard</h1>
-      <div className="flex space-x-2">
+    <div className="flex items-center justify-between w-full">
+      <div className="space-y-1">
+        <div className="flex items-center gap-2">
+          <h1 className="text-4xl font-bold shrink-0">Dashboard</h1>
+          {showData && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setEditStoreOpen(true)}
+              className="h-8 w-8"
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
         <Button
           onClick={onAddTransaction}
-          variant="default"
-          className="bg-gray-800 hover:bg-gray-700"
+          size="sm"
+          className="bg-primary/90 hover:bg-primary flex items-center gap-2"
         >
-          <DollarSign className="mr-2 h-4 w-4" />
+          <DollarSign className="h-4 w-4" />
           Add Transaction
         </Button>
         {showData && (
           <Button
             onClick={onAddStaff}
-            variant="default"
-            className="bg-gray-800 hover:bg-gray-700"
+            size="sm"
+            className="bg-primary/90 hover:bg-primary flex items-center gap-2"
           >
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="h-4 w-4" />
             Add Staff
           </Button>
         )}
         <Button
           onClick={onToggleShowData}
-          variant="outline"
-          className="border-gray-300"
+          variant={showData ? "outline" : "default"}
+          size="sm"
+          className="min-w-[120px] flex items-center gap-2"
         >
-          {showData ? (
-            <>
-              <EyeOff className="mr-2 h-4 w-4" />
-              Hide Data
-            </>
-          ) : (
-            <>
-              <Eye className="mr-2 h-4 w-4" />
-              Show Data
-            </>
-          )}
+          <Eye className="h-4 w-4" />
+          {showData ? "Hide Data" : "Show Data"}
         </Button>
-        {showData && onChangeKey && (
+        {showData && (
           <Button
             onClick={onChangeKey}
             variant="outline"
-            className="border-gray-300"
+            size="sm"
+            className="flex items-center gap-2"
           >
-            <KeyRound className="mr-2 h-4 w-4" />
+            <LockKeyhole className="h-4 w-4" />
             Change Key
           </Button>
         )}
       </div>
+      <EditStoreDialog open={editStoreOpen} onOpenChange={setEditStoreOpen} />
     </div>
   );
 };

@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
@@ -50,6 +51,17 @@ function Calendar({
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",
         ...classNames,
+      }}
+      formatters={{
+        formatWeekdayName: (weekday) => {
+          return weekday.toLocaleString('en-US', { weekday: 'short' });
+        },
+        formatDay: (date) => {
+          return date.getDate().toString();
+        },
+        formatCaption: (date, options) => {
+          return date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+        },
       }}
       components={{
         IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,

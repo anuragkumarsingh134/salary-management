@@ -1,11 +1,16 @@
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useStaffStore } from "@/store/staffStore";
 import { useToast } from "@/components/ui/use-toast";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { CalendarIcon } from "lucide-react";
 
 interface AddStaffDialogProps {
   open: boolean;
@@ -15,12 +20,18 @@ interface AddStaffDialogProps {
 const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
   const { toast } = useToast();
   const addStaff = useStaffStore((state) => state.addStaff);
+  const [date, setDate] = useState<Date>(new Date());
   const [formData, setFormData] = useState({
     name: "",
     position: "",
     salary: "",
-    startDate: "",
   });
+
+  const handleDateSelect = (newDate: Date | undefined) => {
+    if (newDate) {
+      setDate(newDate);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +40,7 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
         name: formData.name,
         position: formData.position,
         salary: Number(formData.salary),
-        startDate: formData.startDate,
+        startDate: format(date, "yyyy-MM-dd"),
         active: true,
       });
       toast({
@@ -37,7 +48,12 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
         description: `${formData.name} has been added to the staff list.`,
       });
       onOpenChange(false);
-      setFormData({ name: "", position: "", salary: "", startDate: "" });
+      setFormData({
+        name: "",
+        position: "",
+        salary: "",
+      });
+      setDate(new Date());
     } catch (error) {
       toast({
         title: "Error adding staff",
@@ -52,6 +68,9 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add New Staff Member</DialogTitle>
+          <DialogDescription>
+            Fill in the details below to add a new staff member.
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -89,16 +108,32 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="startDate">Start Date</Label>
-            <Input
-              id="startDate"
-              type="date"
-              value={formData.startDate}
-              onChange={(e) =>
-                setFormData({ ...formData, startDate: e.target.value })
-              }
-              required
-            />
+            <Label>Start Date</Label>
+            <div className="grid gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="date"
+                    variant={"outline"}
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {format(date, "PPP")}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={handleDateSelect}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
           <Button type="submit" className="w-full">
             Add Staff Member
