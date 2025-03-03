@@ -25,8 +25,8 @@ export const HolidayItem = ({ holiday, onEdit, onDelete }: HolidayItemProps) => 
         </p>
         <p className="text-sm text-muted-foreground">{holiday.reason}</p>
         <p className="text-xs text-muted-foreground">
-          {format(parseISO(holiday.start_date), "yyyy-MM-dd")} -{" "}
-          {format(parseISO(holiday.end_date), "yyyy-MM-dd")}
+          {format(parseISO(holiday.start_date), "dd-MM-yyyy")} -{" "}
+          {format(parseISO(holiday.end_date), "dd-MM-yyyy")}
         </p>
       </div>
       <div className="flex gap-2">

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -54,7 +53,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
         staffId: formData.staffId,
         amount: Number(formData.amount),
         type: formData.type,
-        date: format(transactionDate, "yyyy-MM-dd"),
+        date: format(transactionDate, "dd-MM-yyyy"),
         description: formData.description,
       });
 

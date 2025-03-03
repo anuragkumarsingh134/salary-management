@@ -20,12 +20,12 @@ interface DatePickerProps {
 
 export function DatePicker({ date, onDateChange, placeholder = "Select date" }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
-  const [inputValue, setInputValue] = React.useState<string>(date ? format(date, "yyyy-MM-dd") : '');
+  const [inputValue, setInputValue] = React.useState<string>(date ? format(date, "dd-MM-yyyy") : '');
 
   // Update input value when date prop changes
   React.useEffect(() => {
     if (date) {
-      setInputValue(format(date, "yyyy-MM-dd"));
+      setInputValue(format(date, "dd-MM-yyyy"));
     } else {
       setInputValue('');
     }
@@ -50,9 +50,9 @@ export function DatePicker({ date, onDateChange, placeholder = "Select date" }: 
     setInputValue(value);
     
     // Try to parse the input as a date
-    if (value && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    if (value && /^\d{2}-\d{2}-\d{4}$/.test(value)) {
       try {
-        const parsedDate = parse(value, "yyyy-MM-dd", new Date());
+        const parsedDate = parse(value, "dd-MM-yyyy", new Date());
         if (!isNaN(parsedDate.getTime())) {
           onDateChange(parsedDate);
         }
@@ -70,7 +70,7 @@ export function DatePicker({ date, onDateChange, placeholder = "Select date" }: 
         <Input
           value={inputValue}
           onChange={handleInputChange}
-          placeholder="YYYY-MM-DD"
+          placeholder="DD-MM-YYYY"
           className="w-full pr-10"
         />
         <PopoverTrigger asChild>
