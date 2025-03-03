@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { format, addDays, parse, isValid } from "date-fns";
+import { format, addDays } from "date-fns";
 import { useStaffStore } from "@/store/staffStore";
 import { AddHolidayForm } from "./AddHolidayForm";
 
