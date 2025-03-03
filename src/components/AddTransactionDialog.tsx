@@ -29,10 +29,10 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
 
   const activeStaff = staff.filter(member => member.active);
 
-  const handleDateChange = (newDate: Date | undefined) => {
-    if (newDate) {
-      console.log("New transaction date selected:", newDate);
-      setTransactionDate(newDate);
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      console.log("New transaction date selected:", date);
+      setTransactionDate(date);
     }
   };
 

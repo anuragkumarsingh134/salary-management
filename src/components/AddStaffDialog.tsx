@@ -24,10 +24,10 @@ const AddStaffDialog = ({ open, onOpenChange }: AddStaffDialogProps) => {
     salary: "",
   });
 
-  const handleDateSelect = (newDate: Date | undefined) => {
-    if (newDate) {
-      console.log("New date selected in AddStaffDialog:", newDate);
-      setStartDate(newDate);
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      console.log("New date selected in AddStaffDialog:", date);
+      setStartDate(date);
     }
   };
 

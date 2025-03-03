@@ -20,9 +20,16 @@ interface DatePickerProps {
 export function DatePicker({ date, onDateChange, placeholder = "Select date" }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
 
+  // This function will be called when a date is selected from the calendar
   const handleSelect = (newDate: Date | undefined) => {
     console.log("Calendar date selected:", newDate);
-    onDateChange(newDate);
+    if (newDate) {
+      // Create a new Date to avoid any reference issues
+      const selectedDate = new Date(newDate);
+      onDateChange(selectedDate);
+    } else {
+      onDateChange(undefined);
+    }
     setOpen(false); // Close the popover after selection
   };
 

@@ -20,7 +20,9 @@ interface EditTransactionDialogProps {
 const EditTransactionDialog = ({ open, onOpenChange, transaction }: EditTransactionDialogProps) => {
   const { toast } = useToast();
   const { staff, updateTransaction } = useStaffStore();
-  const [transactionDate, setTransactionDate] = useState<Date>(new Date(transaction.date));
+  const [transactionDate, setTransactionDate] = useState<Date>(
+    parseISO(transaction.date)
+  );
   const [formData, setFormData] = useState({
     staffId: transaction.staffId,
     amount: transaction.amount.toString(),
@@ -29,21 +31,30 @@ const EditTransactionDialog = ({ open, onOpenChange, transaction }: EditTransact
   });
 
   useEffect(() => {
+    // Update local state when transaction prop changes
     setFormData({
       staffId: transaction.staffId,
       amount: transaction.amount.toString(),
       type: transaction.type,
       description: transaction.description,
     });
-    setTransactionDate(new Date(transaction.date));
+    
+    // Ensure we're working with valid date objects
+    try {
+      const date = parseISO(transaction.date);
+      setTransactionDate(date);
+    } catch (error) {
+      console.error('Error parsing transaction date:', error);
+      setTransactionDate(new Date());
+    }
   }, [transaction]);
 
   const activeStaff = staff.filter(member => member.active);
 
-  const handleDateChange = (newDate: Date | undefined) => {
-    if (newDate) {
-      console.log("Edit transaction date changed:", newDate);
-      setTransactionDate(newDate);
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      console.log("Edit transaction date changed:", date);
+      setTransactionDate(date);
     }
   };
 

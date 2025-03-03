@@ -23,8 +23,14 @@ export const StaffEditForm = ({
   );
 
   useEffect(() => {
+    // Update local date state when editForm prop changes
     if (editForm.startDate) {
-      setStartDate(parseISO(editForm.startDate));
+      try {
+        const parsedDate = parseISO(editForm.startDate);
+        setStartDate(parsedDate);
+      } catch (error) {
+        console.error('Error parsing staff start date:', error);
+      }
     }
   }, [editForm.startDate]);
 

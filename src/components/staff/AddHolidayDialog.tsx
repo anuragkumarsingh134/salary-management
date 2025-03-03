@@ -26,6 +26,13 @@ export const AddHolidayDialog = ({
   const { toast } = useToast();
   const { fetchStaff } = useStaffStore();
 
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      console.log("Holiday start date selected:", date);
+      setStartDate(date);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -86,7 +93,7 @@ export const AddHolidayDialog = ({
           startDate={startDate}
           onDaysChange={setDays}
           onReasonChange={setReason}
-          onDateChange={setStartDate}
+          onDateChange={handleDateChange}
           onSubmit={handleSubmit}
         />
       </DialogContent>
