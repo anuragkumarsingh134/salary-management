@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useStaffStore } from "@/store/staffStore";
 import { NavBar } from "@/components/NavBar";
@@ -26,6 +27,7 @@ const Index = () => {
     handleShowDataClick,
     handleForgotPassword,
     handleChangeKey,
+    isChangingKey,
   } = usePasswordProtection();
 
   const { 
@@ -92,6 +94,7 @@ const Index = () => {
           setPassword={setPassword}
           onSubmit={handlePasswordSubmit}
           onForgotPassword={handleForgotPassword}
+          isChangingKey={isChangingKey}
         />
 
         <AddStaffDialog open={addStaffOpen} onOpenChange={setAddStaffOpen} />

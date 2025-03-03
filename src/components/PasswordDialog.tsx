@@ -18,6 +18,7 @@ interface PasswordDialogProps {
   setPassword: (password: string) => void;
   onSubmit: (e: React.FormEvent) => Promise<void>;
   onForgotPassword: () => void;
+  isChangingKey?: boolean;
 }
 
 const PasswordDialog = ({
@@ -27,6 +28,7 @@ const PasswordDialog = ({
   setPassword,
   onSubmit,
   onForgotPassword,
+  isChangingKey = false,
 }: PasswordDialogProps) => {
   const [showResetForm, setShowResetForm] = useState(false);
 
@@ -35,12 +37,18 @@ const PasswordDialog = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {showResetForm ? "Reset Password" : "Enter Password"}
+            {showResetForm 
+              ? "Reset Password" 
+              : isChangingKey 
+                ? "Change Access Key" 
+                : "Enter Password"}
           </DialogTitle>
           <DialogDescription>
             {showResetForm 
               ? "Enter your reset token and new password" 
-              : "Enter your password to view the data"}
+              : isChangingKey 
+                ? "Enter a new key to update your access credentials" 
+                : "Enter your password to view the data"}
           </DialogDescription>
         </DialogHeader>
         {showResetForm ? (
@@ -59,26 +67,28 @@ const PasswordDialog = ({
           <form onSubmit={onSubmit} className="space-y-4">
             <Input
               type="password"
-              placeholder="Enter password"
+              placeholder={isChangingKey ? "Enter new key" : "Enter password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoFocus
             />
             <div className="flex flex-col space-y-2">
               <Button type="submit" className="w-full">
-                Submit
+                {isChangingKey ? "Update Key" : "Submit"}
               </Button>
-              <Button
-                type="button"
-                variant="link"
-                className="text-sm"
-                onClick={() => {
-                  onForgotPassword();
-                  setShowResetForm(true);
-                }}
-              >
-                Forgot Password?
-              </Button>
+              {!isChangingKey && (
+                <Button
+                  type="button"
+                  variant="link"
+                  className="text-sm"
+                  onClick={() => {
+                    onForgotPassword();
+                    setShowResetForm(true);
+                  }}
+                >
+                  Forgot Password?
+                </Button>
+              )}
             </div>
           </form>
         )}
