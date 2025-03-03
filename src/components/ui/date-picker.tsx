@@ -46,7 +46,7 @@ export function DatePicker({ date, onDateChange, placeholder = "Select date" }: 
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {selectedDate ? format(selectedDate, "dd MMM yyyy") : placeholder}
+          {selectedDate ? format(selectedDate, "yyyy-MM-dd") : placeholder}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">

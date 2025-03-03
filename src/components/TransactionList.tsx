@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { useStaffStore } from "@/store/staffStore";
 import { format } from "date-fns";
@@ -64,7 +65,7 @@ const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
                     ₹{transaction.amount.toLocaleString()}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {format(new Date(transaction.date), "dd MMM yyyy")}
+                    {format(new Date(transaction.date), "yyyy-MM-dd")}
                   </p>
                 </div>
                 <div className="flex gap-2">
