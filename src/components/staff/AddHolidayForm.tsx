@@ -26,7 +26,7 @@ export const AddHolidayForm = ({
   onSubmit,
 }: AddHolidayFormProps) => {
   const [dateInputValue, setDateInputValue] = useState<string>(
-    format(startDate, "dd-MM-yyyy")
+    startDate ? format(startDate, "dd-MM-yyyy") : ""
   );
 
   useEffect(() => {
@@ -57,8 +57,10 @@ export const AddHolidayForm = ({
       } catch (error) {
         console.error("Error parsing date:", error, "Input value:", value);
       }
-    } else if (!value) {
-      onDateChange(new Date());
+    } else if (value === "") {
+      // If input is empty, don't automatically set to today's date
+      console.log("Date input cleared");
+      // We'll leave the date undefined until the user provides a valid value
     }
   };
 

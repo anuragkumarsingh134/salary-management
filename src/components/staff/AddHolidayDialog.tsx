@@ -36,6 +36,16 @@ export const AddHolidayDialog = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate that we have a valid start date
+    if (!startDate) {
+      toast({
+        title: "Missing Date",
+        description: "Please enter a valid start date (DD-MM-YYYY).",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
