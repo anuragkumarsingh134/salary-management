@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useStaffStore } from "@/store/staffStore";
 import { Transaction } from "@/types/staff";
 import { useToast } from "@/components/ui/use-toast";
-import { format, parse } from "date-fns";
+import { format } from "date-fns";
 import { DatePicker } from "@/components/ui/date-picker";
 
 interface EditTransactionDialogProps {

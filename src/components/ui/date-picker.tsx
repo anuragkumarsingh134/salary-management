@@ -14,9 +14,10 @@ import {
 interface DatePickerProps {
   date: Date | undefined
   onDateChange: (date: Date | undefined) => void
+  placeholder?: string
 }
 
-export function DatePicker({ date, onDateChange }: DatePickerProps) {
+export function DatePicker({ date, onDateChange, placeholder = "Select date" }: DatePickerProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -28,7 +29,7 @@ export function DatePicker({ date, onDateChange }: DatePickerProps) {
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {format(date || new Date(), "PPP")}
+          {date ? format(date, "MM-dd-yyyy") : placeholder}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
