@@ -92,6 +92,111 @@ pm2 save
 pm2 startup
 ```
 
+## Setup in Ubuntu Container
+
+### 1. Create and Start Ubuntu Container
+
+Using Docker:
+
+```bash
+# Pull Ubuntu image
+docker pull ubuntu:latest
+
+# Create and start the container
+docker run -it --name store-management -p 8081:8081 ubuntu:latest
+```
+
+### 2. Container Setup
+
+Once inside the container, install required tools:
+
+```bash
+# Update package lists
+apt-get update
+
+# Install essentials
+apt-get install -y curl git build-essential
+
+# Install NVM
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# Install Node.js
+nvm install --lts
+nvm use --lts
+
+# Install PM2 globally
+npm install -g pm2
+```
+
+### 3. Application Setup
+
+```bash
+# Clone the repository
+git clone <YOUR_GIT_URL>
+cd <YOUR_PROJECT_NAME>
+
+# Install dependencies
+npm install
+
+# Build the application
+npm run build
+```
+
+### 4. Running with PM2 in Container
+
+```bash
+# Start the application
+pm2 start npm --name "store-management" -- run preview
+
+# Save PM2 process list
+pm2 save
+
+# Keep container running with application
+pm2 startup
+```
+
+### 5. Accessing the Application
+
+The application will be available at:
+- http://localhost:8081 (if you've mapped port 8081 in your container)
+
+### 6. Docker Compose (Alternative)
+
+For an easier setup, you can use Docker Compose:
+
+```yaml
+# docker-compose.yml
+version: '3'
+services:
+  store-management:
+    image: ubuntu:latest
+    container_name: store-management
+    ports:
+      - "8081:8081"
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: >
+      bash -c "apt-get update && 
+      apt-get install -y curl git build-essential &&
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash &&
+      export NVM_DIR=\"$$HOME/.nvm\" &&
+      [ -s \"$$NVM_DIR/nvm.sh\" ] && \. \"$$NVM_DIR/nvm.sh\" &&
+      nvm install --lts &&
+      npm install -g pm2 &&
+      npm install &&
+      npm run build &&
+      pm2 start npm --name \"store-management\" -- run preview &&
+      pm2 logs"
+```
+
+Run with:
+```bash
+docker-compose up
+```
+
 ## Features
 
 - Staff Management
@@ -191,6 +296,11 @@ Common issues and solutions:
      rm -rf node_modules
      npm install
      ```
+
+5. Container-specific issues:
+   - If container stops unexpectedly, run with: `docker start -i store-management`
+   - For port conflicts: Change the mapped port, e.g., `-p 8082:8081`
+   - For persistence: Add a volume mount to preserve data
 
 ## Support
 
