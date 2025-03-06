@@ -13,6 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AddTransactionDialogProps {
   open: boolean;
@@ -31,6 +32,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
     type: "salary" as Transaction['type'],
     description: "",
   });
+  const isMobile = useIsMobile();
 
   const activeStaff = staff.filter(member => member.active);
 
@@ -142,9 +144,9 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className={cn("sm:max-w-[425px]", isMobile && "w-[95vw] max-w-none rounded-lg p-4")}>
         <DialogHeader>
-          <DialogTitle>Add New Transaction</DialogTitle>
+          <DialogTitle className={cn(isMobile && "text-center")}>Add New Transaction</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -155,7 +157,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
                 setFormData({ ...formData, staffId: value })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger className={cn(isMobile && "text-sm")}>
                 <SelectValue placeholder="Select staff member" />
               </SelectTrigger>
               <SelectContent>
@@ -177,6 +179,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
                 setFormData({ ...formData, amount: e.target.value })
               }
               required
+              className={cn(isMobile && "text-sm h-9")}
             />
           </div>
           <div className="space-y-2">
@@ -187,7 +190,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
                 setFormData({ ...formData, type: value })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger className={cn(isMobile && "text-sm")}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -204,20 +207,20 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
                 value={dateValue} 
                 onChange={handleDateChange} 
                 placeholder="DD-MM-YYYY"
-                className="w-full"
+                className={cn("w-full", isMobile && "text-sm h-9")}
               />
               <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     type="button"
-                    className="w-10 p-0"
+                    className={cn("w-10 p-0", isMobile && "h-9")}
                     onClick={() => setIsCalendarOpen(true)}
                   >
                     <CalendarIcon className="h-4 w-4" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className={cn("w-auto p-0", isMobile && "w-[calc(95vw-4rem)]")} align="start">
                   <Calendar
                     mode="single"
                     selected={selectedDate}
@@ -238,6 +241,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
                 setFormData({ ...formData, description: e.target.value })
               }
               required
+              className={cn(isMobile && "text-sm h-9")}
             />
           </div>
           <Button type="submit" className="w-full">
