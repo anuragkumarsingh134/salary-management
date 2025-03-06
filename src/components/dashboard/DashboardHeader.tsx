@@ -26,9 +26,9 @@ const DashboardHeader = ({
   const isMobile = useIsMobile();
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-4">
+    <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
-        <h1 className="text-2xl sm:text-4xl font-bold">Dashboard</h1>
+        <h1 className="text-2xl font-bold">Dashboard</h1>
         {showData && (
           <Button
             variant="ghost"
@@ -41,43 +41,43 @@ const DashboardHeader = ({
         )}
       </div>
       
-      <div className={`${isMobile ? 'grid grid-cols-2' : 'flex'} gap-2`}>
+      <div className="grid grid-cols-2 gap-2">
         <Button
           onClick={onAddTransaction}
           size="sm"
-          className="bg-primary/90 hover:bg-primary flex items-center justify-center gap-1 px-3"
+          className="bg-primary/90 hover:bg-primary flex items-center justify-center gap-1 px-3 h-10"
         >
           <DollarSign className="h-4 w-4" />
-          {isMobile ? 'Transaction' : 'Add Transaction'}
+          Transaction
         </Button>
         {showData && (
           <Button
             onClick={onAddStaff}
             size="sm"
-            className="bg-primary/90 hover:bg-primary flex items-center justify-center gap-1 px-3"
+            className="bg-primary/90 hover:bg-primary flex items-center justify-center gap-1 px-3 h-10"
           >
             <Plus className="h-4 w-4" />
-            {isMobile ? 'Staff' : 'Add Staff'}
+            Staff
           </Button>
         )}
         <Button
           onClick={onToggleShowData}
           variant={showData ? "outline" : "default"}
           size="sm"
-          className="flex items-center justify-center gap-1 px-3"
+          className="flex items-center justify-center gap-1 px-3 h-10"
         >
           <Eye className="h-4 w-4" />
-          {showData ? 'Hide' : 'Show'} {!isMobile && 'Data'}
+          {showData ? 'Hide' : 'Show'}
         </Button>
         {showData && (
           <Button
             onClick={onChangeKey}
             variant="outline"
             size="sm"
-            className="flex items-center justify-center gap-1 px-3"
+            className="flex items-center justify-center gap-1 px-3 h-10"
           >
             <LockKeyhole className="h-4 w-4" />
-            {isMobile ? 'Key' : 'Change Key'}
+            Key
           </Button>
         )}
       </div>

@@ -36,9 +36,9 @@ export const StaffHeader = ({
   const isMobile = useIsMobile();
 
   return (
-    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-3">
-      <h2 className="text-xl font-semibold">Staff Details</h2>
-      <div className="flex flex-wrap gap-2 items-center justify-end">
+    <div className="flex justify-between items-center gap-2 mb-2">
+      <h2 className="text-lg font-semibold">Staff Details</h2>
+      <div className="flex gap-1 items-center">
         {!isEditing && (
           <>
             <AlertDialog>

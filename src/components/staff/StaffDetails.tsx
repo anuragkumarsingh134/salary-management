@@ -76,7 +76,7 @@ export const StaffDetails = ({
   };
 
   return (
-    <Card className="p-4 glassmorphism">
+    <Card className="p-3 glassmorphism">
       <StaffHeader
         isEditing={isEditing}
         isInactive={isInactive}
@@ -90,7 +90,7 @@ export const StaffDetails = ({
         staffName={staff.name}
       />
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         {isEditing ? (
           <StaffEditForm
             editForm={editForm}
