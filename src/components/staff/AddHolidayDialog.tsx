@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { format, addDays } from "date-fns";
+import { format, addDays, subDays } from "date-fns";
 import { useStaffStore } from "@/store/staffStore";
 import { AddHolidayForm } from "./AddHolidayForm";
 
@@ -51,7 +51,11 @@ export const AddHolidayDialog = ({
       if (!user) throw new Error("Not authenticated");
       
       const holidaysTable = `holidays_${user.id.replace(/-/g, '_')}`;
-      const endDate = addDays(startDate, parseInt(days) - 1);
+      
+      // Calculate end date based on the start date and number of days
+      // If it's a future date from today, add days; if it's a past date, subtract days
+      const daysNum = parseInt(days);
+      const endDate = subDays(startDate, daysNum - 1);
 
       console.log("Submitting holiday:", {
         startDate: format(startDate, "yyyy-MM-dd"),
