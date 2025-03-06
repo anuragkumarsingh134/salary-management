@@ -9,7 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      holidays_0aba6c7f_406f_4128_8989_1e8c56de2e78: {
+      holidays_bab0c1c4_950f_428b_a1a9_e7391bd7b26d: {
         Row: {
           created_at: string
           end_date: string
@@ -39,169 +39,15 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_holidays_0aba6c7f_406f_4128_8989_1e8c56de2e78_staff_id"
+            foreignKeyName: "fk_holidays_bab0c1c4_950f_428b_a1a9_e7391bd7b26d_staff_id"
             columns: ["staff_id"]
             isOneToOne: false
-            referencedRelation: "staff_0aba6c7f_406f_4128_8989_1e8c56de2e78"
+            referencedRelation: "staff_bab0c1c4_950f_428b_a1a9_e7391bd7b26d"
             referencedColumns: ["id"]
           },
         ]
       }
-      holidays_8923bf33_db3c_4761_aabd_8b288d1df383: {
-        Row: {
-          created_at: string
-          end_date: string
-          id: string
-          reason: string
-          staff_id: string
-          start_date: string
-          status: string
-        }
-        Insert: {
-          created_at?: string
-          end_date: string
-          id?: string
-          reason: string
-          staff_id: string
-          start_date: string
-          status?: string
-        }
-        Update: {
-          created_at?: string
-          end_date?: string
-          id?: string
-          reason?: string
-          staff_id?: string
-          start_date?: string
-          status?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fk_holidays_8923bf33_db3c_4761_aabd_8b288d1df383_staff_id"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "staff_8923bf33_db3c_4761_aabd_8b288d1df383"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      holidays_b046fcd6_4f7d_417d_a853_c51696b9ee33: {
-        Row: {
-          created_at: string
-          end_date: string
-          id: string
-          reason: string
-          staff_id: string
-          start_date: string
-          status: string
-        }
-        Insert: {
-          created_at?: string
-          end_date: string
-          id?: string
-          reason: string
-          staff_id: string
-          start_date: string
-          status?: string
-        }
-        Update: {
-          created_at?: string
-          end_date?: string
-          id?: string
-          reason?: string
-          staff_id?: string
-          start_date?: string
-          status?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fk_holidays_b046fcd6_4f7d_417d_a853_c51696b9ee33_staff_id"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "staff_b046fcd6_4f7d_417d_a853_c51696b9ee33"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      staff_0aba6c7f_406f_4128_8989_1e8c56de2e78: {
-        Row: {
-          active: boolean
-          created_at: string
-          email: string | null
-          id: string
-          image: string | null
-          name: string
-          position: string
-          salary: number
-          start_date: string
-          user_id: string | null
-        }
-        Insert: {
-          active?: boolean
-          created_at?: string
-          email?: string | null
-          id?: string
-          image?: string | null
-          name: string
-          position: string
-          salary: number
-          start_date: string
-          user_id?: string | null
-        }
-        Update: {
-          active?: boolean
-          created_at?: string
-          email?: string | null
-          id?: string
-          image?: string | null
-          name?: string
-          position?: string
-          salary?: number
-          start_date?: string
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      staff_8923bf33_db3c_4761_aabd_8b288d1df383: {
-        Row: {
-          active: boolean
-          created_at: string
-          email: string | null
-          id: string
-          image: string | null
-          name: string
-          position: string
-          salary: number
-          start_date: string
-          user_id: string | null
-        }
-        Insert: {
-          active?: boolean
-          created_at?: string
-          email?: string | null
-          id?: string
-          image?: string | null
-          name: string
-          position: string
-          salary: number
-          start_date: string
-          user_id?: string | null
-        }
-        Update: {
-          active?: boolean
-          created_at?: string
-          email?: string | null
-          id?: string
-          image?: string | null
-          name?: string
-          position?: string
-          salary?: number
-          start_date?: string
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      staff_b046fcd6_4f7d_417d_a853_c51696b9ee33: {
+      staff_bab0c1c4_950f_428b_a1a9_e7391bd7b26d: {
         Row: {
           active: boolean
           created_at: string
@@ -276,7 +122,7 @@ export type Database = {
         }
         Relationships: []
       }
-      transactions_0aba6c7f_406f_4128_8989_1e8c56de2e78: {
+      transactions_bab0c1c4_950f_428b_a1a9_e7391bd7b26d: {
         Row: {
           amount: number
           created_at: string
@@ -306,86 +152,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_transactions_0aba6c7f_406f_4128_8989_1e8c56de2e78_staff_id"
+            foreignKeyName: "fk_transactions_bab0c1c4_950f_428b_a1a9_e7391bd7b26d_staff_id"
             columns: ["staff_id"]
             isOneToOne: false
-            referencedRelation: "staff_0aba6c7f_406f_4128_8989_1e8c56de2e78"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      transactions_8923bf33_db3c_4761_aabd_8b288d1df383: {
-        Row: {
-          amount: number
-          created_at: string
-          date: string
-          description: string
-          id: string
-          staff_id: string
-          type: string
-        }
-        Insert: {
-          amount: number
-          created_at?: string
-          date: string
-          description: string
-          id?: string
-          staff_id: string
-          type: string
-        }
-        Update: {
-          amount?: number
-          created_at?: string
-          date?: string
-          description?: string
-          id?: string
-          staff_id?: string
-          type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fk_transactions_8923bf33_db3c_4761_aabd_8b288d1df383_staff_id"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "staff_8923bf33_db3c_4761_aabd_8b288d1df383"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      transactions_b046fcd6_4f7d_417d_a853_c51696b9ee33: {
-        Row: {
-          amount: number
-          created_at: string
-          date: string
-          description: string
-          id: string
-          staff_id: string
-          type: string
-        }
-        Insert: {
-          amount: number
-          created_at?: string
-          date: string
-          description: string
-          id?: string
-          staff_id: string
-          type: string
-        }
-        Update: {
-          amount?: number
-          created_at?: string
-          date?: string
-          description?: string
-          id?: string
-          staff_id?: string
-          type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fk_transactions_b046fcd6_4f7d_417d_a853_c51696b9ee33_staff_id"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "staff_b046fcd6_4f7d_417d_a853_c51696b9ee33"
+            referencedRelation: "staff_bab0c1c4_950f_428b_a1a9_e7391bd7b26d"
             referencedColumns: ["id"]
           },
         ]
