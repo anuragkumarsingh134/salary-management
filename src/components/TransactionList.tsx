@@ -1,13 +1,11 @@
 
 import { Card } from "@/components/ui/card";
 import { useStaffStore } from "@/store/staffStore";
-import { format } from "date-fns";
-import { Trash, Pencil } from "lucide-react";
-import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
 import { useState } from "react";
 import { Transaction } from "@/types/staff";
 import EditTransactionDialog from "./EditTransactionDialog";
+import TransactionItem from "./transactions/TransactionItem";
 
 interface TransactionListProps {
   selectedStaffId?: string | null;
@@ -49,51 +47,13 @@ const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
       <Card className="p-6 glassmorphism">
         <div className="space-y-4">
           {staffTransactions.map((transaction) => (
-            <div
+            <TransactionItem
               key={transaction.id}
-              className="flex items-center justify-between p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors"
-            >
-              <div>
-                <h3 className="font-medium">{getStaffName(transaction.staffId)}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {transaction.description}
-                </p>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <p className="font-medium">
-                    ₹{transaction.amount.toLocaleString()}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {format(new Date(transaction.date), "yyyy-MM-dd")}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEditingTransaction(transaction);
-                    }}
-                    className="text-blue-500 hover:text-blue-700"
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(transaction.id);
-                    }}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <Trash className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
+              transaction={transaction}
+              staffName={getStaffName(transaction.staffId)}
+              onEdit={(transaction) => setEditingTransaction(transaction)}
+              onDelete={handleDelete}
+            />
           ))}
           {staffTransactions.length === 0 && (
             <p className="text-muted-foreground text-center py-8">
