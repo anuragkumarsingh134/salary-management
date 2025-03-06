@@ -144,11 +144,14 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={cn("sm:max-w-[425px]", isMobile && "w-[95vw] max-w-none rounded-lg p-4")}>
+      <DialogContent className={cn(
+        "sm:max-w-[425px]", 
+        isMobile && "w-[calc(100vw-32px)] max-w-none rounded-lg p-4 mx-auto overflow-hidden"
+      )}>
         <DialogHeader>
           <DialogTitle className={cn(isMobile && "text-center")}>Add New Transaction</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 w-full">
           <div className="space-y-2">
             <Label htmlFor="staffId">Staff Member</Label>
             <Select
@@ -202,25 +205,25 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
           </div>
           <div className="space-y-2">
             <Label>Date</Label>
-            <div className="flex gap-2">
+            <div className="flex gap-2 max-w-full">
               <Input 
                 value={dateValue} 
                 onChange={handleDateChange} 
                 placeholder="DD-MM-YYYY"
-                className={cn("w-full", isMobile && "text-sm h-9")}
+                className={cn("flex-1 min-w-0", isMobile && "text-sm h-9")}
               />
               <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     type="button"
-                    className={cn("w-10 p-0", isMobile && "h-9")}
+                    className={cn("flex-shrink-0 w-10 p-0", isMobile && "h-9")}
                     onClick={() => setIsCalendarOpen(true)}
                   >
                     <CalendarIcon className="h-4 w-4" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className={cn("w-auto p-0", isMobile && "w-[calc(95vw-4rem)]")} align="start">
+                <PopoverContent className={cn("w-auto p-0", isMobile && "w-[calc(100vw-64px)]")} align="start">
                   <Calendar
                     mode="single"
                     selected={selectedDate}
