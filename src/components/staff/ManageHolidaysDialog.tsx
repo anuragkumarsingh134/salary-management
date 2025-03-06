@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, subDays } from "date-fns";
 import { useStaffStore } from "@/store/staffStore";
 import { HolidayList } from "./HolidayList";
 import { EditHolidayForm } from "./EditHolidayForm";
@@ -32,6 +32,7 @@ export const ManageHolidaysDialog = ({
   const [editingHoliday, setEditingHoliday] = useState<Holiday | null>(null);
   const [days, setDays] = useState("");
   const [reason, setReason] = useState("");
+  const [startDate, setStartDate] = useState<Date>(new Date());
   const { toast } = useToast();
   const { fetchStaff } = useStaffStore();
 
@@ -96,6 +97,13 @@ export const ManageHolidaysDialog = ({
     }
   };
 
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      console.log("Holiday start date changed to:", date);
+      setStartDate(date);
+    }
+  };
+
   const handleEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingHoliday) return;
@@ -105,14 +113,14 @@ export const ManageHolidaysDialog = ({
       if (!user) throw new Error("Not authenticated");
       
       const holidaysTable = `holidays_${user.id.replace(/-/g, '_')}`;
-      const startDate = parseISO(editingHoliday.start_date);
-      const endDate = new Date(startDate);
-      endDate.setDate(startDate.getDate() + parseInt(days) - 1);
+      const daysNum = parseInt(days);
+      const endDate = subDays(startDate, daysNum - 1);
 
       const { error } = await supabase
         .from(holidaysTable as any)
         .update({
           reason,
+          start_date: format(startDate, "yyyy-MM-dd"),
           end_date: format(endDate, "yyyy-MM-dd"),
         })
         .eq('id', editingHoliday.id);
@@ -140,10 +148,11 @@ export const ManageHolidaysDialog = ({
   const startEdit = (holiday: Holiday) => {
     const startDate = parseISO(holiday.start_date);
     const endDate = parseISO(holiday.end_date);
-    const daysDiff = Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    const daysDiff = Math.floor((startDate.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
     
     setDays(daysDiff.toString());
     setReason(holiday.reason);
+    setStartDate(startDate);
     setEditingHoliday(holiday);
   };
 
@@ -151,6 +160,7 @@ export const ManageHolidaysDialog = ({
     setEditingHoliday(null);
     setDays("");
     setReason("");
+    setStartDate(new Date());
   };
 
   return (
@@ -164,8 +174,10 @@ export const ManageHolidaysDialog = ({
           <EditHolidayForm
             days={days}
             reason={reason}
+            startDate={startDate}
             onDaysChange={setDays}
             onReasonChange={setReason}
+            onDateChange={handleDateChange}
             onSubmit={handleEdit}
             onCancel={resetEditingState}
           />
