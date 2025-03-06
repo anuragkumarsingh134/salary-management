@@ -10,6 +10,7 @@ import { ManageHolidaysDialog } from "./ManageHolidaysDialog";
 import { useToast } from "@/components/ui/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import TransactionList from "@/components/TransactionList";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface StaffInfoProps {
   staff: StaffMember;
@@ -22,6 +23,7 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
   const [transactionsOpen, setTransactionsOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [salaryDetails, setSalaryDetails] = useState({
     daysWorked: 0,
     dailyRate: staff.salary / 30,
@@ -58,23 +60,27 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
   };
 
   return (
-    <div className="grid gap-2">
-      <div className="flex items-center space-x-3">
-        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-          <span className="text-lg font-semibold text-primary">
-            {staff.name[0]}
-          </span>
+    <div className="space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <span className="text-lg font-semibold text-primary">
+              {staff.name[0]}
+            </span>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold">{staff.name}</h3>
+            <p className="text-sm text-muted-foreground">{staff.position}</p>
+          </div>
         </div>
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold">{staff.name}</h3>
-          <p className="text-sm text-muted-foreground">{staff.position}</p>
-        </div>
-        <div className="flex gap-2">
+        
+        <div className="flex flex-wrap gap-2 mt-2 sm:mt-0 sm:ml-auto">
           <Button
             variant="outline"
             size="icon"
             onClick={handleRefresh}
             disabled={isRefreshing}
+            className="h-8 w-8"
           >
             <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
           </Button>
@@ -82,30 +88,33 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
             variant="outline"
             size="sm"
             onClick={() => setTransactionsOpen(true)}
+            className="h-8"
           >
-            <History className="mr-2 h-4 w-4" />
-            Transactions
+            <History className="mr-1 h-4 w-4" />
+            {!isMobile && "Transactions"}
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setManageHolidaysOpen(true)}
+            className="h-8"
           >
-            <List className="mr-2 h-4 w-4" />
-            Manage Holidays
+            <List className="mr-1 h-4 w-4" />
+            {!isMobile && "Manage"} 
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setAddHolidayOpen(true)}
+            className="h-8"
           >
-            <Calendar className="mr-2 h-4 w-4" />
-            Add Holiday
+            <Calendar className="mr-1 h-4 w-4" />
+            {!isMobile && "Holiday"}
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 mt-2">
+      <div className="grid grid-cols-2 gap-2">
         <div className="p-2 rounded-lg bg-secondary/30">
           <p className="text-xs text-muted-foreground">Monthly Salary</p>
           <p className="text-sm font-semibold">₹{staff.salary.toLocaleString()}</p>
@@ -116,7 +125,7 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         <div className="p-2 rounded-lg bg-secondary/30">
           <p className="text-xs text-muted-foreground">Working Days</p>
           <p className="text-sm font-semibold">{salaryDetails.daysWorked} days</p>
@@ -129,11 +138,11 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
           <p className="text-xs text-muted-foreground">Daily Rate</p>
           <p className="text-sm font-semibold">₹{salaryDetails.dailyRate.toLocaleString()}</p>
         </div>
-        <div className="p-2 rounded-lg bg-secondary/30">
+        <div className="p-2 rounded-lg bg-secondary/30 sm:col-span-2">
           <p className="text-xs text-muted-foreground">Total Earned</p>
           <p className="text-sm font-semibold">₹{salaryDetails.totalEarned.toLocaleString()}</p>
         </div>
-        <div className="p-2 rounded-lg bg-secondary/30">
+        <div className="p-2 rounded-lg bg-secondary/30 col-span-2 sm:col-span-1">
           <p className="text-xs text-muted-foreground">Balance</p>
           <p className="text-sm font-semibold">
             {salaryDetails.totalEarned > totalTransactions ? (
@@ -148,6 +157,7 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
           </p>
         </div>
       </div>
+
       {staff.startDate && (
         <p className="text-xs text-muted-foreground">
           Started {formatDistanceToNow(new Date(staff.startDate))} ago (

@@ -36,16 +36,16 @@ export const StaffHeader = ({
   const isMobile = useIsMobile();
 
   return (
-    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-3">
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-3">
       <h2 className="text-xl font-semibold">Staff Details</h2>
-      <div className="flex gap-2 items-center justify-end">
+      <div className="flex flex-wrap gap-2 items-center justify-end">
         {!isEditing && (
           <>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
                   variant="ghost"
-                  className={`w-full sm:w-auto px-4 py-2 ${
+                  className={`h-8 ${
                     isInactive
                       ? "text-red-500 hover:text-red-700 hover:bg-red-100"
                       : "text-green-500 hover:text-green-700 hover:bg-green-100"
@@ -80,11 +80,10 @@ export const StaffHeader = ({
                   <AlertDialogTrigger asChild>
                     <Button
                       variant="ghost"
-                      size={isMobile ? "default" : "icon"}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-100"
+                      size="icon"
+                      className="text-red-500 hover:text-red-700 hover:bg-red-100 h-8 w-8"
                     >
                       <Trash2 className="h-4 w-4" />
-                      {isMobile && <span className="ml-2">Delete</span>}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent className="sm:max-w-[425px]">
@@ -108,11 +107,11 @@ export const StaffHeader = ({
                 </AlertDialog>
                 <Button
                   variant="ghost"
-                  size={isMobile ? "default" : "icon"}
+                  size="icon"
                   onClick={onEdit}
+                  className="h-8 w-8"
                 >
                   <Edit2 className="h-4 w-4" />
-                  {isMobile && <span className="ml-2">Edit</span>}
                 </Button>
               </>
             )}
@@ -120,11 +119,11 @@ export const StaffHeader = ({
         )}
         <Button
           variant="ghost"
-          size={isMobile ? "default" : "icon"}
+          size="icon"
           onClick={onClose}
+          className="h-8 w-8"
         >
           <X className="h-4 w-4" />
-          {isMobile && <span className="ml-2">Close</span>}
         </Button>
       </div>
     </div>
