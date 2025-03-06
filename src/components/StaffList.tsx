@@ -58,21 +58,21 @@ const StaffList = ({ onStaffSelect }: StaffListProps) => {
   const currentStaff = showInactive ? inactiveStaff : activeStaff;
 
   return (
-    <Card className="p-6 glassmorphism">
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2 mb-4">
+    <Card className="p-4 glassmorphism">
+      <div className="space-y-3">
+        <div className="flex items-center space-x-2">
           <Switch
             id="staff-toggle"
             checked={showInactive}
             onCheckedChange={setShowInactive}
             className="data-[state=checked]:bg-[#ea384c] data-[state=unchecked]:bg-[#00FF00]"
           />
-          <Label htmlFor="staff-toggle" className="font-medium">
+          <Label htmlFor="staff-toggle" className="font-medium text-sm">
             {showInactive ? "Inactive Staff" : "Active Staff"}
           </Label>
         </div>
 
-        <div className="grid gap-3">
+        <div className="grid gap-2">
           {currentStaff.map((member) => (
             <StaffCard
               key={member.id}
@@ -82,7 +82,7 @@ const StaffList = ({ onStaffSelect }: StaffListProps) => {
             />
           ))}
           {currentStaff.length === 0 && (
-            <p className="text-muted-foreground text-center py-8">
+            <p className="text-muted-foreground text-center py-6 text-sm">
               No {showInactive ? "inactive" : "active"} staff members found
             </p>
           )}
