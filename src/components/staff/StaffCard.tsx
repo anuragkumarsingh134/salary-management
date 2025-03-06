@@ -17,19 +17,19 @@ export const StaffCard = ({ staff, onClick, isInactive }: StaffCardProps) => {
       onClick={onClick}
     >
       <div className="flex items-center space-x-4">
-        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
           <span className="text-lg font-semibold text-primary">
-            {staff.name[0]}
+            {staff.name[0].toUpperCase()}
           </span>
         </div>
-        <div>
-          <h3 className="font-medium">{staff.name}</h3>
-          <p className="text-sm text-muted-foreground">{staff.position}</p>
+        <div className="min-w-0">
+          <h3 className="font-medium text-base capitalize truncate">{staff.name}</h3>
+          <p className="text-sm text-muted-foreground capitalize">{staff.position}</p>
         </div>
       </div>
-      <div className="text-right">
-        <p className="font-medium">₹{staff.salary.toLocaleString()}/month</p>
-        <p className="text-sm text-muted-foreground">
+      <div className="text-right flex-shrink-0 ml-4">
+        <p className="font-medium whitespace-nowrap">₹{staff.salary.toLocaleString()}/month</p>
+        <p className="text-sm text-muted-foreground whitespace-nowrap">
           Joined {formatDistanceToNow(new Date(staff.startDate))} ago
         </p>
       </div>

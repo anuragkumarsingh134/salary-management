@@ -60,19 +60,19 @@ const StaffList = ({ onStaffSelect }: StaffListProps) => {
   return (
     <Card className="p-6 glassmorphism">
       <div className="space-y-4">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 mb-4">
           <Switch
             id="staff-toggle"
             checked={showInactive}
             onCheckedChange={setShowInactive}
             className="data-[state=checked]:bg-[#ea384c] data-[state=unchecked]:bg-[#00FF00]"
           />
-          <Label htmlFor="staff-toggle">
+          <Label htmlFor="staff-toggle" className="font-medium">
             {showInactive ? "Inactive Staff" : "Active Staff"}
           </Label>
         </div>
 
-        <div className="space-y-4">
+        <div className="grid gap-3">
           {currentStaff.map((member) => (
             <StaffCard
               key={member.id}
