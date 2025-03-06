@@ -62,7 +62,7 @@ export function useTransactionForm(onSuccess: () => void) {
       return;
     }
 
-    // Try to parse the date before submitting
+    // Validate the date format
     let transactionDate;
     try {
       if (/^\d{2}-\d{2}-\d{4}$/.test(dateValue)) {
@@ -95,6 +95,7 @@ export function useTransactionForm(onSuccess: () => void) {
     }
 
     try {
+      console.log("Adding transaction with date:", transactionDate);
       await addTransaction({
         staffId: formData.staffId,
         amount: Number(formData.amount),
@@ -112,6 +113,7 @@ export function useTransactionForm(onSuccess: () => void) {
       resetForm();
       onSuccess();
     } catch (error) {
+      console.error("Transaction error:", error);
       toast({
         title: "Error",
         description: "Failed to add transaction. Please try again.",

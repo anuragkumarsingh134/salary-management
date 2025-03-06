@@ -95,7 +95,7 @@ export function useEditTransactionForm(
       return;
     }
 
-    // Try to parse the date before submitting
+    // Validate the date format
     try {
       if (/^\d{2}-\d{2}-\d{4}$/.test(dateValue)) {
         const parsedDate = parse(dateValue, "dd-MM-yyyy", new Date());
@@ -125,6 +125,7 @@ export function useEditTransactionForm(
     }
 
     try {
+      console.log("Updating transaction with date:", dateValue);
       await updateTransaction(transaction.id, {
         staffId: formData.staffId,
         amount: Number(formData.amount),
@@ -140,6 +141,7 @@ export function useEditTransactionForm(
       
       onSuccess();
     } catch (error) {
+      console.error("Transaction update error:", error);
       toast({
         title: "Error",
         description: "Failed to update transaction. Please try again.",

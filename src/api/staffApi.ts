@@ -1,6 +1,8 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { StaffMember, Transaction, StaffRow, TransactionRow } from '@/types/staff';
 import { Database } from '@/integrations/supabase/types';
+import { format, parse } from 'date-fns';
 
 type Tables = Database['public']['Tables'];
 type GenericTable = Tables[keyof Tables];
@@ -36,6 +38,20 @@ const convertTransactionRowToTransaction = (row: TransactionRow): Transaction =>
   date: row.date,
   description: row.description,
 });
+
+// Format a date string to the format Supabase expects (YYYY-MM-DD)
+const formatDateForDb = (dateString: string): string => {
+  try {
+    // Parse the date from DD-MM-YYYY format
+    const parsedDate = parse(dateString, 'dd-MM-yyyy', new Date());
+    // Return in YYYY-MM-DD format for database
+    return format(parsedDate, 'yyyy-MM-dd');
+  } catch (error) {
+    console.error('Error formatting date for DB:', error);
+    // Return original string if parsing fails
+    return dateString;
+  }
+};
 
 export const fetchStaffFromApi = async () => {
   const tables = await getTableNames();
@@ -123,38 +139,54 @@ export const deleteStaffFromApi = async (id: string) => {
 
 export const addTransactionToApi = async (transaction: Omit<Transaction, 'id'>) => {
   const tables = await getTableNames();
+  
+  // Format the date correctly for the database
+  const formattedDate = formatDateForDb(transaction.date);
+  
   const { data, error } = await supabase
     .from(tables.TRANSACTIONS_TABLE as any)
     .insert([{
       staff_id: transaction.staffId,
       amount: transaction.amount,
       type: transaction.type,
-      date: transaction.date,
+      date: formattedDate,
       description: transaction.description,
     }])
     .select()
     .single() as { data: TransactionRow; error: any };
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error adding transaction:', error);
+    throw error;
+  }
   return convertTransactionRowToTransaction(data);
 };
 
 export const updateTransactionInApi = async (id: string, transaction: Partial<Omit<Transaction, 'id'>>) => {
   const tables = await getTableNames();
+  
+  // Create update data object
   const updateData: Partial<TransactionRow> = {
     ...(transaction.staffId && { staff_id: transaction.staffId }),
     ...(transaction.amount && { amount: transaction.amount }),
     ...(transaction.type && { type: transaction.type }),
-    ...(transaction.date && { date: transaction.date }),
     ...(transaction.description && { description: transaction.description }),
   };
+  
+  // Format the date correctly if it exists
+  if (transaction.date) {
+    updateData.date = formatDateForDb(transaction.date);
+  }
 
   const { error } = await supabase
     .from(tables.TRANSACTIONS_TABLE as any)
     .update(updateData)
     .eq('id', id) as { error: any };
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error updating transaction:', error);
+    throw error;
+  }
 };
 
 export const deleteTransactionFromApi = async (id: string) => {
