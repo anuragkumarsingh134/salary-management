@@ -22,10 +22,11 @@ interface TransactionFormProps {
   selectedDate: Date;
   isCalendarOpen: boolean;
   setIsCalendarOpen: (open: boolean) => void;
-  activeStaff: { id: string; name: string; }[];
+  activeStaff: { id: string; name: string; active?: boolean }[];
   handleDateChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleCalendarSelect: (date: Date | undefined) => void;
   handleSubmit: (e: React.FormEvent) => void;
+  submitLabel?: string;
 }
 
 const TransactionForm = ({
@@ -38,7 +39,8 @@ const TransactionForm = ({
   activeStaff,
   handleDateChange,
   handleCalendarSelect,
-  handleSubmit
+  handleSubmit,
+  submitLabel = "Add Transaction"
 }: TransactionFormProps) => {
   const isMobile = useIsMobile();
 
@@ -140,7 +142,7 @@ const TransactionForm = ({
         />
       </div>
       <Button type="submit" className="w-full">
-        Add Transaction
+        {submitLabel}
       </Button>
     </form>
   );
