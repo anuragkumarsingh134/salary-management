@@ -43,7 +43,7 @@ const DashboardHeader = ({
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
         <Button
           onClick={onAddTransaction}
           size="default"
