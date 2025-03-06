@@ -6,6 +6,7 @@ import { StaffDetails } from "@/components/staff/StaffDetails";
 import { StaffCard } from "@/components/staff/StaffCard";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface StaffListProps {
   onStaffSelect?: (staffId: string | null) => void;
@@ -15,6 +16,7 @@ const StaffList = ({ onStaffSelect }: StaffListProps) => {
   const { staff, transactions, updateStaff, deleteStaff } = useStaffStore();
   const [selectedStaff, setSelectedStaff] = useState<string | null>(null);
   const [showInactive, setShowInactive] = useState(false);
+  const isMobile = useIsMobile();
 
   const activeStaff = staff.filter((member) => member.active);
   const inactiveStaff = staff.filter((member) => !member.active);
@@ -58,21 +60,21 @@ const StaffList = ({ onStaffSelect }: StaffListProps) => {
   const currentStaff = showInactive ? inactiveStaff : activeStaff;
 
   return (
-    <Card className="p-4 glassmorphism">
-      <div className="space-y-3">
-        <div className="flex items-center space-x-2">
+    <Card className={`glassmorphism ${isMobile ? 'p-4' : 'p-6'}`}>
+      <div className={`space-y-${isMobile ? '3' : '4'}`}>
+        <div className={`flex items-center space-x-2 ${!isMobile && 'mb-4'}`}>
           <Switch
             id="staff-toggle"
             checked={showInactive}
             onCheckedChange={setShowInactive}
             className="data-[state=checked]:bg-[#ea384c] data-[state=unchecked]:bg-[#00FF00]"
           />
-          <Label htmlFor="staff-toggle" className="font-medium text-sm">
+          <Label htmlFor="staff-toggle" className={`font-medium ${isMobile ? 'text-sm' : ''}`}>
             {showInactive ? "Inactive Staff" : "Active Staff"}
           </Label>
         </div>
 
-        <div className="grid gap-2">
+        <div className={`grid gap-${isMobile ? '2' : '3'}`}>
           {currentStaff.map((member) => (
             <StaffCard
               key={member.id}
@@ -82,7 +84,7 @@ const StaffList = ({ onStaffSelect }: StaffListProps) => {
             />
           ))}
           {currentStaff.length === 0 && (
-            <p className="text-muted-foreground text-center py-6 text-sm">
+            <p className={`text-muted-foreground text-center ${isMobile ? 'py-6 text-sm' : 'py-8'}`}>
               No {showInactive ? "inactive" : "active"} staff members found
             </p>
           )}
