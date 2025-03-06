@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { StaffMember, Transaction, StaffRow, TransactionRow } from '@/types/staff';
 import { Database } from '@/integrations/supabase/types';
@@ -104,12 +103,22 @@ export const updateStaffInApi = async (id: string, staff: Partial<StaffMember>) 
 
 export const deleteStaffFromApi = async (id: string) => {
   const tables = await getTableNames();
-  const { error } = await supabase
+  
+  // First delete all transactions associated with the staff member
+  const { error: transactionError } = await supabase
+    .from(tables.TRANSACTIONS_TABLE as any)
+    .delete()
+    .eq('staff_id', id);
+    
+  if (transactionError) throw transactionError;
+  
+  // Then delete the staff member
+  const { error: staffError } = await supabase
     .from(tables.STAFF_TABLE as any)
     .delete()
-    .eq('id', id) as { error: any };
-
-  if (error) throw error;
+    .eq('id', id);
+    
+  if (staffError) throw staffError;
 };
 
 export const addTransactionToApi = async (transaction: Omit<Transaction, 'id'>) => {
