@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { format, addDays, subDays } from "date-fns";
+import { format, subDays } from "date-fns";
 import { useStaffStore } from "@/store/staffStore";
 import { AddHolidayForm } from "./AddHolidayForm";
 
@@ -52,9 +52,11 @@ export const AddHolidayDialog = ({
       
       const holidaysTable = `holidays_${user.id.replace(/-/g, '_')}`;
       
-      // Calculate end date based on the start date and number of days
-      // If it's a future date from today, add days; if it's a past date, subtract days
+      // Use the input days directly - this is the primary source of truth
       const daysNum = parseInt(days);
+      
+      // Calculate an end date for display purposes only
+      // This doesn't affect the actual holiday calculation
       const endDate = subDays(startDate, daysNum - 1);
 
       console.log("Submitting holiday:", {

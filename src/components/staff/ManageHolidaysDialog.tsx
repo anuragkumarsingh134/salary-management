@@ -1,8 +1,9 @@
+
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { format, parseISO, subDays } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { useStaffStore } from "@/store/staffStore";
 import { HolidayList } from "./HolidayList";
 import { EditHolidayForm } from "./EditHolidayForm";
@@ -114,12 +115,22 @@ export const ManageHolidaysDialog = ({
       const holidaysTable = `holidays_${user.id.replace(/-/g, '_')}`;
       const daysNum = parseInt(days);
       
-      // Calculate end date by subtracting days from start date
-      const endDate = subDays(startDate, daysNum - 1);
+      // We use the input days directly and don't calculate from dates
+      // The end_date field is still required in the database, but we'll set it 
+      // based on the input days for information purposes only
+      
+      // Using startDate and inputted days for database record
+      const formattedStartDate = format(startDate, "yyyy-MM-dd");
+      
+      // For display purposes, calculate an end date
+      // This doesn't affect the actual holiday calculation
+      const displayEndDate = new Date(startDate);
+      displayEndDate.setDate(displayEndDate.getDate() - (daysNum - 1));
+      const formattedEndDate = format(displayEndDate, "yyyy-MM-dd");
 
       console.log("Updating holiday with:", {
-        startDate: format(startDate, "yyyy-MM-dd"),
-        endDate: format(endDate, "yyyy-MM-dd"),
+        startDate: formattedStartDate,
+        endDate: formattedEndDate,
         days: daysNum,
         reason
       });
@@ -128,8 +139,8 @@ export const ManageHolidaysDialog = ({
         .from(holidaysTable as any)
         .update({
           reason,
-          start_date: format(startDate, "yyyy-MM-dd"),
-          end_date: format(endDate, "yyyy-MM-dd"),
+          start_date: formattedStartDate,
+          end_date: formattedEndDate,
         })
         .eq('id', editingHoliday.id);
 
@@ -154,15 +165,20 @@ export const ManageHolidaysDialog = ({
   };
 
   const startEdit = (holiday: Holiday) => {
-    const startDate = parseISO(holiday.start_date);
-    const endDate = parseISO(holiday.end_date);
-    
-    // Calculate days difference (add 1 because both start and end dates are inclusive)
-    const daysDiff = Math.floor((startDate.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-    
-    setDays(daysDiff.toString());
+    // When starting edit, set the days based on database value
+    setStartDate(parseISO(holiday.start_date));
     setReason(holiday.reason);
-    setStartDate(startDate);
+    
+    // Calculate the exact number of days from the holiday record
+    // This ensures we're using the stored value, not recalculating
+    const parsedStartDate = parseISO(holiday.start_date);
+    const parsedEndDate = parseISO(holiday.end_date);
+    
+    // Count the number of days (inclusive) by examining the dates
+    const timeDiff = Math.abs(parsedStartDate.getTime() - parsedEndDate.getTime());
+    const daysCount = Math.floor(timeDiff / (1000 * 3600 * 24)) + 1; // +1 because both days are inclusive
+    
+    setDays(daysCount.toString());
     setEditingHoliday(holiday);
   };
 

@@ -74,7 +74,7 @@ export const AddHolidayForm = ({
           onChange={handleDateChange}
           placeholder="DD-MM-YYYY"
         />
-        <p className="text-xs text-muted-foreground">Format: DD-MM-YYYY</p>
+        <p className="text-xs text-muted-foreground">Start date is for information only</p>
       </div>
       <div className="space-y-2">
         <Label>Number of Days</Label>
@@ -86,6 +86,7 @@ export const AddHolidayForm = ({
           min="1"
           required
         />
+        <p className="text-xs text-muted-foreground">This directly determines the holiday duration</p>
       </div>
       <Textarea
         placeholder="Reason for holiday"

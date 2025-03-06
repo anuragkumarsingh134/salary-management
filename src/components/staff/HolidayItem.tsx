@@ -20,7 +20,7 @@ export const HolidayItem = ({ holiday, onEdit, onDelete }: HolidayItemProps) => 
   // Calculate days correctly based on start and end date
   const startDate = parseISO(holiday.start_date);
   const endDate = parseISO(holiday.end_date);
-  const days = Math.abs(differenceInDays(endDate, startDate)) + 1;
+  const days = Math.abs(differenceInDays(startDate, endDate)) + 1;
   
   return (
     <div className="flex items-center justify-between p-4 rounded-lg border">
@@ -30,8 +30,7 @@ export const HolidayItem = ({ holiday, onEdit, onDelete }: HolidayItemProps) => 
         </p>
         <p className="text-sm text-muted-foreground">{holiday.reason}</p>
         <p className="text-xs text-muted-foreground">
-          {format(parseISO(holiday.start_date), "dd-MM-yyyy")} to {" "}
-          {format(parseISO(holiday.end_date), "dd-MM-yyyy")}
+          From: {format(parseISO(holiday.start_date), "dd-MM-yyyy")}
         </p>
       </div>
       <div className="flex gap-2">

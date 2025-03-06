@@ -101,6 +101,7 @@ export const EditHolidayForm = ({
             </PopoverContent>
           </Popover>
         </div>
+        <p className="text-xs text-muted-foreground">Start date is for information only</p>
       </div>
       
       <div className="grid gap-2">
@@ -116,6 +117,7 @@ export const EditHolidayForm = ({
           min="1"
           required
         />
+        <p className="text-xs text-muted-foreground">This directly determines the holiday duration</p>
       </div>
       
       <div className="grid gap-2">

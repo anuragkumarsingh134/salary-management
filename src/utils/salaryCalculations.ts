@@ -51,7 +51,8 @@ export const calculateSalaryDetails = async (salary: number, startDate: string, 
     let holidayDays = 0;
     if (holidays) {
       holidays.forEach(holiday => {
-        // Validate each holiday date before processing
+        // Calculate holiday days from the difference between start and end dates
+        // This ensures we're using the stored values that were based on user input
         const holidayStart = parseISO(holiday.start_date);
         const holidayEnd = parseISO(holiday.end_date);
         
@@ -61,7 +62,8 @@ export const calculateSalaryDetails = async (salary: number, startDate: string, 
         }
 
         // Add 1 to include both start and end dates
-        holidayDays += differenceInDays(holidayEnd, holidayStart) + 1;
+        const daysForThisHoliday = Math.abs(differenceInDays(holidayStart, holidayEnd)) + 1;
+        holidayDays += daysForThisHoliday;
       });
     }
 
