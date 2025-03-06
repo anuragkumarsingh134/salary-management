@@ -22,9 +22,9 @@ const TransactionItem = ({
   
   return (
     <div
-      className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors"
+      className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors w-full"
     >
-      <div>
+      <div className="w-full sm:w-auto">
         <h3 className="font-medium">{staffName}</h3>
         <p className="text-sm text-muted-foreground">
           {transaction.description}
@@ -39,30 +39,57 @@ const TransactionItem = ({
             {format(new Date(transaction.date), "yyyy-MM-dd")}
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size={isMobile ? "sm" : "icon"}
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit(transaction);
-            }}
-            className="text-blue-500 hover:text-blue-700"
-          >
-            <Pencil className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />
-          </Button>
-          <Button
-            variant="ghost"
-            size={isMobile ? "sm" : "icon"}
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(transaction.id);
-            }}
-            className="text-red-500 hover:text-red-700"
-          >
-            <Trash className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />
-          </Button>
-        </div>
+        {isMobile ? (
+          <div className="flex gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(transaction);
+              }}
+              className="text-blue-500 hover:text-blue-700 h-8 w-8 p-0"
+            >
+              <Pencil className="h-3 w-3" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(transaction.id);
+              }}
+              className="text-red-500 hover:text-red-700 h-8 w-8 p-0"
+            >
+              <Trash className="h-3 w-3" />
+            </Button>
+          </div>
+        ) : (
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(transaction);
+              }}
+              className="text-blue-500 hover:text-blue-700"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(transaction.id);
+              }}
+              className="text-red-500 hover:text-red-700"
+            >
+              <Trash className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
