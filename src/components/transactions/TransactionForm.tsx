@@ -124,6 +124,7 @@ const TransactionForm = ({
                 onSelect={handleCalendarSelect}
                 initialFocus
                 className="pointer-events-auto"
+                disabled={(date) => false} // Ensure no dates are disabled
               />
             </PopoverContent>
           </Popover>
