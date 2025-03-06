@@ -1,4 +1,3 @@
-
 import { formatDistanceToNow } from "date-fns";
 import { StaffMember } from "@/types/staff";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -16,10 +15,10 @@ export const StaffCard = ({ staff, onClick, isInactive }: StaffCardProps) => {
     <div
       className={`flex items-center justify-between rounded-lg ${
         isInactive ? 'bg-secondary/30' : 'bg-secondary/50 hover:bg-secondary/70'
-      } transition-colors cursor-pointer ${isMobile ? 'p-3 gap-2' : 'p-4'}`}
+      } transition-colors cursor-pointer ${isMobile ? 'p-3' : 'p-4'}`}
       onClick={onClick}
     >
-      <div className={`flex items-center min-w-0 ${isMobile ? 'gap-2' : 'space-x-4'}`}>
+      <div className={`flex items-center min-w-0 ${isMobile ? 'gap-2' : 'gap-4'}`}>
         <div className={`rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 ${isMobile ? 'w-8 h-8' : 'w-10 h-10'}`}>
           <span className={`font-semibold text-primary ${isMobile ? 'text-sm' : 'text-lg'}`}>
             {staff.name[0].toUpperCase()}

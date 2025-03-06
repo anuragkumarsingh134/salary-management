@@ -65,7 +65,7 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
             <span className="text-lg font-semibold text-primary">
-              {staff.name[0]}
+              {staff.name[0].toUpperCase()}
             </span>
           </div>
           <div>
@@ -77,39 +77,40 @@ export const StaffInfo = ({ staff, totalTransactions }: StaffInfoProps) => {
         <div className="flex flex-wrap gap-2 mt-2 sm:mt-0 sm:ml-auto">
           <Button
             variant="outline"
-            size="icon"
+            size={isMobile ? "icon" : "default"}
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="h-8 w-8"
+            className={isMobile ? "h-8 w-8" : "h-9"}
           >
-            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''} ${!isMobile && 'mr-2'}`} />
+            {!isMobile && "Refresh"}
           </Button>
           <Button
             variant="outline"
-            size="sm"
+            size={isMobile ? "sm" : "default"}
             onClick={() => setTransactionsOpen(true)}
-            className="h-8"
+            className={isMobile ? "h-8" : "h-9"}
           >
-            <History className="mr-1 h-4 w-4" />
-            {!isMobile && "Transactions"}
+            <History className={`h-4 w-4 ${!isMobile && 'mr-2'}`} />
+            Transactions
           </Button>
           <Button
             variant="outline"
-            size="sm"
+            size={isMobile ? "sm" : "default"}
             onClick={() => setManageHolidaysOpen(true)}
-            className="h-8"
+            className={isMobile ? "h-8" : "h-9"}
           >
-            <List className="mr-1 h-4 w-4" />
-            {!isMobile && "Manage"} 
+            <List className={`h-4 w-4 ${!isMobile && 'mr-2'}`} />
+            Manage
           </Button>
           <Button
             variant="outline"
-            size="sm"
+            size={isMobile ? "sm" : "default"}
             onClick={() => setAddHolidayOpen(true)}
-            className="h-8"
+            className={isMobile ? "h-8" : "h-9"}
           >
-            <Calendar className="mr-1 h-4 w-4" />
-            {!isMobile && "Holiday"}
+            <Calendar className={`h-4 w-4 ${!isMobile && 'mr-2'}`} />
+            Holiday
           </Button>
         </div>
       </div>
