@@ -17,15 +17,20 @@ interface HolidayItemProps {
 }
 
 export const HolidayItem = ({ holiday, onEdit, onDelete }: HolidayItemProps) => {
+  // Calculate days correctly based on start and end date
+  const startDate = parseISO(holiday.start_date);
+  const endDate = parseISO(holiday.end_date);
+  const days = Math.abs(differenceInDays(endDate, startDate)) + 1;
+  
   return (
     <div className="flex items-center justify-between p-4 rounded-lg border">
       <div>
         <p className="font-medium">
-          {differenceInDays(parseISO(holiday.end_date), parseISO(holiday.start_date)) + 1} days
+          {days} days
         </p>
         <p className="text-sm text-muted-foreground">{holiday.reason}</p>
         <p className="text-xs text-muted-foreground">
-          {format(parseISO(holiday.start_date), "dd-MM-yyyy")} -{" "}
+          {format(parseISO(holiday.start_date), "dd-MM-yyyy")} to {" "}
           {format(parseISO(holiday.end_date), "dd-MM-yyyy")}
         </p>
       </div>
