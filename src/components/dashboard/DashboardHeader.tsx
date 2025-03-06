@@ -41,9 +41,53 @@ const DashboardHeader = ({
             </Button>
           )}
         </div>
+        <div className="hidden md:flex items-center gap-3">
+          <Button
+            onClick={onAddTransaction}
+            size="default"
+            className="bg-zinc-800 hover:bg-zinc-900 flex items-center gap-2"
+          >
+            <DollarSign className="h-4 w-4" />
+            <span>Add Transaction</span>
+          </Button>
+          
+          {showData && (
+            <Button
+              onClick={onAddStaff}
+              size="default"
+              className="bg-zinc-800 hover:bg-zinc-900 flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Add Staff</span>
+            </Button>
+          )}
+          
+          <Button
+            onClick={onToggleShowData}
+            variant="outline"
+            size="default"
+            className="flex items-center gap-2"
+          >
+            <Eye className="h-4 w-4" />
+            <span>{showData ? 'Hide Data' : 'Show Data'}</span>
+          </Button>
+          
+          {showData && (
+            <Button
+              onClick={onChangeKey}
+              variant="outline"
+              size="default"
+              className="flex items-center gap-2"
+            >
+              <LockKeyhole className="h-4 w-4" />
+              <span>Change Key</span>
+            </Button>
+          )}
+        </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+      {/* Mobile view buttons */}
+      <div className="grid grid-cols-1 gap-3 md:hidden">
         <Button
           onClick={onAddTransaction}
           size="default"
