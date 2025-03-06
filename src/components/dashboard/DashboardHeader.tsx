@@ -26,26 +26,22 @@ const DashboardHeader = ({
   const isMobile = useIsMobile();
 
   return (
-    <div className="flex flex-col w-full gap-4">
-      <div className="flex items-center justify-between w-full">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-4xl font-bold shrink-0">Dashboard</h1>
-            {showData && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setEditStoreOpen(true)}
-                className="h-8 w-8"
-              >
-                <Settings className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        </div>
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-4">
+      <div className="flex items-center gap-2">
+        <h1 className="text-2xl sm:text-4xl font-bold">Dashboard</h1>
+        {showData && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setEditStoreOpen(true)}
+            className="h-8 w-8"
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
+        )}
       </div>
       
-      <div className={`grid ${isMobile ? 'grid-cols-2' : 'flex'} gap-2 w-full`}>
+      <div className={`${isMobile ? 'grid grid-cols-2' : 'flex'} gap-2`}>
         <Button
           onClick={onAddTransaction}
           size="sm"
@@ -71,7 +67,7 @@ const DashboardHeader = ({
           className="flex items-center justify-center gap-1 px-3"
         >
           <Eye className="h-4 w-4" />
-          {showData ? 'Hide' : 'Show'}
+          {showData ? 'Hide' : 'Show'} {!isMobile && 'Data'}
         </Button>
         {showData && (
           <Button
@@ -81,7 +77,7 @@ const DashboardHeader = ({
             className="flex items-center justify-center gap-1 px-3"
           >
             <LockKeyhole className="h-4 w-4" />
-            Key
+            {isMobile ? 'Key' : 'Change Key'}
           </Button>
         )}
       </div>
