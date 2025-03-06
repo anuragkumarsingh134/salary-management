@@ -9,6 +9,10 @@ import { useStaffStore } from "@/store/staffStore";
 import { Transaction } from "@/types/staff";
 import { useToast } from "@/components/ui/use-toast";
 import { format, parse, isValid } from "date-fns";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface AddTransactionDialogProps {
   open: boolean;
@@ -18,7 +22,9 @@ interface AddTransactionDialogProps {
 const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps) => {
   const { toast } = useToast();
   const { staff, addTransaction } = useStaffStore();
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [dateValue, setDateValue] = useState(format(new Date(), "dd-MM-yyyy"));
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [formData, setFormData] = useState({
     staffId: "",
     amount: "",
@@ -31,6 +37,30 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setDateValue(value);
+    
+    // Try to parse the input as a date
+    if (value && /^\d{2}-\d{2}-\d{4}$/.test(value)) {
+      try {
+        const parsedDate = parse(value, "dd-MM-yyyy", new Date());
+        if (isValid(parsedDate)) {
+          setSelectedDate(parsedDate);
+        }
+      } catch (error) {
+        console.error("Error parsing date:", error);
+      }
+    }
+  };
+
+  const handleCalendarSelect = (date: Date | undefined) => {
+    if (date) {
+      setSelectedDate(date);
+      try {
+        setDateValue(format(date, "dd-MM-yyyy"));
+      } catch (e) {
+        console.error("Error formatting selected date:", e);
+      }
+      setIsCalendarOpen(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -100,6 +130,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
         description: "",
       });
       setDateValue(format(new Date(), "dd-MM-yyyy"));
+      setSelectedDate(new Date());
     } catch (error) {
       toast({
         title: "Error",
@@ -168,11 +199,35 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
           </div>
           <div className="space-y-2">
             <Label>Date</Label>
-            <Input 
-              value={dateValue} 
-              onChange={handleDateChange} 
-              placeholder="DD-MM-YYYY"
-            />
+            <div className="flex gap-2">
+              <Input 
+                value={dateValue} 
+                onChange={handleDateChange} 
+                placeholder="DD-MM-YYYY"
+                className="w-full"
+              />
+              <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    type="button"
+                    className="w-10 p-0"
+                    onClick={() => setIsCalendarOpen(true)}
+                  >
+                    <CalendarIcon className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={handleCalendarSelect}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
