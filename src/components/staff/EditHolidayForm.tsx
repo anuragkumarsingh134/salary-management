@@ -5,9 +5,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { format, parse, isValid } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface EditHolidayFormProps {
   days: string;
@@ -31,35 +31,51 @@ export const EditHolidayForm = ({
   onCancel,
 }: EditHolidayFormProps) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [dateString, setDateString] = useState(format(startDate, "dd-MM-yyyy"));
+  const [dateString, setDateString] = useState(() => {
+    try {
+      return format(startDate, "dd-MM-yyyy");
+    } catch (e) {
+      console.error("Invalid date", e);
+      return "";
+    }
+  });
+
+  // Update dateString when startDate prop changes
+  useEffect(() => {
+    try {
+      if (startDate && isValid(startDate)) {
+        setDateString(format(startDate, "dd-MM-yyyy"));
+      }
+    } catch (e) {
+      console.error("Error formatting date:", e);
+    }
+  }, [startDate]);
 
   const handleManualDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDateString(e.target.value);
+    const value = e.target.value;
+    setDateString(value);
     
     // Try to parse the manually entered date
-    try {
-      const parts = e.target.value.split('-');
-      if (parts.length === 3) {
-        const day = parseInt(parts[0], 10);
-        const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed in JS Date
-        const year = parseInt(parts[2], 10);
-        
-        if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
-          const newDate = new Date(year, month, day);
-          if (newDate.toString() !== "Invalid Date") {
-            onDateChange(newDate);
-          }
+    if (value && /^\d{2}-\d{2}-\d{4}$/.test(value)) {
+      try {
+        const parsedDate = parse(value, "dd-MM-yyyy", new Date());
+        if (isValid(parsedDate)) {
+          onDateChange(parsedDate);
         }
+      } catch (error) {
+        console.error("Error parsing date:", error);
       }
-    } catch (error) {
-      console.error("Error parsing date:", error);
     }
   };
 
   const handleCalendarSelect = (date: Date | undefined) => {
     if (date) {
       onDateChange(date);
-      setDateString(format(date, "dd-MM-yyyy"));
+      try {
+        setDateString(format(date, "dd-MM-yyyy"));
+      } catch (e) {
+        console.error("Error formatting selected date:", e);
+      }
       setIsCalendarOpen(false);
     }
   };
@@ -90,7 +106,7 @@ export const EditHolidayForm = ({
                 <CalendarIcon className="h-4 w-4" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
+            <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
                 selected={startDate}

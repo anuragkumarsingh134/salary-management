@@ -5,6 +5,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { format, parse, isValid } from "date-fns";
 import { useState, useEffect } from "react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface AddHolidayFormProps {
   days: string;
@@ -25,9 +29,15 @@ export const AddHolidayForm = ({
   onDateChange,
   onSubmit,
 }: AddHolidayFormProps) => {
-  const [dateInputValue, setDateInputValue] = useState<string>(
-    startDate ? format(startDate, "dd-MM-yyyy") : ""
-  );
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [dateInputValue, setDateInputValue] = useState<string>(() => {
+    try {
+      return startDate ? format(startDate, "dd-MM-yyyy") : "";
+    } catch (error) {
+      console.error('Error formatting initial date:', error);
+      return "";
+    }
+  });
 
   useEffect(() => {
     // Update local date state when startDate prop changes
@@ -49,18 +59,27 @@ export const AddHolidayForm = ({
       try {
         const parsedDate = parse(value, "dd-MM-yyyy", new Date());
         if (isValid(parsedDate)) {
-          console.log("Valid date parsed:", parsedDate, "Original input:", value);
+          console.log("Valid date parsed:", parsedDate);
           onDateChange(parsedDate);
-        } else {
-          console.log("Invalid date format:", value);
         }
       } catch (error) {
-        console.error("Error parsing date:", error, "Input value:", value);
+        console.error("Error parsing date:", error);
       }
     } else if (value === "") {
       // If input is empty, don't automatically set to today's date
       console.log("Date input cleared");
-      // We'll leave the date undefined until the user provides a valid value
+    }
+  };
+
+  const handleCalendarSelect = (date: Date | undefined) => {
+    if (date) {
+      onDateChange(date);
+      try {
+        setDateInputValue(format(date, "dd-MM-yyyy"));
+      } catch (e) {
+        console.error("Error formatting selected date:", e);
+      }
+      setIsCalendarOpen(false);
     }
   };
 
@@ -68,12 +87,36 @@ export const AddHolidayForm = ({
     <form onSubmit={onSubmit} className="grid gap-4 py-4">
       <div className="space-y-2">
         <Label>Start Date</Label>
-        <Input
-          type="text"
-          value={dateInputValue}
-          onChange={handleDateChange}
-          placeholder="DD-MM-YYYY"
-        />
+        <div className="flex gap-2">
+          <Input
+            type="text"
+            value={dateInputValue}
+            onChange={handleDateChange}
+            placeholder="DD-MM-YYYY"
+            className="w-full"
+          />
+          <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                type="button"
+                className="w-10 p-0"
+                onClick={() => setIsCalendarOpen(true)}
+              >
+                <CalendarIcon className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={startDate}
+                onSelect={handleCalendarSelect}
+                initialFocus
+                className="pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
         <p className="text-xs text-muted-foreground">Start date is for information only</p>
       </div>
       <div className="space-y-2">
@@ -88,12 +131,15 @@ export const AddHolidayForm = ({
         />
         <p className="text-xs text-muted-foreground">This directly determines the holiday duration</p>
       </div>
-      <Textarea
-        placeholder="Reason for holiday"
-        value={reason}
-        onChange={(e) => onReasonChange(e.target.value)}
-        required
-      />
+      <div className="space-y-2">
+        <Label>Reason</Label>
+        <Textarea
+          placeholder="Reason for holiday"
+          value={reason}
+          onChange={(e) => onReasonChange(e.target.value)}
+          required
+        />
+      </div>
       <Button type="submit">Add Holiday</Button>
     </form>
   );
