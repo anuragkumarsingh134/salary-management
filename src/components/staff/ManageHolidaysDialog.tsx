@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
@@ -114,7 +113,16 @@ export const ManageHolidaysDialog = ({
       
       const holidaysTable = `holidays_${user.id.replace(/-/g, '_')}`;
       const daysNum = parseInt(days);
+      
+      // Calculate end date by subtracting days from start date
       const endDate = subDays(startDate, daysNum - 1);
+
+      console.log("Updating holiday with:", {
+        startDate: format(startDate, "yyyy-MM-dd"),
+        endDate: format(endDate, "yyyy-MM-dd"),
+        days: daysNum,
+        reason
+      });
 
       const { error } = await supabase
         .from(holidaysTable as any)
@@ -148,6 +156,8 @@ export const ManageHolidaysDialog = ({
   const startEdit = (holiday: Holiday) => {
     const startDate = parseISO(holiday.start_date);
     const endDate = parseISO(holiday.end_date);
+    
+    // Calculate days difference (add 1 because both start and end dates are inclusive)
     const daysDiff = Math.floor((startDate.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
     
     setDays(daysDiff.toString());

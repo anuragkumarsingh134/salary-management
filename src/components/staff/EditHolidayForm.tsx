@@ -7,6 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface EditHolidayFormProps {
   days: string;
@@ -29,34 +30,77 @@ export const EditHolidayForm = ({
   onSubmit,
   onCancel,
 }: EditHolidayFormProps) => {
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [dateString, setDateString] = useState(format(startDate, "dd-MM-yyyy"));
+
+  const handleManualDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDateString(e.target.value);
+    
+    // Try to parse the manually entered date
+    try {
+      const parts = e.target.value.split('-');
+      if (parts.length === 3) {
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed in JS Date
+        const year = parseInt(parts[2], 10);
+        
+        if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+          const newDate = new Date(year, month, day);
+          if (newDate.toString() !== "Invalid Date") {
+            onDateChange(newDate);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error parsing date:", error);
+    }
+  };
+
+  const handleCalendarSelect = (date: Date | undefined) => {
+    if (date) {
+      onDateChange(date);
+      setDateString(format(date, "dd-MM-yyyy"));
+      setIsCalendarOpen(false);
+    }
+  };
+
   return (
     <form onSubmit={onSubmit} className="grid gap-4 py-4">
       <div className="grid gap-2">
         <label htmlFor="startDate" className="text-sm font-medium">
           Start Date
         </label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                !startDate && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {startDate ? format(startDate, "dd-MM-yyyy") : "Select date"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar
-              mode="single"
-              selected={startDate}
-              onSelect={onDateChange}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
+        <div className="flex gap-2">
+          <Input
+            id="startDate"
+            type="text"
+            placeholder="DD-MM-YYYY"
+            value={dateString}
+            onChange={handleManualDateChange}
+            className="w-full"
+          />
+          <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                type="button"
+                className="w-10 p-0"
+                onClick={() => setIsCalendarOpen(true)}
+              >
+                <CalendarIcon className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={startDate}
+                onSelect={handleCalendarSelect}
+                initialFocus
+                className="pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
       
       <div className="grid gap-2">
