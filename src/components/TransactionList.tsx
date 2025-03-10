@@ -40,7 +40,14 @@ const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
   }
 
   // Show transactions for the selected staff member, regardless of active status
-  const staffTransactions = transactions.filter(t => t.staffId === selectedStaffId);
+  const staffTransactions = transactions
+    .filter(t => t.staffId === selectedStaffId)
+    // Sort transactions by date in descending order (newest first)
+    .sort((a, b) => {
+      const dateA = new Date(a.date.split('-').reverse().join('-'));
+      const dateB = new Date(b.date.split('-').reverse().join('-'));
+      return dateB.getTime() - dateA.getTime();
+    });
 
   return (
     <>
