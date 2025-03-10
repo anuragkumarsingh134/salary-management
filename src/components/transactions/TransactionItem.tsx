@@ -1,6 +1,6 @@
 
 import { Transaction } from "@/types/staff";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { Trash, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -20,6 +20,22 @@ const TransactionItem = ({
 }: TransactionItemProps) => {
   const isMobile = useIsMobile();
   
+  // Format the date correctly for display
+  const formatDisplayDate = (dateString: string): string => {
+    try {
+      // Check if date is in DD-MM-YYYY format
+      if (dateString.match(/^\d{2}-\d{2}-\d{4}$/)) {
+        const parts = dateString.split('-');
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+      }
+      // If it's already in YYYY-MM-DD format, return as is
+      return dateString;
+    } catch (error) {
+      console.error("Error formatting date for display:", error);
+      return dateString;
+    }
+  };
+  
   return (
     <div
       className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors w-full"
@@ -36,7 +52,7 @@ const TransactionItem = ({
             ₹{transaction.amount.toLocaleString()}
           </p>
           <p className="text-sm text-muted-foreground">
-            {format(new Date(transaction.date), "yyyy-MM-dd")}
+            {formatDisplayDate(transaction.date)}
           </p>
         </div>
         {isMobile ? (
