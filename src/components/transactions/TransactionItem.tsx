@@ -1,6 +1,6 @@
 
 import { Transaction } from "@/types/staff";
-import { format, parse } from "date-fns";
+import { parse } from "date-fns";
 import { Trash, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -20,15 +20,20 @@ const TransactionItem = ({
 }: TransactionItemProps) => {
   const isMobile = useIsMobile();
   
-  // Format the date correctly for display
+  // Format the date correctly for display as DD-MM-YYYY
   const formatDisplayDate = (dateString: string): string => {
     try {
-      // Check if date is in DD-MM-YYYY format
+      // If already in DD-MM-YYYY format, return as is
       if (dateString.match(/^\d{2}-\d{2}-\d{4}$/)) {
-        const parts = dateString.split('-');
-        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        return dateString;
       }
-      // If it's already in YYYY-MM-DD format, return as is
+      
+      // If in YYYY-MM-DD format, convert to DD-MM-YYYY
+      if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        const [year, month, day] = dateString.split('-');
+        return `${day}-${month}-${year}`;
+      }
+      
       return dateString;
     } catch (error) {
       console.error("Error formatting date for display:", error);
