@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useStaffStore } from "@/store/staffStore";
 import { NavBar } from "@/components/NavBar";
@@ -124,8 +125,8 @@ const TransactionsReport = () => {
                   <p>Loading transactions...</p>
                 </div>
               ) : (
-                <div className="h-full flex flex-col">
-                  <div className="bg-background py-3 border-b">
+                <div className="h-full flex flex-col overflow-hidden">
+                  <div className="bg-background py-3 border-b sticky top-0 z-10">
                     <div className="px-4 flex">
                       <div className="w-1/5 font-medium">Staff Name</div>
                       <div className="w-1/5 font-medium">Date</div>
@@ -134,7 +135,7 @@ const TransactionsReport = () => {
                       <div className="w-1/5 font-medium">Description</div>
                     </div>
                   </div>
-                  <ScrollArea className="h-[calc(100vh-240px)]">
+                  <ScrollArea className="h-[calc(100vh-250px)] overflow-auto">
                     <Table>
                       <TableBody>
                         {sortedTransactions.map((transaction) => (
