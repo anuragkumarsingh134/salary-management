@@ -1,136 +1,87 @@
 
-import React, { useState } from "react";
-import { Plus, DollarSign, Eye, LockKeyhole, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PlusCircle, Eye, EyeOff, Key, BarChart } from "lucide-react";
+import EditStoreDialog from "./EditStoreDialog";
+import { useState } from "react";
 import { useStoreSettings } from "@/store/storeSettingsStore";
-import { EditStoreDialog } from "./EditStoreDialog";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Link } from "react-router-dom";
 
 interface DashboardHeaderProps {
-  onAddTransaction: () => void;
   onAddStaff: () => void;
+  onAddTransaction: () => void;
   onToggleShowData: () => void;
   onChangeKey: () => void;
   showData: boolean;
 }
 
 const DashboardHeader = ({
-  onAddTransaction,
   onAddStaff,
+  onAddTransaction,
   onToggleShowData,
   onChangeKey,
-  showData,
+  showData
 }: DashboardHeaderProps) => {
-  const { settings } = useStoreSettings();
   const [editStoreOpen, setEditStoreOpen] = useState(false);
-  const isMobile = useIsMobile();
+  const { storeSettings } = useStoreSettings();
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          {showData && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setEditStoreOpen(true)}
-              className="h-8 w-8"
-            >
-              <Settings className="h-4 w-4" />
-            </Button>
-          )}
+    <div className="p-6 rounded-lg bg-muted/50 glassmorphism">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {storeSettings?.store_name || "My Store"}
+          </h1>
+          <p className="text-muted-foreground">
+            Manage your staff and transactions
+          </p>
         </div>
-        <div className="hidden md:flex items-center gap-3">
-          <Button
-            onClick={onAddTransaction}
-            size="default"
-            className="bg-zinc-800 hover:bg-zinc-900 flex items-center gap-2"
-          >
-            <DollarSign className="h-4 w-4" />
-            <span>Add Transaction</span>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={() => setEditStoreOpen(true)}>
+            Edit Store
           </Button>
-          
-          {showData && (
-            <Button
-              onClick={onAddStaff}
-              size="default"
-              className="bg-zinc-800 hover:bg-zinc-900 flex items-center gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Add Staff</span>
-            </Button>
-          )}
-          
-          <Button
+          <Button 
+            variant={showData ? "default" : "outline"} 
+            size="sm" 
             onClick={onToggleShowData}
-            variant="outline"
-            size="default"
-            className="flex items-center gap-2"
           >
-            <Eye className="h-4 w-4" />
-            <span>{showData ? 'Hide Data' : 'Show Data'}</span>
+            {showData ? (
+              <>
+                <EyeOff className="h-4 w-4 mr-2" />
+                Hide Data
+              </>
+            ) : (
+              <>
+                <Eye className="h-4 w-4 mr-2" />
+                Show Data
+              </>
+            )}
           </Button>
-          
-          {showData && (
-            <Button
-              onClick={onChangeKey}
-              variant="outline"
-              size="default"
-              className="flex items-center gap-2"
-            >
-              <LockKeyhole className="h-4 w-4" />
-              <span>Change Key</span>
-            </Button>
-          )}
+          <Button variant="outline" size="sm" onClick={onChangeKey}>
+            <Key className="h-4 w-4 mr-2" />
+            Change Key
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            asChild
+          >
+            <Link to="/transactions-report">
+              <BarChart className="h-4 w-4 mr-2" />
+              Transactions Report
+            </Link>
+          </Button>
         </div>
       </div>
-      
-      {/* Mobile view buttons */}
-      <div className="grid grid-cols-1 gap-3 md:hidden">
-        <Button
-          onClick={onAddTransaction}
-          size="default"
-          className="bg-zinc-800 hover:bg-zinc-900 flex items-center justify-center gap-2 h-12"
-        >
-          <DollarSign className="h-5 w-5" />
-          <span className="font-medium">Transaction</span>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        <Button onClick={onAddStaff} className="md:col-span-1">
+          <PlusCircle className="h-4 w-4 mr-2" />
+          Add Staff
         </Button>
-        
-        {showData && (
-          <Button
-            onClick={onAddStaff}
-            size="default"
-            className="bg-zinc-800 hover:bg-zinc-900 flex items-center justify-center gap-2 h-12"
-          >
-            <Plus className="h-5 w-5" />
-            <span className="font-medium">Staff</span>
-          </Button>
-        )}
-        
-        <Button
-          onClick={onToggleShowData}
-          variant="outline"
-          size="default"
-          className="flex items-center justify-center gap-2 border border-zinc-200 h-12"
-        >
-          <Eye className="h-5 w-5" />
-          <span className="font-medium">{showData ? 'Hide' : 'Show'}</span>
+        <Button onClick={onAddTransaction} variant="secondary" className="md:col-span-2">
+          <PlusCircle className="h-4 w-4 mr-2" />
+          Add Transaction
         </Button>
-        
-        {showData && (
-          <Button
-            onClick={onChangeKey}
-            variant="outline"
-            size="default"
-            className="flex items-center justify-center gap-2 border border-zinc-200 h-12"
-          >
-            <LockKeyhole className="h-5 w-5" />
-            <span className="font-medium">Key</span>
-          </Button>
-        )}
       </div>
-      
       <EditStoreDialog open={editStoreOpen} onOpenChange={setEditStoreOpen} />
     </div>
   );

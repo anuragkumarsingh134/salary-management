@@ -30,122 +30,150 @@ interface StaffStore {
   unsubscribeFromTransactionChanges: () => void;
 }
 
-export const useStaffStore = create<StaffStore>()((set) => ({
-  staff: [],
-  transactions: [],
-  
-  fetchStaff: async () => {
-    const staff = await fetchStaffFromApi();
-    set({ staff });
-  },
+export const useStaffStore = create<StaffStore>()((set) => {
+  // Store channel references
+  let staffChannel: any = null;
+  let transactionChannel: any = null;
 
-  fetchTransactions: async () => {
-    const transactions = await fetchTransactionsFromApi();
-    set({ transactions });
-  },
+  return {
+    staff: [],
+    transactions: [],
+    
+    fetchStaff: async () => {
+      const staff = await fetchStaffFromApi();
+      set({ staff });
+    },
 
-  addStaff: async (staffMember) => {
-    const newStaff = await addStaffToApi(staffMember);
-    set((state) => ({
-      staff: [...state.staff, newStaff],
-    }));
-  },
+    fetchTransactions: async () => {
+      const transactions = await fetchTransactionsFromApi();
+      set({ transactions });
+    },
 
-  updateStaff: async (id, updatedStaff) => {
-    await updateStaffInApi(id, updatedStaff);
-    set((state) => ({
-      staff: state.staff.map((staff) =>
-        staff.id === id ? { ...staff, ...updatedStaff } : staff
-      ),
-    }));
-  },
+    addStaff: async (staffMember) => {
+      const newStaff = await addStaffToApi(staffMember);
+      set((state) => ({
+        staff: [...state.staff, newStaff],
+      }));
+    },
 
-  deleteStaff: async (id) => {
-    await deleteStaffFromApi(id);
-    set((state) => ({
-      staff: state.staff.filter((staff) => staff.id !== id),
-      transactions: state.transactions.filter((t) => t.staffId !== id),
-    }));
-  },
+    updateStaff: async (id, updatedStaff) => {
+      await updateStaffInApi(id, updatedStaff);
+      set((state) => ({
+        staff: state.staff.map((staff) =>
+          staff.id === id ? { ...staff, ...updatedStaff } : staff
+        ),
+      }));
+    },
 
-  addTransaction: async (transaction) => {
-    const newTransaction = await addTransactionToApi(transaction);
-    set((state) => ({
-      transactions: [...state.transactions, newTransaction],
-    }));
-  },
+    deleteStaff: async (id) => {
+      await deleteStaffFromApi(id);
+      set((state) => ({
+        staff: state.staff.filter((staff) => staff.id !== id),
+        transactions: state.transactions.filter((t) => t.staffId !== id),
+      }));
+    },
 
-  updateTransaction: async (id, transaction) => {
-    await updateTransactionInApi(id, transaction);
-    set((state) => ({
-      transactions: state.transactions.map((t) =>
-        t.id === id ? { ...t, ...transaction } : t
-      ),
-    }));
-  },
+    addTransaction: async (transaction) => {
+      const newTransaction = await addTransactionToApi(transaction);
+      set((state) => ({
+        transactions: [...state.transactions, newTransaction],
+      }));
+    },
 
-  deleteTransaction: async (id) => {
-    await deleteTransactionFromApi(id);
-    set((state) => ({
-      transactions: state.transactions.filter((t) => t.id !== id),
-    }));
-  },
+    updateTransaction: async (id, transaction) => {
+      await updateTransactionInApi(id, transaction);
+      set((state) => ({
+        transactions: state.transactions.map((t) =>
+          t.id === id ? { ...t, ...transaction } : t
+        ),
+      }));
+    },
 
-  subscribeToStaffChanges: () => {
-    const channel = supabase
-      .channel('staff_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'staff'
-        },
-        async () => {
-          // Fetch fresh data on any change
-          const staff = await fetchStaffFromApi();
-          set({ staff });
-        }
-      )
-      .subscribe();
+    deleteTransaction: async (id) => {
+      await deleteTransactionFromApi(id);
+      set((state) => ({
+        transactions: state.transactions.filter((t) => t.id !== id),
+      }));
+    },
 
-    return () => {
-      if (channel) {
-        supabase.removeChannel(channel);
+    subscribeToStaffChanges: () => {
+      // Clean up any existing subscription
+      if (staffChannel) {
+        supabase.removeChannel(staffChannel);
       }
-    };
-  },
 
-  subscribeToTransactionChanges: () => {
-    const channel = supabase
-      .channel('transaction_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'transactions'
-        },
-        async () => {
-          // Fetch fresh data on any change
-          const transactions = await fetchTransactionsFromApi();
-          set({ transactions });
+      // Create new subscription
+      staffChannel = supabase
+        .channel('staff_changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'staff'
+          },
+          async () => {
+            // Fetch fresh data on any change
+            const staff = await fetchStaffFromApi();
+            set({ staff });
+          }
+        )
+        .subscribe();
+
+      // Return a cleanup function
+      return () => {
+        if (staffChannel) {
+          supabase.removeChannel(staffChannel);
+          staffChannel = null;
         }
-      )
-      .subscribe();
+      };
+    },
 
-    return () => {
-      if (channel) {
-        supabase.removeChannel(channel);
+    subscribeToTransactionChanges: () => {
+      // Clean up any existing subscription
+      if (transactionChannel) {
+        supabase.removeChannel(transactionChannel);
       }
-    };
-  },
 
-  unsubscribeFromStaffChanges: () => {
-    supabase.removeAllChannels();
-  },
+      // Create new subscription
+      transactionChannel = supabase
+        .channel('transaction_changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'transactions'
+          },
+          async () => {
+            // Fetch fresh data on any change
+            const transactions = await fetchTransactionsFromApi();
+            set({ transactions });
+          }
+        )
+        .subscribe();
 
-  unsubscribeFromTransactionChanges: () => {
-    supabase.removeAllChannels();
-  },
-}));
+      // Return a cleanup function
+      return () => {
+        if (transactionChannel) {
+          supabase.removeChannel(transactionChannel);
+          transactionChannel = null;
+        }
+      };
+    },
+
+    unsubscribeFromStaffChanges: () => {
+      if (staffChannel) {
+        supabase.removeChannel(staffChannel);
+        staffChannel = null;
+      }
+    },
+
+    unsubscribeFromTransactionChanges: () => {
+      if (transactionChannel) {
+        supabase.removeChannel(transactionChannel);
+        transactionChannel = null;
+      }
+    },
+  };
+});
