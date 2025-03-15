@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Eye, EyeOff, Key, BarChart } from "lucide-react";
+import { PlusCircle, Eye, EyeOff, Key } from "lucide-react";
 import { EditStoreDialog } from "./EditStoreDialog";
 import { useState } from "react";
 import { useStoreSettings } from "@/store/storeSettingsStore";
@@ -25,63 +25,83 @@ const DashboardHeader = ({
   const { settings } = useStoreSettings();
 
   return (
-    <div className="p-6 rounded-lg bg-muted/50 glassmorphism">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            {settings?.storeName || "My Store"}
+    <div className="mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <div className="flex items-center">
+          <h1 className="text-2xl font-bold tracking-tight mr-2">
+            Dashboard
           </h1>
-          <p className="text-muted-foreground">
-            Manage your staff and transactions
-          </p>
+          {showData && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="p-1 h-auto" 
+              onClick={() => setEditStoreOpen(true)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+            </Button>
+          )}
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={() => setEditStoreOpen(true)}>
-            Edit Store
-          </Button>
+        <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
           <Button 
-            variant={showData ? "default" : "outline"} 
             size="sm" 
-            onClick={onToggleShowData}
+            onClick={onAddTransaction}
+            className="bg-zinc-800 hover:bg-zinc-700"
           >
-            {showData ? (
-              <>
-                <EyeOff className="h-4 w-4 mr-2" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Transaction
+          </Button>
+          
+          {showData ? (
+            <>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={onAddStaff}
+                className="bg-zinc-800 text-white border-zinc-700 hover:bg-zinc-700"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add Staff
+              </Button>
+              <Button variant="outline" size="sm" onClick={onToggleShowData} className="bg-transparent border-zinc-200">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
                 Hide Data
-              </>
-            ) : (
-              <>
-                <Eye className="h-4 w-4 mr-2" />
-                Show Data
-              </>
-            )}
-          </Button>
-          <Button variant="outline" size="sm" onClick={onChangeKey}>
-            <Key className="h-4 w-4 mr-2" />
-            Change Key
-          </Button>
+              </Button>
+            </>
+          ) : (
+            <Button variant="outline" size="sm" onClick={onToggleShowData} className="bg-transparent border-zinc-200">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              Show Data
+            </Button>
+          )}
+          
           <Button 
             variant="outline" 
             size="sm" 
-            asChild
+            onClick={onChangeKey}
+            className="bg-transparent border-zinc-200"
           >
-            <Link to="/transactions-report">
-              <BarChart className="h-4 w-4 mr-2" />
-              Transactions Report
-            </Link>
+            <Key className="h-4 w-4 mr-2" />
+            Change Key
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-        <Button onClick={onAddStaff} className="md:col-span-1">
-          <PlusCircle className="h-4 w-4 mr-2" />
-          Add Staff
-        </Button>
-        <Button onClick={onAddTransaction} variant="secondary" className="md:col-span-2">
-          <PlusCircle className="h-4 w-4 mr-2" />
-          Add Transaction
-        </Button>
-      </div>
+      
       <EditStoreDialog open={editStoreOpen} onOpenChange={setEditStoreOpen} />
     </div>
   );

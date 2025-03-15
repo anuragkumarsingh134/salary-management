@@ -39,7 +39,7 @@ const TransactionsTable = ({ transactions, getStaffName, isLoading }: Transactio
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden border rounded-md">
       <div className="bg-background py-2 border-b sticky top-0 z-10 flex-shrink-0">
         <div className="px-4 flex text-sm">
           <div className="w-1/5 font-medium">Staff Name</div>

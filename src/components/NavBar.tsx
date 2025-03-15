@@ -31,12 +31,18 @@ export const NavBar = () => {
   };
 
   return (
-    <nav className="border-b">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <h1 className="text-xl font-semibold">{settings?.storeName || 'Staff Management'}</h1>
+    <nav className="border-b border-gray-200">
+      <div className="container max-w-6xl mx-auto h-16 flex items-center justify-between">
+        <div className="flex items-center">
+          <h1 className="text-xl font-bold uppercase">
+            {settings?.storeName || 'NEW GK COLLECTIONS'}
+          </h1>
         </div>
-        <Button variant="outline" onClick={handleSignOut}>
+        <Button 
+          variant="ghost" 
+          onClick={handleSignOut} 
+          className="text-base font-medium"
+        >
           Sign Out
         </Button>
       </div>
