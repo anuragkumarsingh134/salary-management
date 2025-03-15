@@ -1,17 +1,18 @@
-
 import { create } from 'zustand';
 import { StaffMember, Transaction } from '@/types/staff';
 import { supabase } from '@/integrations/supabase/client';
 import {
   fetchStaffFromApi,
-  fetchTransactionsFromApi,
   addStaffToApi,
   updateStaffInApi,
   deleteStaffFromApi,
-  addTransactionToApi,
-  deleteTransactionFromApi,
-  updateTransactionInApi,
 } from '@/api/staffApi';
+import {
+  fetchTransactionsFromApi,
+  addTransactionToApi,
+  updateTransactionInApi,
+  deleteTransactionFromApi,
+} from '@/api/transactionApi';
 
 interface StaffStore {
   staff: StaffMember[];
