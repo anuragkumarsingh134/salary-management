@@ -8,11 +8,23 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatDateForDisplay } from "@/utils/dateUtils";
 import { Transaction } from "@/types/staff";
+import { usePasswordProtection } from "@/hooks/usePasswordProtection";
+import PasswordDialog from "@/components/PasswordDialog";
 
 const TransactionsReport = () => {
   const { transactions, staff, fetchTransactions, fetchStaff } = useStaffStore();
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+
+  const { 
+    showData,
+    passwordDialogOpen,
+    password,
+    setPassword,
+    setPasswordDialogOpen,
+    handlePasswordSubmit,
+    handleForgotPassword,
+  } = usePasswordProtection();
 
   useEffect(() => {
     const loadData = async () => {
@@ -27,6 +39,13 @@ const TransactionsReport = () => {
 
     loadData();
   }, [fetchStaff, fetchTransactions]);
+
+  // Show password dialog when first loading the page
+  useEffect(() => {
+    if (!showData && !isLoading) {
+      setPasswordDialogOpen(true);
+    }
+  }, [showData, isLoading, setPasswordDialogOpen]);
 
   const getStaffName = (staffId: string) => {
     return staff.find((s) => s.id === staffId)?.name || "Unknown";
@@ -86,55 +105,76 @@ const TransactionsReport = () => {
           <div className="w-[100px]"></div> {/* Spacer for alignment */}
         </div>
 
-        <Card className="glassmorphism">
-          <CardHeader>
-            <CardTitle>All Transactions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="flex justify-center p-8">
-                <p>Loading transactions...</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left p-2">Staff Name</th>
-                        <th className="text-left p-2">Date</th>
-                        <th className="text-left p-2">Type</th>
-                        <th className="text-left p-2">Amount</th>
-                        <th className="text-left p-2">Description</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sortedTransactions.map((transaction) => (
-                        <tr key={transaction.id} className="border-b hover:bg-secondary/20">
-                          <td className="p-2">{getStaffName(transaction.staffId)}</td>
-                          <td className="p-2">{formatDateForDisplay(transaction.date)}</td>
-                          <td className={`p-2 ${getTypeColor(transaction.type)}`}>
-                            {transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}
-                          </td>
-                          <td className="p-2">₹{transaction.amount.toLocaleString()}</td>
-                          <td className="p-2">{transaction.description}</td>
-                        </tr>
-                      ))}
-                      {sortedTransactions.length === 0 && (
-                        <tr>
-                          <td colSpan={5} className="p-8 text-center text-muted-foreground">
-                            No transactions found
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+        {showData ? (
+          <Card className="glassmorphism">
+            <CardHeader>
+              <CardTitle>All Transactions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="flex justify-center p-8">
+                  <p>Loading transactions...</p>
                 </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              ) : (
+                <div className="space-y-4">
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left p-2">Staff Name</th>
+                          <th className="text-left p-2">Date</th>
+                          <th className="text-left p-2">Type</th>
+                          <th className="text-left p-2">Amount</th>
+                          <th className="text-left p-2">Description</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sortedTransactions.map((transaction) => (
+                          <tr key={transaction.id} className="border-b hover:bg-secondary/20">
+                            <td className="p-2">{getStaffName(transaction.staffId)}</td>
+                            <td className="p-2">{formatDateForDisplay(transaction.date)}</td>
+                            <td className={`p-2 ${getTypeColor(transaction.type)}`}>
+                              {transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}
+                            </td>
+                            <td className="p-2">₹{transaction.amount.toLocaleString()}</td>
+                            <td className="p-2">{transaction.description}</td>
+                          </tr>
+                        ))}
+                        {sortedTransactions.length === 0 && (
+                          <tr>
+                            <td colSpan={5} className="p-8 text-center text-muted-foreground">
+                              No transactions found
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="flex flex-col items-center justify-center p-12 glassmorphism bg-muted/50 rounded-lg">
+            <p className="text-lg mb-4">Data is protected</p>
+            <Button 
+              onClick={() => setPasswordDialogOpen(true)}
+              variant="default"
+            >
+              View Transactions
+            </Button>
+          </div>
+        )}
       </div>
+
+      <PasswordDialog
+        open={passwordDialogOpen}
+        onOpenChange={setPasswordDialogOpen}
+        password={password}
+        setPassword={setPassword}
+        onSubmit={handlePasswordSubmit}
+        onForgotPassword={handleForgotPassword}
+      />
     </div>
   );
 };
