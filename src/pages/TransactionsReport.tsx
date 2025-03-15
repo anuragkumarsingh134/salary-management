@@ -34,6 +34,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { DateRange } from "react-day-picker";
 
 const TransactionsReport = () => {
   const { transactions, staff, fetchTransactions, fetchStaff } = useStaffStore();
@@ -42,10 +43,7 @@ const TransactionsReport = () => {
 
   // Filter states
   const [selectedStaffId, setSelectedStaffId] = useState<string>("");
-  const [dateRange, setDateRange] = useState<{
-    from: Date | undefined;
-    to: Date | undefined;
-  }>({
+  const [dateRange, setDateRange] = useState<DateRange>({
     from: undefined,
     to: undefined,
   });
@@ -234,7 +232,7 @@ const TransactionsReport = () => {
                           mode="range"
                           defaultMonth={dateRange.from}
                           selected={dateRange}
-                          onSelect={setDateRange}
+                          onSelect={(range) => setDateRange(range || { from: undefined, to: undefined })}
                           numberOfMonths={2}
                           className={cn("p-3 pointer-events-auto")}
                         />
