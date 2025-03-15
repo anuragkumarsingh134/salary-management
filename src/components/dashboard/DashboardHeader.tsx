@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Eye, EyeOff, Key, BarChart } from "lucide-react";
-import EditStoreDialog from "./EditStoreDialog";
+import { EditStoreDialog } from "./EditStoreDialog";
 import { useState } from "react";
 import { useStoreSettings } from "@/store/storeSettingsStore";
 import { Link } from "react-router-dom";
@@ -22,14 +22,14 @@ const DashboardHeader = ({
   showData
 }: DashboardHeaderProps) => {
   const [editStoreOpen, setEditStoreOpen] = useState(false);
-  const { storeSettings } = useStoreSettings();
+  const { settings } = useStoreSettings();
 
   return (
     <div className="p-6 rounded-lg bg-muted/50 glassmorphism">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            {storeSettings?.store_name || "My Store"}
+            {settings?.storeName || "My Store"}
           </h1>
           <p className="text-muted-foreground">
             Manage your staff and transactions
