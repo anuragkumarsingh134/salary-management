@@ -25,13 +25,13 @@ const DashboardHeader = ({
   const { settings } = useStoreSettings();
 
   return (
-    <div className="p-6 rounded-lg bg-muted/50 glassmorphism">
+    <div className="p-4 md:p-6 rounded-lg bg-card shadow-sm border">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-bold">
             {settings?.storeName || "My Store"}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Manage your staff and transactions
           </p>
         </div>
@@ -72,7 +72,7 @@ const DashboardHeader = ({
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 md:mt-6">
         <Button onClick={onAddStaff} className="md:col-span-1">
           <PlusCircle className="h-4 w-4 mr-2" />
           Add Staff
