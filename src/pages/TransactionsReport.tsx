@@ -57,6 +57,16 @@ const TransactionsReport = () => {
     }
   }, [showData, isLoading, setPasswordDialogOpen]);
 
+  // Debug logging to help identify the issue
+  useEffect(() => {
+    console.log("Authentication state:", { 
+      showData, 
+      isLoading, 
+      hasTransactions: transactions.length > 0,
+      sortedTransactionsLength: sortedTransactions.length
+    });
+  }, [showData, isLoading, transactions, sortedTransactions]);
+
   const getStaffName = (staffId: string) => {
     return staff.find((s) => s.id === staffId)?.name || "Unknown";
   };

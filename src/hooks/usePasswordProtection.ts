@@ -31,6 +31,7 @@ export const usePasswordProtection = () => {
 
       if (fetchError) {
         if (fetchError.code === 'PGRST116') {
+          // No settings found, first time setup
           const { error: insertError } = await supabase
             .from('user_settings')
             .insert([
@@ -42,6 +43,7 @@ export const usePasswordProtection = () => {
             ]);
 
           if (insertError) {
+            console.error("Insert error:", insertError);
             toast({
               title: "Error",
               description: "Failed to set password",
@@ -59,7 +61,14 @@ export const usePasswordProtection = () => {
           });
           return;
         }
-        throw fetchError;
+        
+        console.error("Fetch error:", fetchError);
+        toast({
+          title: "Error",
+          description: "Failed to check password",
+          variant: "destructive",
+        });
+        return;
       }
 
       if (!settings.show_data_password) {
@@ -70,6 +79,7 @@ export const usePasswordProtection = () => {
           .eq('user_id', userId);
 
         if (updateError) {
+          console.error("Update error:", updateError);
           toast({
             title: "Error",
             description: "Failed to set key",
@@ -96,6 +106,7 @@ export const usePasswordProtection = () => {
           .eq('user_id', userId);
 
         if (updateError) {
+          console.error("Update error:", updateError);
           toast({
             title: "Error",
             description: "Failed to change key",
@@ -122,6 +133,10 @@ export const usePasswordProtection = () => {
           description: "You now have access to view the data.",
         });
       } else {
+        console.log("Password mismatch:", { 
+          provided: password, 
+          stored: settings.show_data_password 
+        });
         toast({
           title: "Access Denied",
           description: "Incorrect key. Please try again.",
