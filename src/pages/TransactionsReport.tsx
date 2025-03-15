@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useStaffStore } from "@/store/staffStore";
 import { NavBar } from "@/components/NavBar";
@@ -125,39 +124,41 @@ const TransactionsReport = () => {
                   <p>Loading transactions...</p>
                 </div>
               ) : (
-                <ScrollArea className="h-[calc(100vh-240px)]">
-                  <Table>
-                    <TableHeader className="sticky top-0 bg-background z-10">
-                      <TableRow>
-                        <TableHead>Staff Name</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Amount</TableHead>
-                        <TableHead>Description</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {sortedTransactions.map((transaction) => (
-                        <TableRow key={transaction.id} className="hover:bg-secondary/20">
-                          <TableCell>{getStaffName(transaction.staffId)}</TableCell>
-                          <TableCell>{formatDateForDisplay(transaction.date)}</TableCell>
-                          <TableCell className={getTypeColor(transaction.type)}>
-                            {transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}
-                          </TableCell>
-                          <TableCell>₹{transaction.amount.toLocaleString()}</TableCell>
-                          <TableCell>{transaction.description}</TableCell>
-                        </TableRow>
-                      ))}
-                      {sortedTransactions.length === 0 && (
-                        <TableRow>
-                          <TableCell colSpan={5} className="p-8 text-center text-muted-foreground">
-                            No transactions found
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
+                <div className="h-full flex flex-col">
+                  <div className="bg-background py-3 border-b">
+                    <div className="px-4 flex">
+                      <div className="w-1/5 font-medium">Staff Name</div>
+                      <div className="w-1/5 font-medium">Date</div>
+                      <div className="w-1/5 font-medium">Type</div>
+                      <div className="w-1/5 font-medium">Amount</div>
+                      <div className="w-1/5 font-medium">Description</div>
+                    </div>
+                  </div>
+                  <ScrollArea className="h-[calc(100vh-240px)]">
+                    <Table>
+                      <TableBody>
+                        {sortedTransactions.map((transaction) => (
+                          <TableRow key={transaction.id} className="hover:bg-secondary/20">
+                            <TableCell>{getStaffName(transaction.staffId)}</TableCell>
+                            <TableCell>{formatDateForDisplay(transaction.date)}</TableCell>
+                            <TableCell className={getTypeColor(transaction.type)}>
+                              {transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}
+                            </TableCell>
+                            <TableCell>₹{transaction.amount.toLocaleString()}</TableCell>
+                            <TableCell>{transaction.description}</TableCell>
+                          </TableRow>
+                        ))}
+                        {sortedTransactions.length === 0 && (
+                          <TableRow>
+                            <TableCell colSpan={5} className="p-8 text-center text-muted-foreground">
+                              No transactions found
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </ScrollArea>
+                </div>
               )}
             </CardContent>
           </Card>
