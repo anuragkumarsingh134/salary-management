@@ -105,7 +105,7 @@ const TransactionsReport = () => {
     <div className="h-screen flex flex-col overflow-hidden">
       <NavBar />
       <div className="container py-8 flex-1 flex flex-col space-y-4 animate-fadeIn overflow-hidden">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-shrink-0">
           <Button variant="ghost" onClick={() => navigate(-1)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
@@ -115,18 +115,18 @@ const TransactionsReport = () => {
         </div>
 
         {showData ? (
-          <Card className="glassmorphism flex-1 flex flex-col overflow-hidden">
+          <Card className="glassmorphism flex-1 overflow-hidden flex flex-col">
             <CardHeader className="flex-shrink-0">
               <CardTitle>All Transactions</CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 p-0 overflow-hidden">
+            <CardContent className="p-0 flex-1 overflow-hidden">
               {isLoading ? (
                 <div className="flex justify-center p-8">
                   <p>Loading transactions...</p>
                 </div>
               ) : (
-                <div className="h-full flex flex-col overflow-hidden">
-                  <div className="bg-background py-3 border-b sticky top-0 z-10">
+                <div className="flex flex-col h-full overflow-hidden">
+                  <div className="bg-background py-3 border-b sticky top-0 z-10 flex-shrink-0">
                     <div className="px-4 flex">
                       <div className="w-1/5 font-medium">Staff Name</div>
                       <div className="w-1/5 font-medium">Date</div>
@@ -135,7 +135,7 @@ const TransactionsReport = () => {
                       <div className="w-1/5 font-medium">Description</div>
                     </div>
                   </div>
-                  <ScrollArea className="h-[calc(100vh-250px)] overflow-auto">
+                  <ScrollArea className="h-[calc(100vh-255px)] flex-1">
                     <Table>
                       <TableBody>
                         {sortedTransactions.map((transaction) => (

@@ -34,6 +34,9 @@
   * {
     @apply border-border;
   }
+  html, body {
+    @apply overflow-hidden h-screen;
+  }
   body {
     @apply bg-background text-foreground font-inter antialiased;
   }
