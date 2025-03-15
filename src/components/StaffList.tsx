@@ -10,13 +10,17 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 interface StaffListProps {
   onStaffSelect?: (staffId: string | null) => void;
+  activeStaffOnly?: boolean;
 }
 
-const StaffList = ({ onStaffSelect }: StaffListProps) => {
+const StaffList = ({ onStaffSelect, activeStaffOnly: externalActiveStaffOnly }: StaffListProps) => {
   const { staff, transactions, updateStaff, deleteStaff } = useStaffStore();
   const [selectedStaff, setSelectedStaff] = useState<string | null>(null);
-  const [showInactive, setShowInactive] = useState(false);
+  const [internalShowInactive, setInternalShowInactive] = useState(false);
   const isMobile = useIsMobile();
+
+  // Use the external prop if provided, otherwise use internal state
+  const showInactive = externalActiveStaffOnly !== undefined ? !externalActiveStaffOnly : internalShowInactive;
 
   const activeStaff = staff.filter((member) => member.active);
   const inactiveStaff = staff.filter((member) => !member.active);
@@ -30,7 +34,7 @@ const StaffList = ({ onStaffSelect }: StaffListProps) => {
     await updateStaff(staffId, { active: true });
     setSelectedStaff(null);
     onStaffSelect?.(null);
-    setShowInactive(false);
+    setInternalShowInactive(false);
   };
 
   const selectedStaffMember = staff.find((member) => member.id === selectedStaff);
@@ -59,20 +63,25 @@ const StaffList = ({ onStaffSelect }: StaffListProps) => {
 
   const currentStaff = showInactive ? inactiveStaff : activeStaff;
 
+  // Only render the toggle if externalActiveStaffOnly is not provided
+  const renderToggle = externalActiveStaffOnly === undefined;
+
   return (
     <Card className={`glassmorphism ${isMobile ? 'p-4' : 'p-6'}`}>
       <div className={`space-y-${isMobile ? '3' : '4'}`}>
-        <div className={`flex items-center space-x-2 ${!isMobile && 'mb-4'}`}>
-          <Switch
-            id="staff-toggle"
-            checked={showInactive}
-            onCheckedChange={setShowInactive}
-            className="data-[state=checked]:bg-[#ea384c] data-[state=unchecked]:bg-[#00FF00]"
-          />
-          <Label htmlFor="staff-toggle" className={`font-medium ${isMobile ? 'text-sm' : ''}`}>
-            {showInactive ? "Inactive Staff" : "Active Staff"}
-          </Label>
-        </div>
+        {renderToggle && (
+          <div className={`flex items-center space-x-2 ${!isMobile && 'mb-4'}`}>
+            <Switch
+              id="staff-toggle"
+              checked={internalShowInactive}
+              onCheckedChange={setInternalShowInactive}
+              className="data-[state=checked]:bg-[#ea384c] data-[state=unchecked]:bg-[#00FF00]"
+            />
+            <Label htmlFor="staff-toggle" className={`font-medium ${isMobile ? 'text-sm' : ''}`}>
+              {internalShowInactive ? "Inactive Staff" : "Active Staff"}
+            </Label>
+          </div>
+        )}
 
         <div className={`grid gap-${isMobile ? '2' : '3'}`}>
           {currentStaff.map((member) => (
