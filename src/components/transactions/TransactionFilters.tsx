@@ -49,7 +49,7 @@ const TransactionFilters = ({
             <SelectValue placeholder="Filter by staff" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Staff</SelectItem>
+            <SelectItem value="all-staff">All Staff</SelectItem>
             {staff.map((s) => (
               <SelectItem key={s.id} value={s.id}>
                 {s.name}

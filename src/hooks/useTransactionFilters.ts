@@ -4,7 +4,7 @@ import { Transaction, StaffMember } from "@/types/staff";
 import { DateRange } from "react-day-picker";
 
 export const useTransactionFilters = (transactions: Transaction[]) => {
-  const [selectedStaffId, setSelectedStaffId] = useState<string>("");
+  const [selectedStaffId, setSelectedStaffId] = useState<string>("all-staff");
   const [dateRange, setDateRange] = useState<DateRange>({
     from: undefined,
     to: undefined,
@@ -33,7 +33,7 @@ export const useTransactionFilters = (transactions: Transaction[]) => {
   // Apply filters to transactions
   const filteredTransactions = transactions.filter((transaction) => {
     // Apply staff filter
-    if (selectedStaffId && transaction.staffId !== selectedStaffId) {
+    if (selectedStaffId !== "all-staff" && transaction.staffId !== selectedStaffId) {
       return false;
     }
     
@@ -68,7 +68,7 @@ export const useTransactionFilters = (transactions: Transaction[]) => {
 
   // Reset all filters
   const resetFilters = useCallback(() => {
-    setSelectedStaffId("");
+    setSelectedStaffId("all-staff");
     setDateRange({ from: undefined, to: undefined });
   }, []);
 
