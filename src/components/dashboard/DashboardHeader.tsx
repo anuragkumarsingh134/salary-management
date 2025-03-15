@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Eye, EyeOff, Key } from "lucide-react";
+import { PlusCircle, Eye, EyeOff, List } from "lucide-react";
 import { EditStoreDialog } from "./EditStoreDialog";
 import { useState } from "react";
 import { useStoreSettings } from "@/store/storeSettingsStore";
@@ -10,7 +10,7 @@ interface DashboardHeaderProps {
   onAddStaff: () => void;
   onAddTransaction: () => void;
   onToggleShowData: () => void;
-  onChangeKey: () => void;
+  onShowAllTransactions: () => void;
   showData: boolean;
 }
 
@@ -18,7 +18,7 @@ const DashboardHeader = ({
   onAddStaff,
   onAddTransaction,
   onToggleShowData,
-  onChangeKey,
+  onShowAllTransactions,
   showData
 }: DashboardHeaderProps) => {
   const [editStoreOpen, setEditStoreOpen] = useState(false);
@@ -93,11 +93,11 @@ const DashboardHeader = ({
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={onChangeKey}
+            onClick={onShowAllTransactions}
             className="bg-transparent border-zinc-200"
           >
-            <Key className="h-4 w-4 mr-2" />
-            Change Key
+            <List className="h-4 w-4 mr-2" />
+            Show All Transactions
           </Button>
         </div>
       </div>

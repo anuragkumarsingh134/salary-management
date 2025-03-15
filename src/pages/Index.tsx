@@ -12,6 +12,7 @@ import LoadingSkeleton from "@/components/dashboard/LoadingSkeleton";
 import { usePasswordProtection } from "@/hooks/usePasswordProtection";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [addStaffOpen, setAddStaffOpen] = useState(false);
@@ -19,6 +20,7 @@ const Index = () => {
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeStaffOnly, setActiveStaffOnly] = useState(true);
+  const navigate = useNavigate();
   
   const { 
     showData,
@@ -66,8 +68,8 @@ const Index = () => {
     };
   }, [fetchStaff, fetchTransactions, fetchSettings, subscribeToStaffChanges, subscribeToTransactionChanges]);
 
-  const handleChangeKey = () => {
-    setPasswordDialogOpen(true);
+  const handleShowAllTransactions = () => {
+    navigate("/transactions");
   };
 
   if (isLoading) {
@@ -82,7 +84,7 @@ const Index = () => {
           onAddTransaction={() => setAddTransactionOpen(true)}
           onAddStaff={() => setAddStaffOpen(true)}
           onToggleShowData={handleShowDataClick}
-          onChangeKey={handleChangeKey}
+          onShowAllTransactions={handleShowAllTransactions}
           showData={showData}
         />
 
