@@ -102,7 +102,7 @@ const TransactionsReport = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col overflow-hidden">
       <NavBar />
       <div className="container py-8 flex-1 flex flex-col space-y-4 animate-fadeIn overflow-hidden">
         <div className="flex items-center justify-between">
@@ -119,7 +119,7 @@ const TransactionsReport = () => {
             <CardHeader className="flex-shrink-0">
               <CardTitle>All Transactions</CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 p-0">
+            <CardContent className="flex-1 p-0 overflow-hidden">
               {isLoading ? (
                 <div className="flex justify-center p-8">
                   <p>Loading transactions...</p>
