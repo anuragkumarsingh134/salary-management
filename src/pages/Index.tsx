@@ -69,7 +69,7 @@ const Index = () => {
   }, [fetchStaff, fetchTransactions, fetchSettings, subscribeToStaffChanges, subscribeToTransactionChanges]);
 
   const handleShowAllTransactions = () => {
-    navigate("/transactions");
+    navigate("/transactions-report");
   };
 
   if (isLoading) {
