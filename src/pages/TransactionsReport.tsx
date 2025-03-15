@@ -10,6 +10,7 @@ import { formatDateForDisplay } from "@/utils/dateUtils";
 import { Transaction } from "@/types/staff";
 import { usePasswordProtection } from "@/hooks/usePasswordProtection";
 import PasswordDialog from "@/components/PasswordDialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const TransactionsReport = () => {
   const { transactions, staff, fetchTransactions, fetchStaff } = useStaffStore();
@@ -106,51 +107,53 @@ const TransactionsReport = () => {
         </div>
 
         {showData ? (
-          <Card className="glassmorphism">
-            <CardHeader>
+          <Card className="glassmorphism flex-1 flex flex-col">
+            <CardHeader className="flex-shrink-0">
               <CardTitle>All Transactions</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 p-0 h-[calc(100vh-220px)]">
               {isLoading ? (
                 <div className="flex justify-center p-8">
                   <p>Loading transactions...</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
-                      <thead>
-                        <tr className="border-b">
-                          <th className="text-left p-2">Staff Name</th>
-                          <th className="text-left p-2">Date</th>
-                          <th className="text-left p-2">Type</th>
-                          <th className="text-left p-2">Amount</th>
-                          <th className="text-left p-2">Description</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {sortedTransactions.map((transaction) => (
-                          <tr key={transaction.id} className="border-b hover:bg-secondary/20">
-                            <td className="p-2">{getStaffName(transaction.staffId)}</td>
-                            <td className="p-2">{formatDateForDisplay(transaction.date)}</td>
-                            <td className={`p-2 ${getTypeColor(transaction.type)}`}>
-                              {transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}
-                            </td>
-                            <td className="p-2">₹{transaction.amount.toLocaleString()}</td>
-                            <td className="p-2">{transaction.description}</td>
+                <ScrollArea className="h-full px-6 pb-6">
+                  <div className="space-y-4">
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse">
+                        <thead className="sticky top-0 bg-background z-10">
+                          <tr className="border-b">
+                            <th className="text-left p-2">Staff Name</th>
+                            <th className="text-left p-2">Date</th>
+                            <th className="text-left p-2">Type</th>
+                            <th className="text-left p-2">Amount</th>
+                            <th className="text-left p-2">Description</th>
                           </tr>
-                        ))}
-                        {sortedTransactions.length === 0 && (
-                          <tr>
-                            <td colSpan={5} className="p-8 text-center text-muted-foreground">
-                              No transactions found
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {sortedTransactions.map((transaction) => (
+                            <tr key={transaction.id} className="border-b hover:bg-secondary/20">
+                              <td className="p-2">{getStaffName(transaction.staffId)}</td>
+                              <td className="p-2">{formatDateForDisplay(transaction.date)}</td>
+                              <td className={`p-2 ${getTypeColor(transaction.type)}`}>
+                                {transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}
+                              </td>
+                              <td className="p-2">₹{transaction.amount.toLocaleString()}</td>
+                              <td className="p-2">{transaction.description}</td>
+                            </tr>
+                          ))}
+                          {sortedTransactions.length === 0 && (
+                            <tr>
+                              <td colSpan={5} className="p-8 text-center text-muted-foreground">
+                                No transactions found
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
+                </ScrollArea>
               )}
             </CardContent>
           </Card>
