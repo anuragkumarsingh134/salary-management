@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useStaffStore } from "@/store/staffStore";
 import { NavBar } from "@/components/NavBar";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -74,33 +74,26 @@ const TransactionsReport = () => {
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       <NavBar />
-      <div className="container py-8 flex-1 flex flex-col space-y-4 animate-fadeIn overflow-hidden">
-        <div className="flex items-center justify-between flex-shrink-0">
-          <Button variant="ghost" onClick={() => navigate(-1)}>
+      <div className="container py-4 flex-1 flex flex-col overflow-hidden">
+        <div className="flex items-center justify-between mb-2">
+          <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
-          <h1 className="text-2xl font-bold">Transactions Report</h1>
-          <div className="w-[100px]"></div> {/* Spacer for alignment */}
         </div>
 
         {showData ? (
-          <Card className="glassmorphism flex-1 overflow-hidden flex flex-col">
-            <CardHeader className="flex-shrink-0">
-              <div className="flex flex-col space-y-4">
-                <CardTitle>All Transactions</CardTitle>
-                
-                {/* Filters Section */}
-                <TransactionFilters
-                  staff={staff}
-                  selectedStaffId={selectedStaffId}
-                  setSelectedStaffId={setSelectedStaffId}
-                  dateRange={dateRange}
-                  setDateRange={setDateRange}
-                  resetFilters={resetFilters}
-                />
-              </div>
-            </CardHeader>
+          <Card className="glassmorphism flex-1 overflow-hidden flex flex-col pt-3">
+            <div className="px-4 pb-3">
+              <TransactionFilters
+                staff={staff}
+                selectedStaffId={selectedStaffId}
+                setSelectedStaffId={setSelectedStaffId}
+                dateRange={dateRange}
+                setDateRange={setDateRange}
+                resetFilters={resetFilters}
+              />
+            </div>
             <CardContent className="p-0 flex-1 overflow-hidden">
               <TransactionsTable
                 transactions={sortedTransactions}

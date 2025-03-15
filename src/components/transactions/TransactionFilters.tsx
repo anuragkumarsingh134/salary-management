@@ -1,10 +1,9 @@
 
-import { useState } from "react";
-import { StaffMember } from "@/types/staff";
 import { DateRange } from "react-day-picker";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { X, Filter, CalendarRange } from "lucide-react";
+import { X, CalendarRange } from "lucide-react";
+import { StaffMember } from "@/types/staff";
 import {
   Select,
   SelectContent,
@@ -38,14 +37,14 @@ const TransactionFilters = ({
   resetFilters,
 }: TransactionFiltersProps) => {
   return (
-    <div className="flex flex-wrap items-center gap-3 mt-2">
+    <div className="flex flex-wrap items-center gap-2">
       {/* Staff Filter */}
-      <div className="flex-1 min-w-[200px]">
+      <div className="flex-1 min-w-[180px]">
         <Select
           value={selectedStaffId}
           onValueChange={setSelectedStaffId}
         >
-          <SelectTrigger className="h-9">
+          <SelectTrigger className="h-8">
             <SelectValue placeholder="Filter by staff" />
           </SelectTrigger>
           <SelectContent>
@@ -60,22 +59,21 @@ const TransactionFilters = ({
       </div>
       
       {/* Date Range Filter */}
-      <div className="flex-1 min-w-[200px]">
+      <div className="flex-1 min-w-[180px]">
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               className={cn(
-                "h-9 w-full justify-start text-left font-normal",
+                "h-8 w-full justify-start text-left font-normal text-xs",
                 !dateRange.from && !dateRange.to && "text-muted-foreground"
               )}
             >
-              <CalendarRange className="mr-2 h-4 w-4" />
+              <CalendarRange className="mr-2 h-3 w-3" />
               {dateRange.from ? (
                 dateRange.to ? (
                   <>
-                    {format(dateRange.from, "dd MMM yyyy")} -{" "}
-                    {format(dateRange.to, "dd MMM yyyy")}
+                    {format(dateRange.from, "dd MMM")} - {format(dateRange.to, "dd MMM yyyy")}
                   </>
                 ) : (
                   format(dateRange.from, "dd MMM yyyy")
@@ -103,11 +101,11 @@ const TransactionFilters = ({
       <Button
         variant="ghost"
         size="sm"
-        className="h-9"
+        className="h-8 px-2"
         onClick={resetFilters}
-        disabled={!selectedStaffId && !dateRange.from && !dateRange.to}
+        disabled={selectedStaffId === "all-staff" && !dateRange.from && !dateRange.to}
       >
-        <X className="mr-2 h-4 w-4" />
+        <X className="h-3 w-3 mr-1" />
         Clear
       </Button>
     </div>

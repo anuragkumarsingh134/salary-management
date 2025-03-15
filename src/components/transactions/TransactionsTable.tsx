@@ -32,7 +32,7 @@ const TransactionsTable = ({ transactions, getStaffName, isLoading }: Transactio
 
   if (isLoading) {
     return (
-      <div className="flex justify-center p-8">
+      <div className="flex justify-center p-4">
         <p>Loading transactions...</p>
       </div>
     );
@@ -40,8 +40,8 @@ const TransactionsTable = ({ transactions, getStaffName, isLoading }: Transactio
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <div className="bg-background py-3 border-b sticky top-0 z-10 flex-shrink-0">
-        <div className="px-4 flex">
+      <div className="bg-background py-2 border-b sticky top-0 z-10 flex-shrink-0">
+        <div className="px-4 flex text-sm">
           <div className="w-1/5 font-medium">Staff Name</div>
           <div className="w-1/5 font-medium">Date</div>
           <div className="w-1/5 font-medium">Type</div>
@@ -49,23 +49,23 @@ const TransactionsTable = ({ transactions, getStaffName, isLoading }: Transactio
           <div className="w-1/5 font-medium">Description</div>
         </div>
       </div>
-      <ScrollArea className="h-[calc(100vh-330px)] flex-1">
+      <ScrollArea className="h-[calc(100vh-270px)] flex-1">
         <Table>
           <TableBody>
             {transactions.map((transaction) => (
               <TableRow key={transaction.id} className="hover:bg-secondary/20">
-                <TableCell>{getStaffName(transaction.staffId)}</TableCell>
-                <TableCell>{formatDateForDisplay(transaction.date)}</TableCell>
-                <TableCell className={getTypeColor(transaction.type)}>
+                <TableCell className="py-2">{getStaffName(transaction.staffId)}</TableCell>
+                <TableCell className="py-2">{formatDateForDisplay(transaction.date)}</TableCell>
+                <TableCell className={`py-2 ${getTypeColor(transaction.type)}`}>
                   {transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}
                 </TableCell>
-                <TableCell>₹{transaction.amount.toLocaleString()}</TableCell>
-                <TableCell>{transaction.description}</TableCell>
+                <TableCell className="py-2">₹{transaction.amount.toLocaleString()}</TableCell>
+                <TableCell className="py-2">{transaction.description}</TableCell>
               </TableRow>
             ))}
             {transactions.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="p-8 text-center text-muted-foreground">
+                <TableCell colSpan={5} className="p-4 text-center text-muted-foreground">
                   No transactions match your filters
                 </TableCell>
               </TableRow>
