@@ -11,6 +11,14 @@ import { Transaction } from "@/types/staff";
 import { usePasswordProtection } from "@/hooks/usePasswordProtection";
 import PasswordDialog from "@/components/PasswordDialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell
+} from "@/components/ui/table";
 
 const TransactionsReport = () => {
   const { transactions, staff, fetchTransactions, fetchStaff } = useStaffStore();
@@ -94,9 +102,9 @@ const TransactionsReport = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="h-screen flex flex-col">
       <NavBar />
-      <div className="container py-8 flex-1 flex flex-col space-y-4 animate-fadeIn">
+      <div className="container py-8 flex-1 flex flex-col space-y-4 animate-fadeIn overflow-hidden">
         <div className="flex items-center justify-between">
           <Button variant="ghost" onClick={() => navigate(-1)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -107,52 +115,48 @@ const TransactionsReport = () => {
         </div>
 
         {showData ? (
-          <Card className="glassmorphism flex-1 flex flex-col">
+          <Card className="glassmorphism flex-1 flex flex-col overflow-hidden">
             <CardHeader className="flex-shrink-0">
               <CardTitle>All Transactions</CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 p-0 h-[calc(100vh-220px)]">
+            <CardContent className="flex-1 p-0">
               {isLoading ? (
                 <div className="flex justify-center p-8">
                   <p>Loading transactions...</p>
                 </div>
               ) : (
-                <ScrollArea className="h-full px-6 pb-6">
-                  <div className="space-y-4">
-                    <div className="overflow-x-auto">
-                      <table className="w-full border-collapse">
-                        <thead className="sticky top-0 bg-background z-10">
-                          <tr className="border-b">
-                            <th className="text-left p-2">Staff Name</th>
-                            <th className="text-left p-2">Date</th>
-                            <th className="text-left p-2">Type</th>
-                            <th className="text-left p-2">Amount</th>
-                            <th className="text-left p-2">Description</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {sortedTransactions.map((transaction) => (
-                            <tr key={transaction.id} className="border-b hover:bg-secondary/20">
-                              <td className="p-2">{getStaffName(transaction.staffId)}</td>
-                              <td className="p-2">{formatDateForDisplay(transaction.date)}</td>
-                              <td className={`p-2 ${getTypeColor(transaction.type)}`}>
-                                {transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}
-                              </td>
-                              <td className="p-2">₹{transaction.amount.toLocaleString()}</td>
-                              <td className="p-2">{transaction.description}</td>
-                            </tr>
-                          ))}
-                          {sortedTransactions.length === 0 && (
-                            <tr>
-                              <td colSpan={5} className="p-8 text-center text-muted-foreground">
-                                No transactions found
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+                <ScrollArea className="h-[calc(100vh-240px)]">
+                  <Table>
+                    <TableHeader className="sticky top-0 bg-background z-10">
+                      <TableRow>
+                        <TableHead>Staff Name</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Description</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {sortedTransactions.map((transaction) => (
+                        <TableRow key={transaction.id} className="hover:bg-secondary/20">
+                          <TableCell>{getStaffName(transaction.staffId)}</TableCell>
+                          <TableCell>{formatDateForDisplay(transaction.date)}</TableCell>
+                          <TableCell className={getTypeColor(transaction.type)}>
+                            {transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}
+                          </TableCell>
+                          <TableCell>₹{transaction.amount.toLocaleString()}</TableCell>
+                          <TableCell>{transaction.description}</TableCell>
+                        </TableRow>
+                      ))}
+                      {sortedTransactions.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={5} className="p-8 text-center text-muted-foreground">
+                            No transactions found
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
                 </ScrollArea>
               )}
             </CardContent>
