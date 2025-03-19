@@ -45,15 +45,20 @@ export const StaffDetails = ({
     });
   };
 
-  const handleStatusChange = () => {
+  const handleStatusChange = (endDate?: Date) => {
     if (isInactive && onReactivate) {
       onReactivate();
-    } else {
-      onUpdate(staff.id, { active: false });
+    } else if (endDate) {
+      // Format the date to YYYY-MM-DD
+      const formattedEndDate = endDate.toISOString().split('T')[0];
+      onUpdate(staff.id, { 
+        active: false,
+        endDate: formattedEndDate
+      });
       onClose();
       toast({
         title: "Staff member deactivated",
-        description: "The staff member has been successfully deactivated.",
+        description: `The staff member has been deactivated effective ${formattedEndDate}.`,
         variant: "destructive",
       });
     }
