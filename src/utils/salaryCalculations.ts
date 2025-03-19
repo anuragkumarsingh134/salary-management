@@ -7,7 +7,7 @@ interface Holiday {
   end_date: string;
 }
 
-export const calculateSalaryDetails = async (salary: number, startDate: string, staffId: string, endDate?: string) => {
+export const calculateSalaryDetails = async (salary: number, startDate: string, staffId: string) => {
   if (!startDate) {
     return {
       daysWorked: 0,
@@ -35,19 +35,8 @@ export const calculateSalaryDetails = async (salary: number, startDate: string, 
       };
     }
 
-    // Use end date if provided, otherwise use current date
-    let endDateToUse;
-    if (endDate) {
-      endDateToUse = parseISO(endDate);
-      if (!isValid(endDateToUse)) {
-        console.error('Invalid end date:', endDate);
-        endDateToUse = new Date();
-      }
-    } else {
-      endDateToUse = new Date();
-    }
-
-    const totalDays = differenceInDays(endDateToUse, parsedStartDate);
+    const today = new Date();
+    const totalDays = differenceInDays(today, parsedStartDate);
     const dailyRate = salary / 30;
 
     // Fetch holidays for this staff member (only approved ones)

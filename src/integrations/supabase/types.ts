@@ -52,7 +52,6 @@ export type Database = {
           active: boolean
           created_at: string
           email: string | null
-          end_date: string | null
           id: string
           image: string | null
           name: string
@@ -65,7 +64,6 @@ export type Database = {
           active?: boolean
           created_at?: string
           email?: string | null
-          end_date?: string | null
           id?: string
           image?: string | null
           name: string
@@ -78,7 +76,6 @@ export type Database = {
           active?: boolean
           created_at?: string
           email?: string | null
-          end_date?: string | null
           id?: string
           image?: string | null
           name?: string

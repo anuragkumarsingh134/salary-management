@@ -5,7 +5,6 @@ export interface StaffMember {
   position: string;
   salary: number;
   startDate: string;  // This maps to start_date in DB
-  endDate?: string;   // This maps to end_date in DB, optional for active staff
   image?: string;
   active: boolean;
   email?: string;
@@ -27,7 +26,6 @@ export interface StaffRow {
   position: string;
   salary: number;
   start_date: string;
-  end_date: string | null;
   image: string | null;
   active: boolean;
   email: string | null;
