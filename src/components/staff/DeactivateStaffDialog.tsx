@@ -1,10 +1,8 @@
 
-import { useState } from "react";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,11 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 interface DeactivateStaffDialogProps {
   open: boolean;
@@ -26,19 +19,17 @@ interface DeactivateStaffDialogProps {
   staffName: string;
 }
 
-export function DeactivateStaffDialog({
+export const DeactivateStaffDialog = ({
   open,
   onOpenChange,
   onConfirm,
   staffName,
-}: DeactivateStaffDialogProps) {
-  const [endDate, setEndDate] = useState<Date | undefined>(new Date());
+}: DeactivateStaffDialogProps) => {
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const handleConfirm = () => {
-    if (endDate) {
-      onConfirm(endDate);
-      onOpenChange(false);
-    }
+    onConfirm(selectedDate);
+    onOpenChange(false);
   };
 
   return (
@@ -47,41 +38,31 @@ export function DeactivateStaffDialog({
         <DialogHeader>
           <DialogTitle>Deactivate Staff Member</DialogTitle>
           <DialogDescription>
-            Please select the last working date for {staffName}. No salary calculations will be done after this date.
+            Select the last working date for {staffName}. No salary will be calculated after this date.
           </DialogDescription>
         </DialogHeader>
+        
         <div className="py-4">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !endDate && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {endDate ? format(endDate, "PPP") : <span>Select end date</span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={endDate}
-                onSelect={setEndDate}
-                initialFocus
-                className={cn("p-3 pointer-events-auto")}
-              />
-            </PopoverContent>
-          </Popover>
+          <Calendar
+            mode="single"
+            selected={selectedDate}
+            onSelect={(date) => date && setSelectedDate(date)}
+            className="rounded-md border mx-auto"
+          />
+          <p className="text-sm text-muted-foreground mt-2 text-center">
+            End date: {format(selectedDate, "dd-MM-yyyy")}
+          </p>
         </div>
+        
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleConfirm}>Confirm</Button>
+          <Button onClick={handleConfirm}>
+            Deactivate
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
-}
+};
