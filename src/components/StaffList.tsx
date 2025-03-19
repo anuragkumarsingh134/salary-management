@@ -7,6 +7,7 @@ import { StaffCard } from "@/components/staff/StaffCard";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useToast } from "@/components/ui/use-toast";
 
 interface StaffListProps {
   onStaffSelect?: (staffId: string | null) => void;
@@ -18,6 +19,7 @@ const StaffList = ({ onStaffSelect, activeStaffOnly: externalActiveStaffOnly }: 
   const [selectedStaff, setSelectedStaff] = useState<string | null>(null);
   const [internalShowInactive, setInternalShowInactive] = useState(false);
   const isMobile = useIsMobile();
+  const { toast } = useToast();
 
   // Use the external prop if provided, otherwise use internal state
   const showInactive = externalActiveStaffOnly !== undefined ? !externalActiveStaffOnly : internalShowInactive;
@@ -34,7 +36,17 @@ const StaffList = ({ onStaffSelect, activeStaffOnly: externalActiveStaffOnly }: 
     await updateStaff(staffId, { active: true });
     setSelectedStaff(null);
     onStaffSelect?.(null);
-    setInternalShowInactive(false);
+    
+    // If using internal toggle, switch back to active staff view
+    if (externalActiveStaffOnly === undefined) {
+      setInternalShowInactive(false);
+    }
+    
+    toast({
+      title: "Staff reactivated",
+      description: "The staff member has been successfully reactivated.",
+      variant: "default",
+    });
   };
 
   const selectedStaffMember = staff.find((member) => member.id === selectedStaff);

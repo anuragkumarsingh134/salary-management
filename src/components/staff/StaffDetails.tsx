@@ -48,10 +48,6 @@ export const StaffDetails = ({
   const handleStatusChange = () => {
     if (isInactive && onReactivate) {
       onReactivate();
-      toast({
-        title: "Staff member reactivated",
-        description: "The staff member has been successfully reactivated.",
-      });
     } else {
       onUpdate(staff.id, { active: false });
       onClose();
