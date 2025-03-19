@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/components/ui/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface StaffListProps {
   onStaffSelect?: (staffId: string | null) => void;
@@ -95,21 +96,23 @@ const StaffList = ({ onStaffSelect, activeStaffOnly: externalActiveStaffOnly }: 
           </div>
         )}
 
-        <div className={`grid gap-${isMobile ? '2' : '3'}`}>
-          {currentStaff.map((member) => (
-            <StaffCard
-              key={member.id}
-              staff={member}
-              onClick={() => handleStaffSelect(member.id)}
-              isInactive={!member.active}
-            />
-          ))}
-          {currentStaff.length === 0 && (
-            <p className={`text-muted-foreground text-center ${isMobile ? 'py-6 text-sm' : 'py-8'}`}>
-              No {showInactive ? "inactive" : "active"} staff members found
-            </p>
-          )}
-        </div>
+        <ScrollArea className="h-[calc(100vh-250px)] pr-4">
+          <div className={`grid gap-${isMobile ? '2' : '3'}`}>
+            {currentStaff.map((member) => (
+              <StaffCard
+                key={member.id}
+                staff={member}
+                onClick={() => handleStaffSelect(member.id)}
+                isInactive={!member.active}
+              />
+            ))}
+            {currentStaff.length === 0 && (
+              <p className={`text-muted-foreground text-center ${isMobile ? 'py-6 text-sm' : 'py-8'}`}>
+                No {showInactive ? "inactive" : "active"} staff members found
+              </p>
+            )}
+          </div>
+        </ScrollArea>
       </div>
     </Card>
   );

@@ -77,9 +77,9 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-white overflow-hidden">
       <NavBar />
-      <div className="container max-w-6xl py-4 flex-1 flex flex-col">
+      <div className="container max-w-6xl py-4 flex-1 flex flex-col overflow-hidden">
         <DashboardHeader
           onAddTransaction={() => setAddTransactionOpen(true)}
           onAddStaff={() => setAddStaffOpen(true)}
@@ -89,8 +89,8 @@ const Index = () => {
         />
 
         {showData && (
-          <>
-            <div className="flex items-center mb-6">
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex items-center mb-4">
               <Switch 
                 id="active-staff" 
                 checked={activeStaffOnly}
@@ -101,11 +101,13 @@ const Index = () => {
                 Active Staff
               </Label>
             </div>
-            <StaffList 
-              onStaffSelect={setSelectedStaffId} 
-              activeStaffOnly={activeStaffOnly}
-            />
-          </>
+            <div className="flex-1 overflow-hidden">
+              <StaffList 
+                onStaffSelect={setSelectedStaffId} 
+                activeStaffOnly={activeStaffOnly}
+              />
+            </div>
+          </div>
         )}
 
         <PasswordDialog
