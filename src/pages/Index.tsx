@@ -77,7 +77,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-white overflow-hidden">
+    <div className="h-screen flex flex-col bg-white overflow-hidden">
       <NavBar />
       <div className="container max-w-6xl py-4 flex-1 flex flex-col overflow-hidden">
         <DashboardHeader
@@ -89,7 +89,7 @@ const Index = () => {
         />
 
         {showData && (
-          <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex-1 flex flex-col overflow-hidden mt-4">
             <div className="flex items-center mb-4">
               <Switch 
                 id="active-staff" 

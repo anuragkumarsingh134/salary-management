@@ -80,10 +80,10 @@ const StaffList = ({ onStaffSelect, activeStaffOnly: externalActiveStaffOnly }: 
   const renderToggle = externalActiveStaffOnly === undefined;
 
   return (
-    <Card className={`glassmorphism ${isMobile ? 'p-4' : 'p-6'}`}>
-      <div className={`space-y-${isMobile ? '3' : '4'}`}>
+    <Card className={`glassmorphism ${isMobile ? 'p-4' : 'p-6'} flex flex-col h-full`}>
+      <div className="flex flex-col h-full space-y-3">
         {renderToggle && (
-          <div className={`flex items-center space-x-2 ${!isMobile && 'mb-4'}`}>
+          <div className="flex items-center space-x-2 mb-2">
             <Switch
               id="staff-toggle"
               checked={internalShowInactive}
@@ -96,8 +96,8 @@ const StaffList = ({ onStaffSelect, activeStaffOnly: externalActiveStaffOnly }: 
           </div>
         )}
 
-        <ScrollArea className="h-[calc(100vh-250px)] pr-4">
-          <div className={`grid gap-${isMobile ? '2' : '3'}`}>
+        <ScrollArea className="flex-1 overflow-auto">
+          <div className={`grid gap-${isMobile ? '2' : '3'} pb-4`}>
             {currentStaff.map((member) => (
               <StaffCard
                 key={member.id}

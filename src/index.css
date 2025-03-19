@@ -33,16 +33,12 @@
 @layer base {
   * {
     @apply border-border;
-    scroll-behavior: smooth;
   }
-  html {
-    @apply overflow-hidden h-screen;
+  html, body, #root {
+    @apply h-full overflow-hidden;
   }
   body {
-    @apply bg-background text-foreground font-inter antialiased h-full;
-  }
-  #root {
-    @apply h-full;
+    @apply bg-background text-foreground font-inter antialiased;
   }
 }
 
@@ -54,3 +50,11 @@
   @apply bg-white/80 backdrop-blur-md border border-white/20;
 }
 
+/* Explicitly enable scrolling in scroll-area components */
+.overflow-auto {
+  overflow: auto !important;
+}
+
+.scroll-area-viewport {
+  height: 100% !important;
+}
