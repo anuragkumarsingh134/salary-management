@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Transaction } from "@/types/staff";
 import EditTransactionDialog from "./EditTransactionDialog";
 import TransactionItem from "./transactions/TransactionItem";
+import ExportOptions from "./transactions/ExportOptions";
 
 interface TransactionListProps {
   selectedStaffId?: string | null;
@@ -71,6 +72,15 @@ const TransactionList = ({ selectedStaffId }: TransactionListProps) => {
   return (
     <>
       <Card className="p-6 glassmorphism">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-medium">Transactions</h3>
+          {staffTransactions.length > 0 && (
+            <ExportOptions
+              transactions={staffTransactions}
+              getStaffName={getStaffName}
+            />
+          )}
+        </div>
         <div className="space-y-4">
           {staffTransactions.map((transaction) => (
             <TransactionItem

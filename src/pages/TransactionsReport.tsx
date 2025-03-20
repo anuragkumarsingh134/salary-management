@@ -11,6 +11,7 @@ import PasswordDialog from "@/components/PasswordDialog";
 import TransactionFilters from "@/components/transactions/TransactionFilters";
 import TransactionsTable from "@/components/transactions/TransactionsTable";
 import { useTransactionFilters } from "@/hooks/useTransactionFilters";
+import ExportOptions from "@/components/transactions/ExportOptions";
 
 const TransactionsReport = () => {
   const { transactions, staff, fetchTransactions, fetchStaff } = useStaffStore();
@@ -80,6 +81,14 @@ const TransactionsReport = () => {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
+          
+          {showData && (
+            <ExportOptions 
+              transactions={sortedTransactions} 
+              getStaffName={getStaffName}
+              disabled={isLoading || sortedTransactions.length === 0}
+            />
+          )}
         </div>
 
         {showData ? (
